@@ -1,0 +1,35 @@
+<resources>
+
+    <string name="app_name">MyMusic</string>
+    <string name="menu_local_music">本地音乐</string>
+    <string name="menu_my_downloads">我的下载</string>
+    <string name="menu_my_fav">我喜欢听</string>
+    <string name="menu_my_default_list">我的列表</string>
+    <string name="menu_recently">最近播放</string>
+    <string name="scan_music_in_sdcard">扫描手机音乐</string>
+    <string name="filter_music">过滤</string>
+    <string name="stop_scan">停止</string>
+    <string name="scan_finish">扫描完成</string>
+    <string name="scan_was_stoped">扫描已停止</string>
+    <string name="no_musics">没有音乐</string>
+    <string name="song_name">Song Name</string>
+    <string name="local_music">本地歌曲</string>
+    <string name="download_music">下载歌曲</string>
+    <string name="recently_music">最近歌曲</string>
+    <string name="fav_music">我喜欢的</string>
+    <string name="refreshing_music">正在刷新</string>
+    <string name="widget_initial_text">点击进行播放</string>
+    <string name="delete">删除</string>
+    <string name="detail">详细信息</string>
+    <string name="choose_operate">请选择操作</string>
+    <string name="delete_file_error">删除文件失败</string>
+    <string name="delete_file_success">删除文件成功</string>
+    <string name="login_not_register1_qq">没有账号?点击这里</string>
+    <string name="reg_login">已有帐号?点击这里</string>
+    <string name="login_not_register2_qq">快速注册</string>
+    <string name="favor_message_input_qq_vcode">系统监测到您的账号有异常,为保证账号安全,请输入验证码。</string>
+    <string name="login">登录</string>
+    <string name="reg">注册</string>
+    <string name="user_reg">用户注册</string>
+
+</resources>

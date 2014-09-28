@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <!-- view list -->
+
+    <com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip
+        android:id="@+id/pagerStrip"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/pageStripSize"
+        android:layout_gravity="top"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/default_text_size" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/menu_page"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:background="@color/main_default_color" />
+
+    <!-- music of playing -->
+
+</LinearLayout>

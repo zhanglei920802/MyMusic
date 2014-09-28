@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="baseSyle"></style>
+
+    <style name="wm_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="menu_button" parent="@style/wm_style">
+        <item name="android:padding">8dip</item>
+        <item name="android:background">@drawable/sel_menu_btn</item>
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="input_highlight_color">
+        <item name="android:textColor">#ff4e4e4e</item>
+        <item name="android:textColorHighlight">#ffbbb9b0</item>
+    </style>
+
+    <style name="text_color">
+        <item name="android:textColor">#ff4e4e4e</item>
+    </style>
+
+    <declare-styleable name="PagerSlidingTabStrip">
+        <attr name="pstsIndicatorColor" format="color" />
+        <attr name="pstsUnderlineColor" format="color" />
+        <attr name="pstsDividerColor" format="color" />
+        <attr name="pstsIndicatorHeight" format="dimension" />
+        <attr name="pstsUnderlineHeight" format="dimension" />
+        <attr name="pstsDividerPadding" format="dimension" />
+        <attr name="pstsTabPaddingLeftRight" format="dimension" />
+        <attr name="pstsScrollOffset" format="dimension" />
+        <attr name="pstsTabBackground" format="reference" />
+        <attr name="pstsShouldExpand" format="boolean" />
+        <attr name="pstsTextAllCaps" format="boolean" />
+    </declare-styleable>
+
+</resources>

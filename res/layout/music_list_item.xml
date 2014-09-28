@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dip"
+    android:descendantFocusability="blocksDescendants"
+    android:padding="8dip" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dip"
+        android:layout_marginTop="8dip" >
+
+        <!-- music name & singer -->
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/music_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="music_name" />
+
+            <TextView
+                android:id="@+id/music_item_singer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:text="singer_name" />
+        </LinearLayout>
+
+        <!-- music time -->
+
+        <TextView
+            android:id="@+id/music_item_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="music&apos;s time" />
+    </RelativeLayout>
+
+</RelativeLayout>

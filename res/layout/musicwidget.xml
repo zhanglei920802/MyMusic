@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playctrl"
+    android:layout_width="@dimen/widget_width"
+    android:layout_height="@dimen/widget_height"
+    android:background="@drawable/app_widget_background_color"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal" >
+
+    <ImageButton
+        android:id="@+id/album_appwidget"
+        android:layout_width="@dimen/widget_album_width"
+        android:layout_height="@dimen/widget_album_width"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5.0dip"
+        android:background="@drawable/appwidget_button_center"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_qqmusic_default_album" />
+
+    <RelativeLayout
+        android:id="@+id/right_appwidget"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="8.0dip" >
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="200.0dip"
+            android:layout_height="20.0dip"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="5.0dip"
+            android:ellipsize="none"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="20.0dip"
+            android:gravity="left|center"
+            android:singleLine="true"
+            android:text="@string/widget_initial_text"
+            android:textColor="@color/appwidget_text"
+            android:textSize="13.0dip"
+            android:textStyle="normal" />
+
+        <LinearLayout
+            android:id="@+id/right_down_appwidget"
+            android:layout_width="242.0dip"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/widget_play_progress"
+            android:layout_below="@id/title"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:gravity="center" >
+
+                <ImageView
+                    android:id="@+id/control_previous"
+                    android:layout_width="@dimen/widget_icon_width"
+                    android:layout_height="@dimen/widget_icon_height"
+                    android:src="@drawable/app_widget_prevbutton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:gravity="center" >
+
+                <ImageView
+                    android:id="@+id/control_play"
+                    android:layout_width="@dimen/widget_icon_width"
+                    android:layout_height="@dimen/widget_icon_height"
+                    android:src="@drawable/app_widget_playbutton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:gravity="center" >
+
+                <ImageView
+                    android:id="@+id/control_next"
+                    android:layout_width="@dimen/widget_icon_width"
+                    android:layout_height="@dimen/widget_icon_height"
+                    android:src="@drawable/app_widget_nextbutton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:gravity="center" >
+
+                <ImageView
+                    android:id="@+id/btn_show_dl"
+                    android:layout_width="@dimen/widget_icon_width"
+                    android:layout_height="@dimen/widget_icon_height"
+                    android:src="@drawable/app_widget_dl_close_button"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/widget_play_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="242.0dip"
+            android:layout_height="2.0dip"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5.0dip"
+            android:indeterminate="false"
+            android:max="1000"
+            android:progress="0"
+            android:progressDrawable="@drawable/widgetprogressbar_xml"
+            android:secondaryProgress="0" />
+    </RelativeLayout>
+
+</LinearLayout>

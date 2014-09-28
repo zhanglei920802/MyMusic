@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.tcl.lzhang1.mymusic.ui.MusicPlayActivity"
+            android:name="com.tcl.lzhang1.mymusic.ui.SpalashActivity"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
             <intent-filter>
@@ -28,12 +28,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.tcl.lzhang1.mymusic.ui.MainActivity"
-            android:launchMode="singleTask"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            android:name="com.tcl.lzhang1.mymusic.ui.MusicScanAcitivity"
+            android:launchMode="singleTask" >
         </activity>
         <activity
-            android:name="com.tcl.lzhang1.mymusic.ui.MusicScanAcitivity"
+            android:name="com.tcl.lzhang1.mymusic.ui.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.tcl.lzhang1.mymusic.ui.MusicListAcitivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.tcl.lzhang1.mymusic.ui.LoginActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.tcl.lzhang1.mymusic.ui.RegActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.tcl.lzhang1.mymusic.ui.MusicPlayActivity"
             android:launchMode="singleTask" >
         </activity>
 
@@ -42,6 +61,20 @@
             android:name="com.tcl.lzhang1.mymusic.service.MusicPlayService"
             android:process=":play" >
         </service>
+        <!-- appwidgets -->
+        <receiver android:name="com.tcl.lzhang1.mymusic.ui.appwidgets.MusicAppWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.tcl.lzhang1.mymusic.play.state.change" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/appwidgetinfo" >
+            </meta-data>
+        </receiver>
 
         <uses-library android:name="android.test.runner" />
     </application>

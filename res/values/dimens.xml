@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="pageStripSize">50dip</dimen>
+    <dimen name="widget_width">300.0dip</dimen>
+    <dimen name="widget_height">96.0dip</dimen>
+    <dimen name="widget_album_width">86.0dip</dimen>
+    <dimen name="widget_album_margin_left">0.0dip</dimen>
+    <dimen name="widget_icon_width">42.0dip</dimen>
+    <dimen name="widget_icon_height">42.0dip</dimen>
+    <dimen name="widget_large_icon_width">36.0dip</dimen>
+    <dimen name="widget_large_icon_height">36.0dip</dimen>
+    <dimen name="widget_ctrl_panel_height">36.0dip</dimen>
+    <dimen name="default_text_size">16sp</dimen>
+    <dimen name="login_line_height">46.0dip</dimen>
+    <dimen name="login_center_height">139.0dip</dimen>
+    <dimen name="search_delete_icon">20.0dip</dimen>
+    <dimen name="topbar_height">56.0dip</dimen>
+
+</resources>

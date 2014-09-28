@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/white" >
+
+    <include
+        android:id="@+id/topBar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/topbar_height"
+        layout="@layout/nav_common_bar_v2" />
+
+    <ScrollView
+        android:id="@+id/input_ly"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/topBar"
+        android:focusable="true" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/login_bg"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="17.0dip"
+                android:background="@drawable/login_bg" >
+
+                <RelativeLayout
+                    android:id="@+id/inputs"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30.0dip"
+                    android:layout_marginRight="30.0dip"
+                    android:layout_marginTop="42.0dip"
+                    android:orientation="vertical" >
+
+                    <!-- email begin -->
+
+                    <FrameLayout
+                        android:id="@+id/reg_email_fl"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            style="@style/input_highlight_color"
+                            android:layout_width="1.0dip"
+                            android:layout_height="@dimen/login_line_height"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:saveEnabled="true"
+                            android:selectAllOnFocus="true"
+                            android:singleLine="true"
+                            android:visibility="visible" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="horizontal" >
+
+                            <cn.beyondme.widgets.ClearableEditText
+                                android:id="@+id/edit_text_email"
+                                android:layout_width="0.0dip"
+                                android:layout_height="@dimen/login_line_height"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_weight="1.0"
+                                android:background="@color/transparent"
+                                android:hint="邮箱"
+                                android:imeOptions="actionDone"
+                                android:longClickable="false"
+                                android:paddingLeft="0.0dip"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                android:textColor="@android:color/black"
+                                android:textColorHint="#ffcfcfcf"
+                                android:textSize="18.0sp" />
+
+                            <ImageButton
+                                android:id="@+id/clearUinBtn"
+                                android:layout_width="@dimen/search_delete_icon"
+                                android:layout_height="@dimen/search_delete_icon"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="5.0dip"
+                                android:layout_marginRight="10.0dip"
+                                android:background="@drawable/voice_search_clear_text_xml"
+                                android:scaleType="centerInside"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/reg_email_divide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:layout_below="@+id/reg_email_fl"
+                        android:background="@color/common_green_divider_line_colcor" />
+                    <!-- email end -->
+
+
+                    <!-- tel begin -->
+
+                    <FrameLayout
+                        android:id="@+id/reg_tel_fl"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/reg_email_divide" >
+
+                        <TextView
+                            android:id="@+id/edit_text_tel"
+                            style="@style/input_highlight_color"
+                            android:layout_width="1.0dip"
+                            android:layout_height="@dimen/login_line_height"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:saveEnabled="true"
+                            android:selectAllOnFocus="true"
+                            android:singleLine="true"
+                            android:visibility="visible" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="horizontal" >
+
+                            <cn.beyondme.widgets.ClearableEditText
+                                android:id="@+id/edit_text_reg_tel"
+                                android:layout_width="0.0dip"
+                                android:layout_height="@dimen/login_line_height"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_weight="1.0"
+                                android:background="@color/transparent"
+                                android:hint="电话"
+                                android:imeOptions="actionDone"
+                                android:longClickable="false"
+                                android:paddingLeft="0.0dip"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                android:textColor="@android:color/black"
+                                android:textColorHint="#ffcfcfcf"
+                                android:textSize="18.0sp" />
+
+                            <ImageButton
+                                android:id="@+id/clear_reg_tel"
+                                android:layout_width="@dimen/search_delete_icon"
+                                android:layout_height="@dimen/search_delete_icon"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="5.0dip"
+                                android:layout_marginRight="10.0dip"
+                                android:background="@drawable/voice_search_clear_text_xml"
+                                android:scaleType="centerInside"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/reg_tel_divide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:layout_below="@+id/reg_tel_fl"
+                        android:background="@color/common_green_divider_line_colcor" />
+                    <!-- tel end -->
+                    <!-- pwd start -->
+
+                    <FrameLayout
+                        android:id="@+id/reg_pwd_fl"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/reg_tel_divide" >
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="horizontal" >
+
+                            <cn.beyondme.widgets.ClearableEditText
+                                android:id="@+id/edit_text_password"
+                                android:layout_width="0.0dip"
+                                android:layout_height="@dimen/login_line_height"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_weight="1.0"
+                                android:background="@color/transparent"
+                                android:hint="密码"
+                                android:imeOptions="actionDone"
+                                android:longClickable="false"
+                                android:paddingLeft="0.0dip"
+                                android:password="true"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                android:textColor="@android:color/black"
+                                android:textColorHint="#ffcfcfcf"
+                                android:textSize="18.0sp" />
+
+                            <ImageButton
+                                android:id="@+id/clearPwdBtn"
+                                android:layout_width="@dimen/search_delete_icon"
+                                android:layout_height="@dimen/search_delete_icon"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="5.0dip"
+                                android:layout_marginRight="10.0dip"
+                                android:layout_weight="0.0"
+                                android:background="@drawable/voice_search_clear_text_xml"
+                                android:scaleType="centerInside"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/pwd_divide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:layout_below="@+id/reg_pwd_fl"
+                        android:background="@color/common_green_divider_line_colcor" />
+
+                    <!-- pwd end -->
+                    <!-- repeat pwd begin -->
+
+                    <FrameLayout
+                        android:id="@+id/reg_re_pwd_fl"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/pwd_divide" >
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="horizontal" >
+
+                            <cn.beyondme.widgets.ClearableEditText
+                                android:id="@+id/edit_text_re_pwd"
+                                android:layout_width="0.0dip"
+                                android:layout_height="@dimen/login_line_height"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_weight="1.0"
+                                android:background="@color/transparent"
+                                android:hint="重复密码"
+                                android:imeOptions="actionDone"
+                                android:longClickable="false"
+                                android:paddingLeft="0.0dip"
+                                android:password="true"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                android:textColor="@android:color/black"
+                                android:textColorHint="#ffcfcfcf"
+                                android:textSize="18.0sp" />
+
+                            <ImageButton
+                                android:id="@+id/clearPwdBtn"
+                                android:layout_width="@dimen/search_delete_icon"
+                                android:layout_height="@dimen/search_delete_icon"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="5.0dip"
+                                android:layout_marginRight="10.0dip"
+                                android:layout_weight="0.0"
+                                android:background="@drawable/voice_search_clear_text_xml"
+                                android:scaleType="centerInside"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/re_pwd_divide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:layout_below="@+id/reg_re_pwd_fl"
+                        android:background="@color/common_green_divider_line_colcor" />
+                    <!-- repeat pwd end -->
+
+
+                    <!-- reg btn begin -->
+
+                    <LinearLayout
+                        android:id="@+id/reg_reg_ll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/re_pwd_divide"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="30.0dip"
+                        android:layout_marginTop="32.0dip"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/reg_reg_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/reg_login"
+                            android:textColor="@color/login_text1_register_color"
+                            android:textSize="15.0sp" />
+
+                        <TextView
+                            android:id="@+id/login_register_txt2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/login"
+                            android:textColor="@color/login_text2_register_color"
+                            android:textSize="15.0sp" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/button_reg"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reg_reg_ll"
+                        android:layout_gravity="fill"
+                        android:layout_marginTop="20.0dip"
+                        android:background="@drawable/setting_login_btn_bg"
+                        android:text="@string/reg"
+                        android:textColor="@color/login_text2_register_color"
+                        android:textSize="15.0sp" />
+
+                    <!-- reg btn end -->
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

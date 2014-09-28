@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="main_default_color">#ff88c8ee</color>
+    <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="appwidget_text">#ffcccccc</color>
+    <color name="transparent">#00000000</color>
+    <color name="common_green_divider_line_colcor">#ff16bc5c</color>
+    <color name="login_text1_register_color">#ff999999</color>
+    <color name="login_text2_register_color">#ff16bc5c</color>
+
+</resources>
