@@ -83,7 +83,9 @@ public class SongImp implements DBOperator {
         // TODO Auto-generated method stub
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         if (null != db) {
-            Object[] deleteArgs = new Object[] {id};
+            Object[] deleteArgs = new Object[] {
+                    id
+            };
             db.execSQL(DELETE_SQL_ID, deleteArgs);
 
             db.close();
@@ -234,11 +236,63 @@ public class SongImp implements DBOperator {
         // TODO Auto-generated method stub
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         if (null != db) {
-            Object[] deleteArgs = new Object[] {string};
+            Object[] deleteArgs = new Object[] {
+                    string
+            };
             db.execSQL(DELETE_SQL, deleteArgs);
 
             db.close();
             db = null;
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.db.DBOperator#find(java.lang.String)
+     */
+    @Override
+    public BaseModel find(String sql) {
+        return null;
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.db.DBOperator#findAll(java.lang.String)
+     */
+    @Override
+    public List<? extends BaseModel> findAll(String sql) {
+        // TODO Auto-generated method stub
+        List<SongModel> songs = new ArrayList<SongModel>();
+        SongModel model;
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        if (null != db) {
+            Cursor datas = db.rawQuery(sql, null);
+            // do iterator
+            while (datas.moveToNext()) {
+                // obtain datas
+                model = new SongModel();
+                {
+                    model.setSongID(datas.getInt(datas.getColumnIndex("id")));
+                    model.setType(datas.getInt(datas.getColumnIndex("type")));
+                    model.setSongName(datas.getString(datas.getColumnIndex("name")));
+                    model.setSingerName(datas.getString(datas.getColumnIndex("singername")));
+                    model.setAblumName(datas.getString(datas.getColumnIndex("ablumname")));
+                    model.setRemark(datas.getString(datas.getColumnIndex("remark")));
+                    model.setFile(datas.getString(datas.getColumnIndex("file")));
+                    model.setSinger_img(datas.getString(datas.getColumnIndex("singer_img")));
+                    model.setAblum_img(datas.getString(datas.getColumnIndex("ablum_img")));
+                    model.setHours(datas.getInt(datas.getColumnIndex("hours")));
+                    model.setMinutes(datas.getInt(datas.getColumnIndex("minutes")));
+                    model.setSeconds(datas.getInt(datas.getColumnIndex("seconds")));
+                }
+                songs.add(model);
+            }
+
+            datas.close();
+            datas = null;
+        }
+        return songs;
     }
 }

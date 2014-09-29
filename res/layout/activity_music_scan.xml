@@ -1,82 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="10dip" >
 
-    <!-- music scan progress -->
-
-    <ProgressBar
-        android:id="@+id/music_scan_progess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-    <!-- default layount -->
-
-    <RelativeLayout
-        android:id="@+id/default_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" >
-
-        <Button
-            android:id="@+id/scan_music"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="@string/scan_music_in_sdcard" />
-
-        <Button
-            android:id="@+id/filter_music"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:text="@string/filter_music" />
-    </RelativeLayout>
-    <!-- scaning muscc -->
+    <include layout="@layout/nav_common_bar" />
 
     <RelativeLayout
         android:id="@+id/scaning_music"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dip"
         android:visibility="visible" >
 
-        <LinearLayout
-            android:id="@+id/scaning_music_wrap"
-            android:layout_width="200dip"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/cur_music_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:text="cur_music_name" />
-
-            <TextView
-                android:id="@+id/scan_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dip"
-                android:text="scan_total" />
-        </LinearLayout>
-
         <Button
-            android:id="@+id/stop_scan"
-            android:layout_width="40dip"
+            android:id="@+id/scan_music"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/scaning_music_wrap"
-            android:text="@string/stop_scan" />
+            android:layout_gravity="fill"
+            android:layout_marginTop="20.0dip"
+            android:background="@drawable/setting_login_btn_bg"
+            android:text="@string/scan_music_in_sdcard"
+            android:textColor="@color/login_text2_register_color"
+            android:textSize="15.0sp" />
+
+        <TextView
+            android:id="@+id/cur_music_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/scan_music"
+            android:layout_centerHorizontal="true"
+            android:text="cur_music_name" />
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

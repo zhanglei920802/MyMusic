@@ -17,29 +17,36 @@
 package com.tcl.lzhang1.mymusic.ui;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.UIHelper;
 import com.tcl.lzhang1.mymusic.db.DBOperator;
@@ -55,12 +62,19 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         OnItemClickListener, OnItemLongClickListener {
 
     private ListView mMusicList = null;
+
     private MusicListAdapter musicListAdapter = null;
+
     private List<SongModel> mSongs = null;
+
     private RelativeLayout no_musics = null;
+
     private Button scan_music = null;
+
     private TextView back = null;
+
     private TextView nav_title = null;
+
     private TextView more = null;
 
     // list operate
@@ -75,13 +89,121 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                     UIHelper.toast(MusicListAcitivity.this, getString(R.string.delete_file_success));
                     musicListAdapter.notifyDataSetChanged();
                     break;
-
+                case 2:
+                    if (null != mSongs) {
+                        mSongs.clear();
+                        mSongs.addAll((Collection<? extends SongModel>) msg.obj);
+                        musicListAdapter.notifyDataSetChanged();
+                    }
+                    break;
                 default:
 
                     break;
             }
         };
     };
+
+    /**
+     * 
+     */
+    private PopupWindow moreMenu = null;
+    /**
+    * 
+    */
+    private View moreView = null;
+    /**
+     * 
+     */
+    private String[] moreStringArray = null;
+    /**
+     * 
+     */
+    private ListView music_list_more = null;
+
+    /**
+     * 
+     */
+    private ArrayAdapter<String> mMoreAdapter = null;
+
+    /**
+     * 
+     */
+    private void showListMore() {
+        if (null != moreMenu) {
+            moreMenu.dismiss();
+            moreMenu = null;
+            return;
+        }
+        moreMenu = new PopupWindow(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        // moreMenu.setBackgroundDrawable(new );
+        moreMenu.setOutsideTouchable(false);
+        moreMenu.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        moreView = getLayoutInflater().inflate(R.layout.activity_music_scan_more, null);
+        music_list_more = (ListView) moreView.findViewById(R.id.music_list_more);
+        moreStringArray = getResources().getStringArray(R.array.music_list_more);
+        mMoreAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
+                moreStringArray);
+        music_list_more.setAdapter(mMoreAdapter);
+        music_list_more.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO Auto-generated method stub
+                if (null != moreMenu) {
+                    moreMenu.dismiss();
+                }
+                switch (position) {
+                    case 0:
+                        Log.d(TAG, "sort by song");
+                        new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                // TODO Auto-generated method stub
+                                @SuppressWarnings("unchecked")
+                                List<SongModel> models = (List<SongModel>) mDbOperator
+                                        .findAll("select * from songs order by name");
+                                if (null != models) {
+                                    Message message = mHandler.obtainMessage();
+                                    message.what = 2;
+                                    message.obj = models;
+                                    mHandler.sendMessage(message);
+                                }
+                            }
+                        }).start();
+
+                        break;
+                    case 1:
+                        Log.d(TAG, "sort by singer");
+                        new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                // TODO Auto-generated method stub
+                                @SuppressWarnings("unchecked")
+                                List<SongModel> models = (List<SongModel>) mDbOperator
+                                        .findAll("select * from songs order by singername");
+                                if (null != models) {
+                                    Message message = mHandler.obtainMessage();
+                                    message.what = 2;
+                                    message.obj = models;
+                                    mHandler.sendMessage(message);
+                                }
+                            }
+                        }).start();
+                        break;
+                    case 2:
+                        UIHelper.showScanMusicActivity(MusicListAcitivity.this, null);
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+        });
+        moreMenu.setContentView(moreView);
+        moreMenu.showAsDropDown(more);
+    }
 
     /*
      * (non-Javadoc)
@@ -159,6 +281,9 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             case R.id.back:
                 finish();
                 break;
+            case R.id.more:
+                showListMore();
+                break;
             default:
                 break;
         }
@@ -232,7 +357,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                                     public void run() {
                                         // TODO Auto-generated method stub
                                         try {
-                                            Log.d(TAG, "will delete file:"+filePath);
+                                            Log.d(TAG, "will delete file:" + filePath);
                                             // delete database record
                                             mDbOperator.delete(filePath.trim());
                                             File file = new File(filePath);
@@ -258,7 +383,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                             }
                                 break;
                             case 1:// view informations
-
+                                showMusicInfoDialog(filePath, position);
                                 break;
                             default:
 
@@ -268,5 +393,35 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 });
         builder.create().show();
 
+    }
+
+    private void showMusicInfoDialog(final String filePath, final int position) {
+        Builder builder = new Builder(this);
+        builder.setTitle(getString(R.string.song_info));
+        StringBuilder sb = new StringBuilder();
+        SongModel model = mSongs.get(position);
+        sb.append("歌曲: " + model.getSongName());
+        sb.append("\n");
+        sb.append("歌手:" + model.getSingerName());
+        sb.append("\n");
+        sb.append("专辑:" + model.getAblumName());
+        sb.append("\n");
+        sb.append("备注:" + model.getRemark());
+        sb.append("\n");
+        sb.append("时长:" + MusicUtil.formatString(model.getMinutes(), model.getSeconds()));
+        sb.append("\n");
+        sb.append("路径:" + filePath);
+        builder.setMessage(sb.toString());
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                dialog.dismiss();
+                return;
+            }
+        });
+
+        builder.create().show();
     }
 }

@@ -84,4 +84,16 @@ public interface DBOperator {
      */
     public void delete(String string);
 
+    /**
+     * @param sql
+     */
+    public BaseModel find(String sql);
+
+    /**
+     * find all record
+     * 
+     * @return
+     */
+    public List<? extends BaseModel> findAll(String sql);
+
 }

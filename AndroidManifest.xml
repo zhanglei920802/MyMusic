@@ -61,6 +61,7 @@
             android:name="com.tcl.lzhang1.mymusic.service.MusicPlayService"
             android:process=":play" >
         </service>
+        <service android:name="com.tcl.lzhang1.mymusic.service.WidgetService"></service>
         <!-- appwidgets -->
         <receiver android:name="com.tcl.lzhang1.mymusic.ui.appwidgets.MusicAppWidget" >
             <intent-filter>

@@ -24,7 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.crypto.Mac;
+
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -517,5 +522,33 @@ public class MusicUtil {
      */
     public static String formatString1(int intvalue) {
         return String.format("%d 首", intvalue);
+    }
+
+    /**
+     * check running service
+     * 
+     * @param context
+     * @param serviceName
+     * @return
+     */
+    public static boolean checkServiceIsRunning(Context context, String serviceName) {
+        Log.d(LOG_TAG, "will check service :"+serviceName);
+        ActivityManager mActivityManager = (ActivityManager) context
+                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> mRunningServiceInfos = mActivityManager
+                .getRunningServices(1000);
+        for (RunningServiceInfo runningServiceInfo : mRunningServiceInfos) {
+            if (null == runningServiceInfo) {
+                continue;
+            }
+
+            if (serviceName.equals(runningServiceInfo.service.getClassName())) {
+                Log.d(LOG_TAG, "service["+serviceName+"] is running");
+                return true;
+            }
+
+        }
+
+        return false;
     }
 }

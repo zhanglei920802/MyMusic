@@ -32,9 +32,11 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tcl.lzhang1.mymusic.AppContext;
 import com.tcl.lzhang1.mymusic.Contants;
 import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
+import com.tcl.lzhang1.mymusic.UIHelper;
 import com.tcl.lzhang1.mymusic.db.DBOperator;
 import com.tcl.lzhang1.mymusic.db.imp.SongImp;
 import com.tcl.lzhang1.mymusic.model.SongModel;
@@ -63,6 +65,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     private TextView total_time = null;
     private MySeekBar music_seek_bar = null;
     private SongModel curSong = null;
+    private AppContext mAppContext = null;
     // process music play state changed
     private BroadcastReceiver mMusicPlaySateChangedReciver = new BroadcastReceiver() {
 
@@ -156,6 +159,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         public static final int ACTION_START = 3;
         public static final int ACTION_NEXT = 4;
         public static final int ACTION_PRE = 5;
+        public static final int ACTION_NEW = 6;
     }
 
     /**
@@ -185,7 +189,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.acitivity_music_play);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
+        mAppContext = (AppContext) getApplication();
         {
             findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
 
@@ -211,6 +215,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             play_time = (TextView) findViewById(R.id.play_time);
             total_time = (TextView) findViewById(R.id.total_time);
             music_seek_bar = (MySeekBar) findViewById(R.id.music_seek_bar);
+            setPlayMode(mAppContext.getPlayMode());
         }
 
         {
@@ -225,7 +230,22 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             nav_title.setText(model.getSongName());
             total_time.setText(MusicUtil.formatString(model.getMinutes(),
                     model.getSeconds()));
-            playMusic();
+            boolean isPlayServiceRunning = MusicUtil.checkServiceIsRunning(this,
+                    MusicPlayService.class.getName());
+            if (!isPlayServiceRunning) {
+                playMusic();
+            } else {// if music is playing
+                Intent intent = new Intent();
+                intent.setAction(Contants.FILTER_PLAY_ACTION);
+                intent.putExtra("action", PlayAction.ACTION_NEW);
+                intent.putExtra("index", index);
+                intent.putExtra("time", time);
+                sendBroadcast(intent);
+                pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                isPlaying = true;
+                isInit = false;
+            }
+
         }
     }
 
@@ -284,27 +304,52 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                 switch (curMode) {
                     case PlayMode.MODE_REPEAT_ALL:
                         curMode = PlayMode.MODE_REPEAT_RANDOM;
-                        playmode.setBackground(getResources().getDrawable(
-                                R.drawable.playmode_repeate_random));
-
+                        playmode.setImageResource(R.drawable.playmode_repeate_random);
+                        UIHelper.toast(this,
+                                String.format(getString(R.string.cur_play_mode), "随机播放"));
                         break;
                     case PlayMode.MODE_REPEAT_RANDOM:
                         curMode = PlayMode.MODE_REPEAT_SINGLE;
-                        playmode.setBackground(getResources().getDrawable(
-                                R.drawable.playmode_repeate_single));
+                        playmode.setBackground(null);
+                        playmode.setImageResource(R.drawable.playmode_repeate_single);
+                        UIHelper.toast(this,
+                                String.format(getString(R.string.cur_play_mode), "单曲循环"));
                         break;
                     case PlayMode.MODE_REPEAT_SINGLE:
-                        curMode = PlayMode.MODE_REPEAT_SINGLE;
-                        playmode.setBackground(getResources().getDrawable(
-                                R.drawable.playmode_repeate_all));
+                        curMode = PlayMode.MODE_REPEAT_ALL;
+                        playmode.setBackground(null);
+                        playmode.setImageResource(R.drawable.playmode_repeate_all);
+                        UIHelper.toast(this,
+                                String.format(getString(R.string.cur_play_mode), "列表循环"));
                         break;
                     default:
                         break;
                 }
+                mAppContext.savePlayMode(curMode);
                 sendPlayModeBroad(curMode);
             }
                 break;
             case R.id.go_list:
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setPlayMode(int playMode) {
+        switch (curMode) {
+            case PlayMode.MODE_REPEAT_ALL:
+                playmode.setImageResource(R.drawable.playmode_repeate_all);
+
+                break;
+            case PlayMode.MODE_REPEAT_RANDOM:
+
+                playmode.setImageResource(R.drawable.playmode_repeate_random);
+                break;
+            case PlayMode.MODE_REPEAT_SINGLE:
+
+                playmode.setImageResource(R.drawable.playmode_repeate_single);
 
                 break;
             default:

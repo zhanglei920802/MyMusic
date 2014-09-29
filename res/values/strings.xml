@@ -10,6 +10,7 @@
     <string name="filter_music">过滤</string>
     <string name="stop_scan">停止</string>
     <string name="scan_finish">扫描完成</string>
+    <string name="scan_music">扫描音乐</string>
     <string name="scan_was_stoped">扫描已停止</string>
     <string name="no_musics">没有音乐</string>
     <string name="song_name">Song Name</string>
@@ -31,5 +32,8 @@
     <string name="login">登录</string>
     <string name="reg">注册</string>
     <string name="user_reg">用户注册</string>
-
+    <string name="refreshing_music_stand_by">刷新中,请稍候...</string>
+    <string name="scan_finished">已找到歌曲%s首</string>
+    <string name="song_info">歌曲信息</string>
+	<string name="cur_play_mode">处于%s模式</string>
 </resources>

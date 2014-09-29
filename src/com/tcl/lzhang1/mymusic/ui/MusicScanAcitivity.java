@@ -23,10 +23,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.tcl.lzhang1.mymusic.MusicUtil;
@@ -46,21 +44,22 @@ import com.tcl.lzhang1.mymusic.model.SongModel;
  */
 public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
         onMusicScanListener {
-
-    private ProgressBar music_scan_progess = null;
-    private RelativeLayout default_layout = null;
+    private TextView back = null;
+    private TextView nav_title = null;
     private Button scan_music = null;
-    private Button filter_music = null;
-    private RelativeLayout scaning_music = null;
-    private LinearLayout scaning_music_wrap = null;
     private TextView cur_music_name = null;
-    private TextView scan_total = null;
-    private Button stop_scan = null;
 
-    private int mScanTotal = 0;
     private List<SongModel> mSongs = null;
 
     private DBOperator mDbOperator = null;
+
+    private int mScanState = ScanState.STATE_INIT;
+
+    public interface ScanState {
+        public final int STATE_INIT = 0;
+        public final int STATE_SCANING = 1;
+        public final int STATE_FINISH = 2;
+    }
 
     @Override
     public void getPreActivityData(Bundle bundle) {
@@ -70,26 +69,20 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
 
     @Override
     public void initView() {
-        // TODO Auto-generated method stub
+        // TODO Auto-generated method stub'
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_music_scan);
-
-        music_scan_progess = (ProgressBar) findViewById(R.id.music_scan_progess);
-        default_layout = (RelativeLayout) findViewById(R.id.default_layout);
+        back = (TextView) findViewById(R.id.back);
+        back.setOnClickListener(this);
+        nav_title = (TextView) findViewById(R.id.nav_title);
+        nav_title.setText(R.string.scan_music);
         scan_music = (Button) findViewById(R.id.scan_music);
-        filter_music = (Button) findViewById(R.id.filter_music);
-        scaning_music = (RelativeLayout) findViewById(R.id.scaning_music);
-        scaning_music_wrap = (LinearLayout) findViewById(R.id.scaning_music_wrap);
         cur_music_name = (TextView) findViewById(R.id.cur_music_name);
-        scan_total = (TextView) findViewById(R.id.scan_total);
-        stop_scan = (Button) findViewById(R.id.stop_scan);
-
+        cur_music_name.setVisibility(View.GONE);
         scan_music.setOnClickListener(this);
-        filter_music.setOnClickListener(this);
-        stop_scan.setOnClickListener(this);
+        findViewById(R.id.more).setVisibility(View.GONE);
         MusicUtil.setMusicListener(this);
 
-        default_layout.setVisibility(View.VISIBLE);
-        scaning_music.setVisibility(View.GONE);
     }
 
     @Override
@@ -104,19 +97,13 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
     public void onClick(View v) {
         // TODO Auto-generated method stub
         switch (v.getId()) {
-            case R.id.stop_scan:
-                cur_music_name.setText(R.string.scan_was_stoped);
-                scan_total.setText(String.valueOf(mScanTotal));
-                break;
-            case R.id.filter_music:
-                // show dialog
-                break;
+
             case R.id.scan_music:
 
                 // new thread to scan music
-                default_layout.setVisibility(View.GONE);
-                scaning_music.setVisibility(View.VISIBLE);
-
+                mSongs.clear();
+                mScanState = ScanState.STATE_SCANING;
+                scan_music.setEnabled(false);
                 new Thread(new Runnable() {
 
                     @Override
@@ -146,15 +133,15 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
             return;
         }
 
-        mScanTotal++;
         mSongs.add(song);
         runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
                 // TODO Auto-generated method stub
+                cur_music_name.setVisibility(View.VISIBLE);
                 cur_music_name.setText(song.getSongName());
-                scan_total.setText(String.valueOf(mScanTotal));
+
                 Log.d(TAG, "music scaned.file name is:" + song.getSongName());
             }
         });
@@ -169,10 +156,12 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
             @Override
             public void run() {
                 // TODO Auto-generated method stub
-                cur_music_name.setText(R.string.scan_finish);
-                scan_total.setText(String.valueOf(mScanTotal));
+                cur_music_name.setText(String.format(getString(R.string.scan_finished),
+                        mSongs.size() + ""));
                 Log.d(TAG, "music scaned finish,total :" + mSongs.size());
+                mScanState = ScanState.STATE_FINISH;
                 saveSongs();
+                finish();
             }
         });
 

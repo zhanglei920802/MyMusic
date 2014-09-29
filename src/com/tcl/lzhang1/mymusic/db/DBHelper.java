@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 package com.tcl.lzhang1.mymusic.db;
 
 import android.content.Context;
@@ -27,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private int DB_VERSION = 1;
     private String CREATE_SQL = "CREATE TABLE [songs] (  [id] INT,   [type] INT DEFAULT 2,   [name] NVARCHAR2 NOT NULL,   [singername] NVARCHAR2 NOT NULL,   [ablumname] NVARCHAR2 NOT NULL,  [remark] NVARCHAR2,  [file] NVARCHAR2 NOT NULL,  [singer_img] NVARCHAR2,  [ablum_img] CHAR,[hours] int ,  [minutes] int , [seconds] int ,CONSTRAINT [] PRIMARY KEY ([id]) ON CONFLICT ABORT)";
+    private String CREATE_USER_SQL = "CREATE TABLE [user] (  [user_id] NVARCHAR2,   [password] NVARCHAR2,   CONSTRAINT [] PRIMARY KEY ([user_id]))";
 
     /**
 	 * 
@@ -59,6 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // TODO Auto-generated method stub
         db.execSQL(CREATE_SQL);
+        db.execSQL(CREATE_USER_SQL);
     }
 
     /*

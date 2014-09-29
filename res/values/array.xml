@@ -11,5 +11,10 @@
         <item>@string/delete</item>
         <item>@string/detail</item>
     </string-array>
+    <string-array name="music_list_more">
+        <item>按歌曲排序</item>
+        <item>按歌手排序</item>
+        <item>扫描</item>
+    </string-array>
 
 </resources>

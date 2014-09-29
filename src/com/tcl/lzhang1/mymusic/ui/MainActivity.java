@@ -72,6 +72,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private List<SongModel> mSongModels;
     private DBOperator mDbOperator = null;
     private Button login = null;
+    private boolean isRefreshing = true;
     // music scan
     private Handler mHandler = new Handler() {
         @SuppressWarnings("unchecked")
@@ -90,8 +91,9 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                         } else {
                             Map<String, String> map = mList.get(0);
                             map.put("value", MusicUtil.formatString1(0));
+                            mSongModels = new ArrayList<SongModel>();
                         }
-
+                        isRefreshing = false;
                         mineAdapter.notifyDataSetChanged();
 
                         break;
@@ -198,17 +200,29 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     }
 
     /**
-     * scan music
+     * scan musictext
      */
     private void scanMusic() {
         new Thread(new Runnable() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public void run() {
                 // TODO Auto-generated method stub
                 try {
-                    List<SongModel> models = MusicUtil.scanMusic();
+
+                    List<SongModel> models;
                     Message message = mHandler.obtainMessage();
+                    models = (List<SongModel>) mDbOperator.findAll();
+                    if (models != null && !models.isEmpty()) {
+                        Log.d(TAG, "data base have datas");
+                        message.what = SCAN_MUSIC_SUCCESS;
+                        message.obj = models;
+                        mHandler.sendMessage(message);
+                        return;
+                    }
+                    models = MusicUtil.scanMusic();
+
                     message.what = SCAN_MUSIC_SUCCESS;
                     message.obj = models;
                     mHandler.sendMessage(message);
@@ -236,6 +250,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             case R.id.mine_list:
             // menu list
             {
+                if (isRefreshing) {
+                    UIHelper.toast(this, R.string.refreshing_music_stand_by);
+                    return;
+                }
+
                 HashMap<String, String> map = mList.get(arg2);
                 String name = map.get("name");
                 if (getString(R.string.local_music).equals(name)) {

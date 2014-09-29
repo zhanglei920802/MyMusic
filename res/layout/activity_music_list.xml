@@ -10,6 +10,7 @@
         android:id="@+id/no_musics"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="10dip"
         android:visibility="visible" >
 
         <TextView
@@ -21,12 +22,15 @@
 
         <Button
             android:id="@+id/scan_music"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/no_music_labels"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dip"
-            android:text="@string/scan_music_in_sdcard" />
+            android:layout_gravity="fill"
+            android:layout_marginTop="20.0dip"
+            android:background="@drawable/setting_login_btn_bg"
+            android:text="@string/scan_music_in_sdcard"
+            android:textColor="@color/login_text2_register_color"
+            android:textSize="15.0sp" />
     </RelativeLayout>
 
     <ListView

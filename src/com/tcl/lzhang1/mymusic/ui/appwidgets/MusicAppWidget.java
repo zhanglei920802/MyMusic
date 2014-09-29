@@ -16,19 +16,26 @@
 
 package com.tcl.lzhang1.mymusic.ui.appwidgets;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.tcl.lzhang1.mymusic.AppContext;
 import com.tcl.lzhang1.mymusic.Contants;
+import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.model.SongModel;
+import com.tcl.lzhang1.mymusic.model.SongsWrap;
+import com.tcl.lzhang1.mymusic.service.MusicPlayService;
 import com.tcl.lzhang1.mymusic.service.MusicPlayService.PlayState;
+import com.tcl.lzhang1.mymusic.service.WidgetService;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayAction;
 import com.tcl.lzhang1.mymusic.ui.SpalashActivity;
 
@@ -87,14 +94,19 @@ public class MusicAppWidget extends AppWidgetProvider {
      */
     private AppWidgetManager mAppWidgetManager = null;
 
+    private AppContext mAppContext = null;
+
     /**
      * the broadcast receiver. process music play state.when music play state
      * changed, the music play service will send broadcast to it's receiver
      */
+    boolean isRunning;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(LOG_TAG, "appwidget receive broadcast..." + intent.getAction());
-
+        isRunning = MusicUtil.checkServiceIsRunning(context,
+                MusicPlayService.class.getName());
         if (intent != null && Contants.FILTER_PLAY_STATE_CHANGED.equals(intent.getAction())) {
             // instance layout
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.musicwidget);
@@ -133,7 +145,9 @@ public class MusicAppWidget extends AppWidgetProvider {
             mAppWidgetManager.updateAppWidget(new ComponentName(context, MusicAppWidget.class),
                     remoteViews);
             remoteViews = null;
-
+            int[] appWidgetIds = mAppWidgetManager.getAppWidgetIds(new ComponentName(context,
+                    MusicAppWidget.class));
+            onUpdate(context, mAppWidgetManager, appWidgetIds);
         } else {// let super to process default action
             super.onReceive(context, intent);
         }
@@ -150,38 +164,124 @@ public class MusicAppWidget extends AppWidgetProvider {
             return;
         }
 
+        mAppContext = (AppContext) context.getApplicationContext();
+
         Intent intent = null;
         PendingIntent pendingIntent = null;
         RemoteViews remoteViews = null;
-        // loop for appWidgetIDs to update appwidget
+        isRunning = MusicUtil.checkServiceIsRunning(context,
+                MusicPlayService.class.getName());
+        // loop for appWidgetIDs to update app widget
         for (int i = 0; i < appWidgetIds.length; i++) {
-            intent = new Intent(context, SpalashActivity.class);
-            pendingIntent = PendingIntent.getActivity(context, REQUESET_CODE, intent, 0);
-            remoteViews = new RemoteViews(context.getPackageName(), R.layout.musicwidget);
-            // launch splash activity
-            remoteViews.setOnClickPendingIntent(R.id.album_appwidget, pendingIntent);
+            // launch splash activity begin
+            {
+                intent = new Intent(context, SpalashActivity.class);
+                pendingIntent = PendingIntent.getActivity(context, REQUESET_CODE, intent, 0);
+                remoteViews = new RemoteViews(context.getPackageName(), R.layout.musicwidget);
 
-            // play next
-            intent = new Intent();
-            intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
-            intent.putExtra("action", PlayAction.ACTION_NEXT);
-            pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE_PLAY_NEXT, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.control_next, pendingIntent);
+                remoteViews.setOnClickPendingIntent(R.id.album_appwidget, pendingIntent);
+            }
+            // launch splash activity end
 
-            // play pre
-            intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
-            intent.putExtra("action", PlayAction.ACTION_PRE);
-            pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE_PLAY_PRE, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.control_previous, pendingIntent);
+            // play next begin
+            {
+                if (isRunning) {
+                    intent = new Intent();
+                    intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
+                    intent.putExtra("action", PlayAction.ACTION_NEXT);
 
-            // pause | play
-            intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
-            intent.putExtra("action", PlayAction.ACTION_PAUSE);
-            pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE_PLAY, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(R.id.control_play, pendingIntent);
+                    pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE_PLAY_NEXT,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                } else {
+                    
+                    intent = new Intent(context, MusicPlayService.class);
+                    int playIndex = mAppContext.getPlayIndex();
+                    intent.putExtra("index", playIndex == (mAppContext.getSongs().size() - 1) ? 0
+                            : playIndex++);
+                    int time = mAppContext.getPlayTime();
+                    intent.putExtra("time", time);
+                    if (null != mAppContext && mAppContext.getSongs() != null) {
+                        Log.d(LOG_TAG, "Application has global songs");
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("songs", new SongsWrap(mAppContext.getSongs()));
+                        intent.putExtras(bundle);
+                        bundle = null;
+                    }
+                    pendingIntent = PendingIntent.getService(context, 0,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                }
+                remoteViews.setOnClickPendingIntent(R.id.control_next, pendingIntent);
+            }
+            // play next end
+
+            // play pre begin
+            {
+
+                if (isRunning) {
+                    intent = new Intent();
+                    intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
+                    intent.putExtra("action", PlayAction.ACTION_PRE);
+
+                    pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE_PLAY_PRE,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                } else
+                {
+                    
+                    intent = new Intent(context, MusicPlayService.class);
+                    int playIndex = mAppContext.getPlayIndex();
+                    intent.putExtra("index", playIndex > 1 ? playIndex : 0);
+                    int time = mAppContext.getPlayTime();
+                    intent.putExtra("time", time);
+                    if (null != mAppContext && mAppContext.getSongs() != null) {
+                        Log.d(LOG_TAG, "Application has global songs");
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("songs", new SongsWrap(mAppContext.getSongs()));
+                        intent.putExtras(bundle);
+                        bundle = null;
+                    }
+                    pendingIntent = PendingIntent.getService(context, 0, intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+
+                }
+                remoteViews.setOnClickPendingIntent(R.id.control_previous, pendingIntent);
+            }
+            // play pre end
+
+            // pause | play begin
+            {
+                intent = new Intent();
+
+                if (isRunning) {
+                    intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
+                    intent.putExtra("action", PlayAction.ACTION_PAUSE);
+                    pendingIntent = PendingIntent.getBroadcast(context,
+                            REQUEST_CODE_PLAY, intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+
+                } else {
+
+                    intent = new Intent(context, MusicPlayService.class);
+                    int playIndex = mAppContext.getPlayIndex();
+                    intent.putExtra("index", playIndex);
+                    int time = mAppContext.getPlayTime();
+                    intent.putExtra("time", time);
+                    if (null != mAppContext && mAppContext.getSongs() != null) {
+                        Log.d(LOG_TAG, "Application has global songs");
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("songs", new SongsWrap(mAppContext.getSongs()));
+                        intent.putExtras(bundle);
+                        bundle = null;
+                    }
+                    intent.setClass(context, MusicPlayService.class);
+                    pendingIntent = PendingIntent.getService(context, 0, intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                }
+                remoteViews.setOnClickPendingIntent(R.id.control_play, pendingIntent);
+            }
+            // pause | play end
 
             appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
 

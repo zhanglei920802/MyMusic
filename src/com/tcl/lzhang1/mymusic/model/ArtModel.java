@@ -21,4 +21,9 @@ package com.tcl.lzhang1.mymusic.model;
  */
 public class ArtModel extends BaseModel {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
 }

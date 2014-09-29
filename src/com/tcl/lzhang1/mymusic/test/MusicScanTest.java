@@ -28,4 +28,8 @@ public class MusicScanTest extends AndroidTestCase {
         MusicUtil.getMusicInfo(new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/test.mp3"));
     }
+    
+    public void testRuningService(){
+        MusicUtil.checkServiceIsRunning(getContext(), getContext().getPackageName());
+    }
 }
