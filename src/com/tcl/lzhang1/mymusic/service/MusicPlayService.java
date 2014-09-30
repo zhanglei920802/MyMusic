@@ -125,7 +125,7 @@ public class MusicPlayService extends Service {
                             timeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
                             Log.d(LOG_TAG, "request pause,cur pos is:" + timeToPlay);
                             mMusicMediaPlayer.pause();
-                            sendBroadCast(null, PlayState.PLAY_PAUSED, 0, null);
+                            sendBroadCast(mSongs.get(play_index), PlayState.PLAY_PAUSED, 0, null);
                         }
                         break;
                     case PlayAction.ACTION_NEW:
@@ -167,52 +167,54 @@ public class MusicPlayService extends Service {
                         break;
                     case PlayAction.ACTION_PRE:
                         if (null != mMusicMediaPlayer) {
-                            if (mMusicMediaPlayer.isPlaying()) {
-                                mMusicMediaPlayer.stop();
-                                mMusicMediaPlayer.reset();
-                                switch (mPlayMode) {
-                                    case PlayMode.MODE_REPEAT_ALL:
-                                        play_index--;
-                                        break;
-                                    case PlayMode.MODE_REPEAT_RANDOM:// random
-                                                                     // play
-                                                                     // music
+                            // no condition to play next
+                            // if (mMusicMediaPlayer.isPlaying()) {
+                            mMusicMediaPlayer.stop();
+                            mMusicMediaPlayer.reset();
+                            switch (mPlayMode) {
+                                case PlayMode.MODE_REPEAT_ALL:
+                                    play_index--;
+                                    break;
+                                case PlayMode.MODE_REPEAT_RANDOM:// random
+                                                                 // play
+                                                                 // music
 
-                                        // break;
-                                    case PlayMode.MODE_REPEAT_SINGLE:// random
-                                                                     // play
-                                                                     // music
-                                        play_index = MusicUtil.getRandomInt(mSongs.size());
-                                        break;
-                                    default:
-                                        break;
-                                }
-
-                                playMusic(play_index < 1 ? 0 : play_index, 0);
+                                    // break;
+                                case PlayMode.MODE_REPEAT_SINGLE:// random
+                                                                 // play
+                                                                 // music
+                                    play_index = MusicUtil.getRandomInt(mSongs.size());
+                                    break;
+                                default:
+                                    break;
                             }
+
+                            playMusic(play_index < 1 ? 0 : play_index, 0);
+                            // }
                         }
                         break;
                     case PlayAction.ACTION_NEXT:
                         if (null != mMusicMediaPlayer) {
-                            if (mMusicMediaPlayer.isPlaying()) {
-                                mMusicMediaPlayer.stop();
-                                mMusicMediaPlayer.reset();
-                                switch (mPlayMode) {
-                                    case PlayMode.MODE_REPEAT_ALL:
-                                        play_index++;
-                                        break;
-                                    case PlayMode.MODE_REPEAT_RANDOM:
+                            // no condition to play next
+                            // if (mMusicMediaPlayer.isPlaying()) {
+                            mMusicMediaPlayer.stop();
+                            mMusicMediaPlayer.reset();
+                            switch (mPlayMode) {
+                                case PlayMode.MODE_REPEAT_ALL:
+                                    play_index++;
+                                    break;
+                                case PlayMode.MODE_REPEAT_RANDOM:
 
-                                        // break;
-                                    case PlayMode.MODE_REPEAT_SINGLE:
-                                        play_index = MusicUtil.getRandomInt(mSongs.size());
-                                        break;
-                                    default:
-                                        break;
-                                }
-
-                                playMusic(play_index, 0);
+                                    // break;
+                                case PlayMode.MODE_REPEAT_SINGLE:
+                                    play_index = MusicUtil.getRandomInt(mSongs.size());
+                                    break;
+                                default:
+                                    break;
                             }
+
+                            playMusic(play_index, 0);
+                            // }
                         }
                         break;
                     default:
@@ -227,51 +229,55 @@ public class MusicPlayService extends Service {
                     case PlayAction.ACTION_PRE:
                         if (null != mMusicMediaPlayer) {
                             Log.d(LOG_TAG, "recever app widget's broad cast to start pre");
-                            if (mMusicMediaPlayer.isPlaying()) {
-                                mMusicMediaPlayer.stop();
-                                mMusicMediaPlayer.reset();
-                                switch (mPlayMode) {
-                                    case PlayMode.MODE_REPEAT_ALL:
-                                        play_index--;
-                                        break;
-                                    case PlayMode.MODE_REPEAT_RANDOM:
-                                        play_index = MusicUtil.getRandomInt(mSongs.size());
-                                        break;
-                                    case PlayMode.MODE_REPEAT_SINGLE:
+                            // no condition to play next
+                            // if (mMusicMediaPlayer.isPlaying()) {
+                            mMusicMediaPlayer.stop();
+                            mMusicMediaPlayer.reset();
+                            switch (mPlayMode) {
+                                case PlayMode.MODE_REPEAT_ALL:
+                                    play_index--;
+                                    break;
+                                case PlayMode.MODE_REPEAT_RANDOM:
+                                    play_index = MusicUtil.getRandomInt(mSongs.size());
+                                    break;
+                                case PlayMode.MODE_REPEAT_SINGLE:
 
-                                        break;
-                                    default:
-                                        break;
-                                }
-
-                                playMusic(play_index < 1 ? 0 : play_index, 0);
-                                sendBroadCast(mSongs.get(play_index), PlayState.PLAY_NEW, 0, null);
+                                    break;
+                                default:
+                                    break;
                             }
+
+                            playMusic(play_index < 1 ? 0 : play_index, 0);
+                            // sendBroadCast(mSongs.get(play_index),
+                            // PlayState.PLAY_NEW, 0, null);
+                            // }
                         }
                         break;
                     case PlayAction.ACTION_NEXT:
                         if (null != mMusicMediaPlayer) {
                             Log.d(LOG_TAG, "recever app widget's broad cast to start next");
-                            if (mMusicMediaPlayer.isPlaying()) {
-                                mMusicMediaPlayer.stop();
-                                mMusicMediaPlayer.reset();
-                                switch (mPlayMode) {
-                                    case PlayMode.MODE_REPEAT_ALL:
-                                        play_index++;
-                                        break;
-                                    case PlayMode.MODE_REPEAT_RANDOM:
-                                        play_index = MusicUtil.getRandomInt(mSongs.size());
-                                        break;
-                                    case PlayMode.MODE_REPEAT_SINGLE:
+                            // no condition to play next
+                            // if (mMusicMediaPlayer.isPlaying()) {
+                            mMusicMediaPlayer.stop();
+                            mMusicMediaPlayer.reset();
+                            switch (mPlayMode) {
+                                case PlayMode.MODE_REPEAT_ALL:
+                                    play_index++;
+                                    break;
+                                case PlayMode.MODE_REPEAT_RANDOM:
+                                    play_index = MusicUtil.getRandomInt(mSongs.size());
+                                    break;
+                                case PlayMode.MODE_REPEAT_SINGLE:
 
-                                        break;
-                                    default:
-                                        break;
-                                }
-
-                                playMusic(play_index, 0);
-                                sendBroadCast(mSongs.get(play_index), PlayState.PLAY_NEW, 0, null);
+                                    break;
+                                default:
+                                    break;
                             }
+
+                            playMusic(play_index, 0);
+                            // sendBroadCast(mSongs.get(play_index),
+                            // PlayState.PLAY_NEW, 0, null);
+                            // }
                         }
                         break;
                     case PlayAction.ACTION_PAUSE:
@@ -573,8 +579,8 @@ public class MusicPlayService extends Service {
      */
     public void playMusic(final int position, final int time_position) {
         try {
-            System.out.println("MusicPlayService.playMusic()   position:" + position);
             play_index = position;
+            Log.d(LOG_TAG, "play music[name:" + mSongs.get(play_index).getSongName() + "]");
             mMusicMediaPlayer.setDataSource(mSongs.get(position).getFile());
             mMusicMediaPlayer.prepareAsync();
             mMusicMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

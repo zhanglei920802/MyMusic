@@ -28,12 +28,14 @@
     <string name="login_not_register1_qq">没有账号?点击这里</string>
     <string name="reg_login">已有帐号?点击这里</string>
     <string name="login_not_register2_qq">快速注册</string>
-    <string name="favor_message_input_qq_vcode">系统监测到您的账号有异常,为保证账号安全,请输入验证码。</string>
     <string name="login">登录</string>
     <string name="reg">注册</string>
     <string name="user_reg">用户注册</string>
     <string name="refreshing_music_stand_by">刷新中,请稍候...</string>
     <string name="scan_finished">已找到歌曲%s首</string>
     <string name="song_info">歌曲信息</string>
-	<string name="cur_play_mode">处于%s模式</string>
+    <string name="cur_play_mode">处于%s模式</string>
+    <string name="cur_song">歌曲名称</string>
+    <string name="cur_song_singer">歌曲歌手</string>
+
 </resources>

@@ -48,6 +48,14 @@ import com.tcl.lzhang1.mymusic.ui.widget.MySeekBar;
 
 public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     /**
+     * launch from miniplayer
+     */
+    public static final int START_MODE_FROM_MINIPLAYER = 1;
+    /**
+     * launch from music list
+     */
+    public static final int START_MODE_FROM_MUSIC_LIST = 2;
+    /**
      * the nav title
      */
     private TextView nav_title = null;
@@ -92,7 +100,10 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
      * current play time
      */
     private int time = 0;
-
+    /**
+     * current launch mode
+     */
+    private int mLanuchMode = START_MODE_FROM_MUSIC_LIST;
     /**
      * the DataBase access interface
      */
@@ -156,23 +167,28 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             // TODO Auto-generated method stub
             if (null != intent && intent.getAction().equals(Contants.FILTER_PLAY_STATE_CHANGED)) {
                 curSong = (SongModel) intent.getSerializableExtra("model");
+                Log.d(TAG, "play activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
+                        + "play music[" + curSong!=null ?curSong.getSongName():"" + "]");
                 int time = intent.getIntExtra("time", 0);
                 String errmsg = intent.getStringExtra("errmsg");
                 switch (intent.getIntExtra("state", 0)) {
                     case PlayState.PLAY_END:
-
+                        Log.d(TAG, "PLAY_STOPED");
                         break;
                     case PlayState.PLAY_ERROR:
-
+                        Log.d(TAG, "PLAY_ERROR");
                         break;
                     case PlayState.PLAY_NEW:
                     {
+                        Log.d(TAG, "PLAY_NEW");
 
                         play_song_name.setText(curSong.getSongName());
                         ablum_name.setText(curSong.getSingerName());
                         nav_title.setText(curSong.getSongName());
                         total_time.setText(MusicUtil.formatString(curSong.getMinutes(),
                                 curSong.getSeconds()));
+                        isPlaying =true;
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
                         if (curSong.getFav() == 1) {
                             add_fav.setImageResource(R.drawable.add_fav_xml);
                         } else {
@@ -181,18 +197,19 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                     }
                         break;
                     case PlayState.PLAY_PAUSED:
+                        Log.d(TAG, "PLAY_PAUSED");
                         Log.d(TAG, "music play thread received broadcast,music was puased");
                         pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
                         isPlaying = false;
                         break;
                     case PlayState.PLAY_RESUMED:
-
+                        Log.d(TAG, "PLAY_RESUMED");
                         break;
                     case PlayState.PLAY_SEEK:
-
+                        Log.d(TAG, "PLAY_SEEK");
                         break;
                     case PlayState.PLAY_STOPED:
-
+                        Log.d(TAG, "PLAY_STOPED");
                         break;
                     default:
                         break;
@@ -228,7 +245,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                     sec++;
                     if (sec % 60 == 0) {
                         min++;
-                        sec = 0;
+                        sec = 0;pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
                     }
 
                     play_time.setText(MusicUtil.formatString(min, sec));
@@ -244,6 +261,11 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         mSongsWrap = (SongsWrap) getIntent().getSerializableExtra("songs");
         index = getIntent().getIntExtra("index", 0);
         time = getIntent().getIntExtra("time", 0);
+        mLanuchMode = getIntent().getIntExtra("from", START_MODE_FROM_MUSIC_LIST);
+        if (mLanuchMode == START_MODE_FROM_MINIPLAYER) {
+            curSong = (SongModel) getIntent().getSerializableExtra("song");
+            isPlaying = getIntent().getBooleanExtra("isrunning", false);
+        }
     }
 
     /**
@@ -362,19 +384,28 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             }
             boolean isPlayServiceRunning = MusicUtil.checkServiceIsRunning(this,
                     MusicPlayService.class.getName());
-            if (!isPlayServiceRunning) {
+            if (!isPlayServiceRunning && mLanuchMode == START_MODE_FROM_MUSIC_LIST) {
                 playMusic();
             } else {// if music is playing
-                Intent intent = new Intent();
-                intent.setAction(Contants.FILTER_PLAY_ACTION);
-                intent.putExtra("action", PlayAction.ACTION_NEW);
-                intent.putExtra("index", index);
-                intent.putExtra("time", time);
+                if (mLanuchMode == START_MODE_FROM_MUSIC_LIST) {
+                    Intent intent = new Intent();
+                    intent.setAction(Contants.FILTER_PLAY_ACTION);
+                    intent.putExtra("action", PlayAction.ACTION_NEW);
+                    intent.putExtra("index", index);
+                    intent.putExtra("time", time);
 
-                sendBroadcast(intent);
-                pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
-                isPlaying = true;
-                isInit = false;
+                    sendBroadcast(intent);
+                    pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                    isPlaying = true;
+                    isInit = false;
+                } else if (mLanuchMode == START_MODE_FROM_MINIPLAYER) {
+                    if(!isPlaying){
+                        //display pasue button
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                        isInit = false;
+                    }
+                }
+
             }
 
         }
@@ -408,6 +439,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                         Log.i(TAG, "send broadcast to start play music");
                         intent = new Intent(Contants.FILTER_PLAY_ACTION);
                         intent.putExtra("action", PlayAction.ACTION_START);
+                        
                         sendBroadcast(intent);
                         pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
                         isPlaying = true;

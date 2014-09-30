@@ -8,5 +8,8 @@
     <color name="common_green_divider_line_colcor">#ff16bc5c</color>
     <color name="login_text1_register_color">#ff999999</color>
     <color name="login_text2_register_color">#ff16bc5c</color>
+    <color name="minibar_selected_color">#ff16bc5c</color>
+    <color name="minibar_background_color">#ff232837</color>
+    <color name="mini_player_song_name_color">#ffffffff</color>
 
 </resources>

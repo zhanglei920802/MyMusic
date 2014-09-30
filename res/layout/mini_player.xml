@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:id="@+id/mini_player_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/mini_player_background"
+        android:padding="5dip" >
+
+        <RelativeLayout
+            android:id="@+id/mini_player_ablum_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true" >
+
+            <ImageView
+                android:id="@+id/mini_player_ablum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/mini_default_album"
+                android:scaleType="centerInside" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:layout_toRightOf="@id/mini_player_ablum_rl" >
+
+            <TextView
+                android:id="@+id/currSongName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/cur_song"
+                android:textColor="@color/mini_player_song_name_color"
+                android:textSize="13.0sp" />
+
+            <TextView
+                android:id="@+id/currSongSinger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/currSongName"
+                android:layout_marginTop="4.0dip"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/cur_song_singer"
+                android:textColor="@color/mini_player_song_name_color"
+                android:textSize="13.0sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/mini_player_action_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/mini_player_pre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/miniplayer_pre_btn_xml"
+                android:scaleType="centerInside" />
+
+            <ImageView
+                android:id="@+id/mini_player_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/mini_playbtn_xml"
+                android:scaleType="centerInside" />
+
+            <ImageView
+                android:id="@+id/mini_player_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/miniplayer_next_btn_xml"
+                android:scaleType="centerInside" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

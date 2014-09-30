@@ -21,6 +21,7 @@
         android:layout_weight="1"
         android:background="@color/main_default_color" />
 
+    <include layout="@layout/mini_player" />
     <!-- music of playing -->
 
 </LinearLayout>
