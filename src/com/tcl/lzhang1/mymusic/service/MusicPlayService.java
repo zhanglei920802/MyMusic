@@ -47,22 +47,42 @@ import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayAction;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
 
 /**
- * paly music service <br>
+ * play music service <br>
  * 
  * @author leizhang
  */
 public class MusicPlayService extends Service {
+    /**
+     * the log_tag
+     */
     private static String LOG_TAG = "";
 
     // play tools
+    /**
+     * the media player
+     */
     private MediaPlayer mMusicMediaPlayer = null;
 
+    /**
+     * current play index
+     */
     private int play_index = 0;// the special index to play
 
+    /**
+     * the songs to be play
+     */
     private List<SongModel> mSongs = null;
 
+    /**
+     * the time to play
+     */
     private int timeToPlay = 0;// the special time to play
 
+    /**
+     * local binder
+     * 
+     * @author leizhang
+     */
     private class LocalBinder extends Binder {
         MusicPlayService getService() {
             return MusicPlayService.this;
@@ -70,13 +90,25 @@ public class MusicPlayService extends Service {
     }
 
     // notification
+    /**
+     * notification manager
+     */
     private NotificationManager mNotificationManager = null;
 
+    /**
+     * notification id
+     */
     private final int notification_id = 19920802;
 
+    /**
+     * the hander
+     */
     private Handler mHandler = new Handler();
 
     // configs
+    /**
+     * the application context
+     */
     private AppContext mAppContext = null;
     // start&pause's receiver
     private BroadcastReceiver mPlayActionBroadcastReceiver = new BroadcastReceiver() {
@@ -272,6 +304,7 @@ public class MusicPlayService extends Service {
 
     // play mode receiver
     private int mPlayMode = PlayMode.MODE_REPEAT_ALL;
+
     private BroadcastReceiver mPlayModeBroadcastReceiver = new BroadcastReceiver() {
 
         @Override
@@ -422,6 +455,21 @@ public class MusicPlayService extends Service {
         }
     };
 
+    /**
+     * broadcast receiver to process mark fav or not
+     */
+    private BroadcastReceiver mFavBroadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent && Contants.FILTER_ACTION_MARK_FAV.equals(intent.getAction())) {
+                SongModel model = (SongModel) intent.getSerializableExtra("song");
+                boolean value = intent.getBooleanExtra("value", false);
+                if (model != null) {
+                    markFav(model.getFile(), value);
+                }
+            }
+        };
+    };
+
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
@@ -446,7 +494,7 @@ public class MusicPlayService extends Service {
         filter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         registerReceiver(mPhoneBroadcastReceiver, filter);
-
+        registerReceiver(mFavBroadcastReceiver, new IntentFilter(Contants.FILTER_ACTION_MARK_FAV));
         mAppContext = (AppContext) getApplication();
     }
 
@@ -457,6 +505,7 @@ public class MusicPlayService extends Service {
         unregisterReceiver(mPlayModeBroadcastReceiver);
         unregisterReceiver(mHeadsetReceiver);
         unregisterReceiver(mPhoneBroadcastReceiver);
+        unregisterReceiver(mFavBroadcastReceiver);
         if (mMusicMediaPlayer != null) {
             mMusicMediaPlayer.stop();
             mMusicMediaPlayer.reset();
@@ -643,4 +692,23 @@ public class MusicPlayService extends Service {
         intent = null;
     }
 
+    /**
+     * mark music fav or not
+     * 
+     * @param path the index
+     * @param value mark value
+     */
+    private void markFav(String path, boolean value) {
+
+        for (SongModel songModel : mSongs) {
+            if (songModel.getFile().equals(path)) {
+                if (value) {
+                    songModel.setFav(1);
+                } else {
+                    songModel.setFav(0);
+                }
+                return;
+            }
+        }
+    }
 }

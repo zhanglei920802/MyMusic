@@ -17,12 +17,16 @@
 package com.tcl.lzhang1.mymusic.ui;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import android.app.AlertDialog.Builder;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -46,6 +50,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.tcl.lzhang1.mymusic.Contants;
 import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.UIHelper;
@@ -61,25 +66,72 @@ import com.tcl.lzhang1.mymusic.ui.apdater.MusicListAdapter;
 public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         OnItemClickListener, OnItemLongClickListener {
 
+    /**
+     * start mode local music ,default.
+     */
+    public static final int START_MODE_LOCAL = 1;
+
+    /**
+     * start mode my favorite music
+     */
+    public static final int START_MODE_FAV = 2;
+
+    /**
+     * current start mode
+     */
+    private int curStartMode = START_MODE_LOCAL;
+
+    /**
+     * the list view
+     */
     private ListView mMusicList = null;
 
+    /**
+     * the list adapter
+     */
     private MusicListAdapter musicListAdapter = null;
 
+    /**
+     * the songs
+     */
     private List<SongModel> mSongs = null;
 
+    /**
+     * no music
+     */
     private RelativeLayout no_musics = null;
 
+    /**
+     * scan music button
+     */
     private Button scan_music = null;
 
+    /**
+     * back button
+     */
     private TextView back = null;
 
+    /**
+     * navigation title
+     */
     private TextView nav_title = null;
 
+    /**
+     * more
+     */
     private TextView more = null;
 
     // list operate
+    /**
+     * DB access API
+     */
     private DBOperator mDbOperator = null;
+
+    /**
+     * the hander
+     */
     private Handler mHandler = new Handler() {
+        @SuppressWarnings("unchecked")
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case -1:
@@ -92,7 +144,16 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 case 2:
                     if (null != mSongs) {
                         mSongs.clear();
-                        mSongs.addAll((Collection<? extends SongModel>) msg.obj);
+                        List<SongModel> models = (List<SongModel>) msg.obj;
+                        
+                        if (models == null || models.isEmpty()) {
+                            no_musics.setVisibility(View.VISIBLE);
+                            mMusicList.setVisibility(View.GONE);
+                        } else {
+                            mSongs.clear();
+                            mSongs.addAll(models);
+                        }
+
                         musicListAdapter.notifyDataSetChanged();
                     }
                     break;
@@ -104,24 +165,25 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     };
 
     /**
-     * 
+     * the popup window
      */
     private PopupWindow moreMenu = null;
+
     /**
-    * 
-    */
+     * the contentview
+     */
     private View moreView = null;
     /**
-     * 
+     * the data source
      */
     private String[] moreStringArray = null;
     /**
-     * 
+     * list
      */
     private ListView music_list_more = null;
 
     /**
-     * 
+     * the list adpter
      */
     private ArrayAdapter<String> mMoreAdapter = null;
 
@@ -157,12 +219,20 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                         Log.d(TAG, "sort by song");
                         new Thread(new Runnable() {
 
+                            @SuppressWarnings("unchecked")
                             @Override
                             public void run() {
                                 // TODO Auto-generated method stub
-                                @SuppressWarnings("unchecked")
-                                List<SongModel> models = (List<SongModel>) mDbOperator
-                                        .findAll("select * from songs order by name");
+                                List<SongModel> models = null;
+                                if (curStartMode == START_MODE_LOCAL) {
+
+                                    models = (List<SongModel>) mDbOperator
+                                            .findAll("select * from songs order by name");
+                                } else if (curStartMode == START_MODE_FAV) {
+
+                                    models = (List<SongModel>) mDbOperator
+                                            .findAll("select * from songs where fav=1 order by name ");
+                                }
                                 if (null != models) {
                                     Message message = mHandler.obtainMessage();
                                     message.what = 2;
@@ -177,12 +247,21 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                         Log.d(TAG, "sort by singer");
                         new Thread(new Runnable() {
 
+                            @SuppressWarnings({
+                                    "unchecked"
+                            })
                             @Override
                             public void run() {
                                 // TODO Auto-generated method stub
-                                @SuppressWarnings("unchecked")
-                                List<SongModel> models = (List<SongModel>) mDbOperator
-                                        .findAll("select * from songs order by singername");
+                                List<SongModel> models = null;
+
+                                if (curStartMode == START_MODE_LOCAL) {
+                                    models = (List<SongModel>) mDbOperator
+                                            .findAll("select * from songs order by singername");
+                                } else if (curStartMode == START_MODE_FAV) {
+                                    models = (List<SongModel>) mDbOperator
+                                            .findAll("select * from songs where fav=1  order by singername");
+                                }
                                 if (null != models) {
                                     Message message = mHandler.obtainMessage();
                                     message.what = 2;
@@ -217,8 +296,77 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         Intent intent = getIntent();
         if (null != intent) {
             SongsWrap songWrap = (SongsWrap) intent.getSerializableExtra("songs");
+            curStartMode = intent.getIntExtra("startmode", 0);
+            if (curStartMode == 0) {
+                Log.d(TAG, "you should provide the start mode value");
+                finish();
+                return;
+            }
+
             if (null != songWrap) {
                 mSongs = songWrap.getModels();
+            }
+
+            //
+            List<SongModel> mSongModels = new ArrayList<SongModel>();
+            if (curStartMode == START_MODE_FAV) {
+               
+                for (SongModel songModel : mSongs) {
+                    if (songModel.getFav() == 1) {
+                        mSongModels.add(songModel);
+                    }
+                }
+                
+                mSongs = mSongModels;
+                mSongModels = null;
+            }
+           
+
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onDestroy()
+     */
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        unregisterReceiver(mFavBroadcastReceiver);
+        super.onDestroy();
+    }
+
+    /**
+     * broadcast receiver to process mark fav or not
+     */
+    private BroadcastReceiver mFavBroadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent && Contants.FILTER_ACTION_MARK_FAV.equals(intent.getAction())) {
+                SongModel model = (SongModel) intent.getSerializableExtra("song");
+                boolean value = intent.getBooleanExtra("value", false);
+                if (model != null) {
+                    markFav(model.getFile(), value);
+                }
+            }
+        };
+    };
+
+    /**
+     * mark music fav or not
+     * 
+     * @param path the index
+     * @param value mark value
+     */
+    private void markFav(String path, boolean value) {
+
+        for (SongModel songModel : mSongs) {
+            if (songModel.getFile().equals(path)) {
+                if (value) {
+                    songModel.setFav(1);
+                } else {
+                    songModel.setFav(0);
+                }
+                return;
             }
         }
     }
@@ -251,13 +399,22 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             back = (TextView) findViewById(R.id.back);
             back.setOnClickListener(this);
             nav_title = (TextView) findViewById(R.id.nav_title);
-            nav_title.setText(R.string.local_music);
+            if (curStartMode == START_MODE_LOCAL) {
+                nav_title.setText(R.string.local_music);
+            } else if (curStartMode == START_MODE_FAV) {
+                nav_title.setText(R.string.fav_music);
+            }
+
             more = (TextView) findViewById(R.id.more);
             more.setOnClickListener(this);
         }
         // delete dialog
         {
             mMusicList.setOnItemLongClickListener(this);
+        }
+        {
+            registerReceiver(mFavBroadcastReceiver, new IntentFilter(
+                    Contants.FILTER_ACTION_MARK_FAV));
         }
     }
 

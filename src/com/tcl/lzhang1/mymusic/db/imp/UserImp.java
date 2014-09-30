@@ -210,4 +210,13 @@ public class UserImp implements DBOperator {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.db.DBOperator#executeSQL(java.lang.String)
+     */
+    @Override
+    public void executeSQL(String sql) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

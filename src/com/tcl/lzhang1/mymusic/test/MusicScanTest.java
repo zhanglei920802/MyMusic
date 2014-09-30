@@ -19,6 +19,8 @@ package com.tcl.lzhang1.mymusic.test;
 import java.io.File;
 
 import com.tcl.lzhang1.mymusic.MusicUtil;
+import com.tcl.lzhang1.mymusic.db.DBOperator;
+import com.tcl.lzhang1.mymusic.db.imp.SongImp;
 
 import android.os.Environment;
 import android.test.AndroidTestCase;
@@ -31,5 +33,10 @@ public class MusicScanTest extends AndroidTestCase {
     
     public void testRuningService(){
         MusicUtil.checkServiceIsRunning(getContext(), getContext().getPackageName());
+    }
+    
+    public void testFindAll(){
+        DBOperator mDbOperator = new SongImp(getContext());
+        mDbOperator.findAll("select * from songs where fav=1");
     }
 }

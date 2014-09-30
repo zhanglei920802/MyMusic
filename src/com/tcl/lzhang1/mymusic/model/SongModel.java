@@ -38,7 +38,8 @@ public class SongModel extends BaseModel {
     private String singer_img = "";
     private String ablum_img = "";
     private String remark = "";
-
+    private int fav =0;//我喜欢的,1为真,0为假
+    
     private int version; // MPEG版本（2+，2，1，0表示保留）
     private int layer; // 层级(1,2,3,0表示保留)
     private int protect; // 是否受CRC校验保护(1为保护，0为未保护）
@@ -391,6 +392,20 @@ public class SongModel extends BaseModel {
 
     public void setMinutes(int minutes) {
         this.minutes = minutes;
+    }
+
+    /**
+     * @return the fav
+     */
+    public int getFav() {
+        return fav;
+    }
+
+    /**
+     * @param fav the fav to set
+     */
+    public void setFav(int fav) {
+        this.fav = fav;
     }
 
 }

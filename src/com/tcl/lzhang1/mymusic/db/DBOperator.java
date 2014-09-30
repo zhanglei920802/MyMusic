@@ -96,4 +96,11 @@ public interface DBOperator {
      */
     public List<? extends BaseModel> findAll(String sql);
 
+    /**
+     * execute sql
+     * 
+     * @param sql
+     */
+    public void executeSQL(String sql);
+
 }

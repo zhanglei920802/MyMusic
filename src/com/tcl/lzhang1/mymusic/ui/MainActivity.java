@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +40,7 @@ import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.tcl.lzhang1.mymusic.Contants;
 import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.UIHelper;
@@ -56,23 +61,40 @@ import com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip;
 public class MainActivity extends BaseActivity implements OnItemClickListener, OnClickListener {
 
     private PagerSlidingTabStrip mPagerTabStrip = null;
+
     private ViewPager mViewPager = null;
+
     private List<View> mViews = null;
+
     private LayoutInflater mLayoutInflater = null;
+
     private String[] mMenuTitles = null;
+
     private MyPageAdapter mPageAdapter = null;
 
     // mine
     public static final int SCAN_MUSIC_SUCCESS = 1;
+
     public static final int SCAN_MUSIC_FAILD = 2;
+
     private View mine = null;
+
     private ListView mine_list = null;
+
     private List<HashMap<String, String>> mList;
+
     private MineAdapter mineAdapter = null;
+
     private List<SongModel> mSongModels;
+
     private DBOperator mDbOperator = null;
+
     private Button login = null;
+
     private boolean isRefreshing = true;
+
+    private int fav_count = 0;
+
     // music scan
     private Handler mHandler = new Handler() {
         @SuppressWarnings("unchecked")
@@ -85,14 +107,25 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                     case SCAN_MUSIC_SUCCESS:
                         Log.d(TAG, "hand message,upadte UI......");
                         mSongModels = (List<SongModel>) msg.obj;
+
+                        for (SongModel songModel : mSongModels) {
+                            if (songModel.getFav() == 1) {
+                                fav_count++;
+                            }
+
+                        }
+
                         if (null != mSongModels && !mSongModels.isEmpty()) {
                             Map<String, String> map = mList.get(0);
                             map.put("value", MusicUtil.formatString1(mSongModels.size()));
+                            map = mList.get(1);
+                            map.put("value", MusicUtil.formatString1(fav_count));
                         } else {
                             Map<String, String> map = mList.get(0);
                             map.put("value", MusicUtil.formatString1(0));
                             mSongModels = new ArrayList<SongModel>();
                         }
+
                         isRefreshing = false;
                         mineAdapter.notifyDataSetChanged();
 
@@ -106,6 +139,40 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             }
         }
     };
+    /**
+     * broadcast receiver to process mark fav or not
+     */
+    private BroadcastReceiver mFavBroadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent && Contants.FILTER_ACTION_MARK_FAV.equals(intent.getAction())) {
+                SongModel model = (SongModel) intent.getSerializableExtra("song");
+                boolean value = intent.getBooleanExtra("value", false);
+                if (model != null) {
+                    markFav(model.getFile(), value);
+                }
+            }
+        };
+    };
+
+    /**
+     * mark music fav or not
+     * 
+     * @param path the index
+     * @param value mark value
+     */
+    private void markFav(String path, boolean value) {
+
+        for (SongModel songModel : mSongModels) {
+            if (songModel.getFile().equals(path)) {
+                if (value) {
+                    songModel.setFav(1);
+                } else {
+                    songModel.setFav(0);
+                }
+                return;
+            }
+        }
+    }
 
     /*
      * (non-Javadoc)
@@ -165,6 +232,22 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             login = (Button) mine.findViewById(R.id.login);
             login.setOnClickListener(this);
         }
+
+        {
+            registerReceiver(mFavBroadcastReceiver, new IntentFilter(
+                    Contants.FILTER_ACTION_MARK_FAV));
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onDestroy()
+     */
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        unregisterReceiver(mFavBroadcastReceiver);
+        super.onDestroy();
     }
 
     /*
@@ -259,6 +342,13 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 String name = map.get("name");
                 if (getString(R.string.local_music).equals(name)) {
                     bundle = new Bundle();
+                    bundle.putInt("startmode", MusicListAcitivity.START_MODE_LOCAL);
+                    bundle.putSerializable("songs", new SongsWrap(mSongModels));
+                    UIHelper.showMusicListActivity(this, bundle);
+                    bundle = null;
+                } else if (getString(R.string.fav_music).equals(name)) {
+                    bundle = new Bundle();
+                    bundle.putInt("startmode", MusicListAcitivity.START_MODE_FAV);
                     bundle.putSerializable("songs", new SongsWrap(mSongModels));
                     UIHelper.showMusicListActivity(this, bundle);
                     bundle = null;

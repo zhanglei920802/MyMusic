@@ -16,9 +16,30 @@
 
 package com.tcl.lzhang1.mymusic;
 
+/**
+ * This class define the intent filter's action
+ * 
+ * @author leizhang
+ */
 public class Contants {
+    /**
+     * action indicates play music
+     */
     public static final String FILTER_PLAY_ACTION = "com.tcl.lzhang1.mymusic.play";
+    /**
+     * filed indicates play mode
+     */
     public static final String FILTER_PLAY_MODE = "com.tcl.lzhang1.mymusic.play.mode";
+    /**
+     * filed indicates play state changed
+     */
     public static final String FILTER_PLAY_STATE_CHANGED = "com.tcl.lzhang1.mymusic.play.state.change";
+    /**
+     * filed indicates widgets play action
+     */
     public static final String FILTER_WIDGET_PLAY_ACTION = "com.tcl.lzhang1.mymusic.widget.play";
+    /**
+     * filed indicates mark read action
+     */
+    public static final String FILTER_ACTION_MARK_FAV = "COM.TCL.LZHANG1.MYMUSIC.MARK.FAV";
 }
