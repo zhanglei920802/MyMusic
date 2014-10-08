@@ -36,6 +36,7 @@ import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
  * @author leizhang
  */
 public class AppContext extends Application {
+    public static AppManager mAppManger;
     private List<SongModel> models;
     private String TAG = "AppContext";
     private int mPlayIndex = 0;
@@ -53,8 +54,7 @@ public class AppContext extends Application {
     public int getPlayMode() {
         return playMode;
     }
-    
-    
+
     /**
      * save play index
      * 
@@ -99,6 +99,7 @@ public class AppContext extends Application {
         // TODO Auto-generated method stub
         Log.d(TAG, "Application creaed");
         super.onCreate();
+        mAppManger = AppManager.getInstance();
         scanMusic();
         readConfigs();
     }

@@ -16,6 +16,8 @@
 
 package com.tcl.lzhang1.mymusic.ui;
 
+import com.tcl.lzhang1.mymusic.AppContext;
+
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -35,7 +37,7 @@ public abstract class BaseActivity extends Activity implements AcitivityInit {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-
+        AppContext.mAppManger.addActivity(this);
         {
             getPreActivityData(getIntent().getExtras());
             initViewData();
@@ -51,6 +53,7 @@ public abstract class BaseActivity extends Activity implements AcitivityInit {
     @Override
     protected void onDestroy() {
         // TODO Auto-generated method stub
+        AppContext.mAppManger.finishActivity(this);
         super.onDestroy();
        
     }
