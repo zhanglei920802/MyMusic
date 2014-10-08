@@ -24,7 +24,9 @@ import com.tcl.lzhang1.mymusic.ui.MusicScanAcitivity;
 import com.tcl.lzhang1.mymusic.ui.RegActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -135,5 +137,54 @@ public class UIHelper {
     public static void toast(Context context, String text) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
         
+    }
+    
+    /**
+     * 发送App异常崩溃报告.
+     * 
+     * @param cont
+     *            the cont
+     * @param crashReport
+     *            the crash report
+     */
+    public static void sendAppCrashReport(final Context cont,
+            final String crashReport) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(cont);
+
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        builder.setTitle("程序出现出现异常");
+        builder.setMessage("很抱歉，应用程序出现错误，即将退出。\n请提交错误报告，我们会尽快修复这个问题！");
+        builder.setPositiveButton("提交报告",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        // 发送异常报告
+
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        // i.setType("text/plain"); //模拟器
+
+                        i.setType("message/rfc822"); // 真机
+
+                        i.putExtra(Intent.EXTRA_EMAIL,
+                                new String[] { "794857063@qq.com" });
+                        i.putExtra(Intent.EXTRA_SUBJECT, "移动校园- 错误报告");
+                        i.putExtra(Intent.EXTRA_TEXT, crashReport);
+                        cont.startActivity(Intent.createChooser(i, "发送错误报告"));
+                        // 退出
+
+                        AppManager.getInstance().AppExit(cont);
+                    }
+                });
+        builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                // 退出
+
+                AppManager.getInstance().AppExit(cont);
+            }
+        });
+        builder.show();
     }
 }

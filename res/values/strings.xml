@@ -37,5 +37,20 @@
     <string name="cur_play_mode">处于%s模式</string>
     <string name="cur_song">歌曲名称</string>
     <string name="cur_song_singer">歌曲歌手</string>
-	<string name="exit_when_click_again">再按一次返回桌面</string>
+    <string name="exit_when_click_again">再按一次返回桌面</string>
+    <string name="http_status_code_error">http状态异常</string>
+    <string name="http_exception_error">网络异常</string>
+    <string name="socket_exception_error">套接字异常</string>
+    <string name="network_not_connected">没有网络连接</string>
+    <string name="xml_parser_failed">xml解析异常</string>
+    <string name="io_exception_error">IO异常</string>
+    <string name="app_run_code_error">程序运行异常</string>
+    <string name="no_net_work">对不起,无网络连接,请检测网络后,重新再试</string>
+    <string name="xlistview_header_hint_normal">下拉刷新</string>
+    <string name="xlistview_header_hint_ready">松开刷新数据</string>
+    <string name="xlistview_header_hint_loading">正在加载中</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="xlistview_footer_hint_normal">点击查看更多</string>
+    <string name="xlistview_footer_hint_ready">松开载入更多</string>
+
 </resources>

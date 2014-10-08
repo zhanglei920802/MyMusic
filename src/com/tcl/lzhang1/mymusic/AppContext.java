@@ -20,6 +20,7 @@ import java.util.List;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -102,6 +103,8 @@ public class AppContext extends Application {
         mAppManger = AppManager.getInstance();
         scanMusic();
         readConfigs();
+        Thread.setDefaultUncaughtExceptionHandler(AppException
+                .getAppExceptionHandler());
     }
 
     /**
@@ -135,5 +138,13 @@ public class AppContext extends Application {
             Log.d(TAG, "scan music error:" + e.getMessage());
         }
 
+    }
+
+    /**
+     * @return
+     */
+    public PackageInfo getPackageInfo() {
+        // TODO Auto-generated method stub
+        return getPackageInfo();
     }
 }
