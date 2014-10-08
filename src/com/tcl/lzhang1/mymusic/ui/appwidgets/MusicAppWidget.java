@@ -16,7 +16,6 @@
 
 package com.tcl.lzhang1.mymusic.ui.appwidgets;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -35,7 +34,6 @@ import com.tcl.lzhang1.mymusic.model.SongModel;
 import com.tcl.lzhang1.mymusic.model.SongsWrap;
 import com.tcl.lzhang1.mymusic.service.MusicPlayService;
 import com.tcl.lzhang1.mymusic.service.MusicPlayService.PlayState;
-import com.tcl.lzhang1.mymusic.service.WidgetService;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayAction;
 import com.tcl.lzhang1.mymusic.ui.SpalashActivity;
 
