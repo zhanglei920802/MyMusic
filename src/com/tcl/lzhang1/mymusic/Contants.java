@@ -42,4 +42,9 @@ public class Contants {
      * filed indicates mark read action
      */
     public static final String FILTER_ACTION_MARK_FAV = "COM.TCL.LZHANG1.MYMUSIC.MARK.FAV";
+
+    /**
+     * action update progress
+     */
+    public static final String FILTER_ACTION_SEEK_UPDATED = "COM.TCL.LZHANG1.MYMUSIC.SEEKUPDATE";
 }

@@ -74,7 +74,7 @@
             android:focusable="false"
             android:max="100"
             android:maxHeight="16.0dip"
-            android:progress="10"
+            android:progress="0"
             android:progressDrawable="@drawable/play_activity_progressbar_xml"
             android:thumb="@drawable/play_progress_thumb"
             android:thumbOffset="6.0dip" />

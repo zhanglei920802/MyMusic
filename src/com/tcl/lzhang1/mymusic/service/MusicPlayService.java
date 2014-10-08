@@ -19,6 +19,8 @@ package com.tcl.lzhang1.mymusic.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -34,6 +36,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -48,6 +51,12 @@ import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
 
 /**
  * play music service <br>
+ * <br/>
+ * <b> update play progress <b/> Because service always run long time
+ * whileLog.d(LOG_TAG, "min=" + min + " sec=" + sec + ""); activity will exit
+ * when user click back menu,so I create a timer & timer task, it will be
+ * trigger the run method in period of 1s,it will send broadcast to UI
+ * component,so UI component can update.
  * 
  * @author leizhang
  */
@@ -69,7 +78,7 @@ public class MusicPlayService extends Service {
     private int play_index = 0;// the special index to play
 
     /**
-     * the songs to be play
+     * Log.d(LOG_TAG, "min=" + min + " sec=" + sec + ""); the songs to be play
      */
     private List<SongModel> mSongs = null;
 
@@ -103,7 +112,46 @@ public class MusicPlayService extends Service {
     /**
      * the hander
      */
-    private Handler mHandler = new Handler();
+    private Handler mHandler = new Handler() {
+
+        /*
+         * (non-Javadoc)
+         * @see android.os.Handler#handleMessage(android.os.Message)
+         */
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            // super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    // Log.d(LOG_TAG, "thread ID:" +
+                    // Thread.currentThread().getId());
+                    Log.d(LOG_TAG, "min=" + min + " sec=" + sec + "");
+                    // send broadcast
+                    if (mMusicMediaPlayer != null && mMusicMediaPlayer.isPlaying()) {
+                        // sec++;
+                        setSec(getSec() + 1);
+                        if (getSec() % 60 == 0) {
+                            setMin(getMin() + 1);
+
+                            setSec(0);
+                        }
+
+                        SongModel curSong = mSongs.get(play_index);
+                        int playedTime = getMin() * 60 + getSec();
+                        float percent = (playedTime) / ((float) (curSong.getTime() / 1000));
+                        sendProgressedChangedBroadcast(playedTime, curSong, percent,
+                                MusicUtil.formatString(getMin(), getSec()));
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+
+    };
 
     // configs
     /**
@@ -151,7 +199,8 @@ public class MusicPlayService extends Service {
                             // Log.d(LOG_TAG, "pause=start:isplaying:" + true);
                             //
                             // } else {intent
-                            // Log.d(LOG_TAG, "pause=start:isplaying:" + false);
+                            // Log.d(LOG_TAGPLAY_SEEK, "pause=start:isplaying:"
+                            // + false);
                             // mMusicMediaPlayer.stop();
                             // mMusicMediaPlayer.reset();
                             // playMusic(play_index, timeToPlay);
@@ -217,6 +266,24 @@ public class MusicPlayService extends Service {
                             // }
                         }
                         break;
+                    case PlayAction.ACTION_SEEK:// seek the play
+                    {
+                        // Log.d(LOG_TAG, "thread ID:" +
+                        // Thread.currentThread().getId());
+                        Log.d(LOG_TAG, "min=" + min + " sec=" + sec + "");
+                        if (null != mMusicMediaPlayer) {
+                            int seekedValue = intent.getIntExtra("seekvalue", 0);
+                            Log.d(LOG_TAG, "ACTION_SEEK.seekedValue=" + seekedValue);
+                            if (0 == seekedValue)
+                                return;
+                            int playedTime = intent.getIntExtra("playedtime", 0);
+                            Log.d(LOG_TAG, "playedTime:" + playedTime);
+                            setMin(((int) playedTime % 3600) / 60);
+                            setSec(((int) playedTime % 3600) % 60);
+                            mMusicMediaPlayer.seekTo(seekedValue);
+                        }
+                    }
+                        break;
                     default:
                         break;
                 }
@@ -279,6 +346,18 @@ public class MusicPlayService extends Service {
                             // PlayState.PLAY_NEW, 0, null);
                             // }
                         }
+                        if (null != mMusicMediaPlayer) {
+                            int seekedValue = intent.getIntExtra("seekvalue", 0);
+                            Log.d(LOG_TAG, "ACTION_SEEK.seekedValue=" + seekedValue);
+                            if (0 == seekedValue)
+                                return;
+                            int playedTime = intent.getIntExtra("playedtime", 0);
+                            Log.d(LOG_TAG, "playedTime:" + playedTime);
+                            setMin(((int) playedTime % 3600) / 60);
+                            setSec(((int) playedTime % 3600) % 60);
+                            mMusicMediaPlayer.seekTo(seekedValue);
+                        }
+
                         break;
                     case PlayAction.ACTION_PAUSE:
                         if (null != mMusicMediaPlayer) {
@@ -297,6 +376,17 @@ public class MusicPlayService extends Service {
                                 sendBroadCast(mSongs.get(play_index), PlayState.PLAY_RESUMED, 0,
                                         null);
 
+                            }
+                            if (null != mMusicMediaPlayer) {
+                                int seekedValue = intent.getIntExtra("seekvalue", 0);
+                                Log.d(LOG_TAG, "ACTION_SEEK.seekedValue=" + seekedValue);
+                                if (0 == seekedValue)
+                                    return;
+                                int playedTime = intent.getIntExtra("playedtime", 0);
+                                Log.d(LOG_TAG, "playedTime:" + playedTime);
+                                setMin(((int) playedTime % 3600) / 60);
+                                setSec(((int) playedTime % 3600) % 60);
+                                mMusicMediaPlayer.seekTo(seekedValue);
                             }
 
                         }
@@ -476,6 +566,45 @@ public class MusicPlayService extends Service {
         };
     };
 
+    /**
+     * the timer
+     */
+    private Timer mTimer;
+
+    /**
+     * min & sec
+     */
+    private int min = 0, sec = 0;
+
+    public int getMin() {
+        return min;
+    }
+
+    public void setMin(int min) {
+        // Log.d(LOG_TAG, "old value:" + getMin() + "  new value:" + min + "");
+        this.min = min;
+    }
+
+    public int getSec() {
+        return sec;
+    }
+
+    public void setSec(int sec) {
+        // Log.d(LOG_TAG, "old value:" + getSec() + "  new value:" + sec + "");
+        this.sec = sec;
+    }
+
+    /**
+     * timer task
+     */
+    private TimerTask mTimerTask = new TimerTask() {
+
+        @Override
+        public void run() {
+            mHandler.sendEmptyMessage(1);
+        }
+    };
+
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
@@ -512,12 +641,13 @@ public class MusicPlayService extends Service {
         unregisterReceiver(mHeadsetReceiver);
         unregisterReceiver(mPhoneBroadcastReceiver);
         unregisterReceiver(mFavBroadcastReceiver);
+        sendBroadCast(null, PlayState.PLAY_STOPED, 0, "play stoped");
         if (mMusicMediaPlayer != null) {
             mMusicMediaPlayer.stop();
             mMusicMediaPlayer.reset();
             mMusicMediaPlayer.release();
+            mMusicMediaPlayer = null;
         }
-        sendBroadCast(null, PlayState.PLAY_STOPED, 0, "play stoped");
 
         mAppContext.savePlayIndex(play_index);
         mAppContext.savePlayTime(timeToPlay);
@@ -592,6 +722,16 @@ public class MusicPlayService extends Service {
                     sendBroadCast(mSongs.get(position), PlayState.PLAY_NEW, 0, null);
                     // createStatusBarNotification(mSongs.get(position).getSongName());
                     mp.seekTo(time_position);
+
+                    // progress
+                    if (null == mTimer) {
+                        mTimer = new Timer();
+                        mTimer.schedule(mTimerTask, 0, 1000);
+                    } else {
+                        min = 0;
+                        sec = 0;
+                    }
+
                 }
             });
             mMusicMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -611,6 +751,8 @@ public class MusicPlayService extends Service {
                 public void onCompletion(MediaPlayer mp) {
                     // TODO Auto-generated method stub
                     mp.reset();
+
+                    // play mode
                     if (mPlayMode == PlayMode.MODE_REPEAT_SINGLE) {
                         playMusic(position, 0);
                         sendBroadCast(mSongs.get(position), PlayState.PLAY_END, 0, null);
@@ -622,6 +764,7 @@ public class MusicPlayService extends Service {
                         playMusic(randomIndex, 0);
                         sendBroadCast(mSongs.get(randomIndex), PlayState.PLAY_END, 0, null);
                     }
+
                 }
             });
         } catch (IllegalArgumentException e) {
@@ -716,5 +859,30 @@ public class MusicPlayService extends Service {
                 return;
             }
         }
+    }
+
+    /**
+     * send broadcast to other component to update UI when progress changed
+     * 
+     * @param currentPlayTime time have played
+     * @param cursong the song current played
+     * @param curPercent the percent have played
+     * @param displayStr the str which will displayed in start textview
+     */
+    private void sendProgressedChangedBroadcast(int currentPlayTime, BaseModel cursong,
+            float curPercent, String displayStr) {
+        Intent intent = new Intent();
+        intent.setAction(Contants.FILTER_ACTION_SEEK_UPDATED);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("song", cursong);
+        bundle.putInt("playtime", currentPlayTime);
+        bundle.putFloat("percent", curPercent);
+        bundle.putString("displaystr", displayStr);
+        intent.putExtras(bundle);
+        bundle = null;
+
+        sendBroadcast(intent);
+        intent = null;
     }
 }

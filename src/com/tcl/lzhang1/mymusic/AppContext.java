@@ -125,7 +125,7 @@ public class AppContext extends Application {
                 Log.d(TAG, "data base have datas");
                 return;
             }
-            models = MusicUtil.scanMusic();
+            models = MusicUtil.scanMusic(this);
 
             Log.d(TAG, "scan music finished,send message .....");
             mDbOperator.saveAll(models);

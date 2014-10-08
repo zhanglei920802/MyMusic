@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -205,12 +206,12 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 curSong = (SongModel) intent.getSerializableExtra("model");
                 try {
                     Log.d(TAG, "main activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
-                            + "play music[" + curSong!=null? curSong.getSongName():"" + "]");
+                            + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
                 } catch (Exception e) {
                     // TODO: handle exception
-                    e.printStackTrace();
+                    // e.printStackTrace();
                 }
-              
+
                 int time = intent.getIntExtra("time", 0);
                 String errmsg = intent.getStringExtra("errmsg");
                 switch (intent.getIntExtra("state", 0)) {
@@ -224,8 +225,9 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                     {
                         Log.d(TAG, "PLAY_NEW");
                         updateMiniPlayInfo(curSong);
-                        mini_player_start.setBackground(getResources().getDrawable(R.drawable.mini_pausebtn_xml));
-                        isPlaying =true;
+                        mini_player_start.setBackground(getResources().getDrawable(
+                                R.drawable.mini_pausebtn_xml));
+                        isPlaying = true;
                     }
                         break;
                     case PlayState.PLAY_PAUSED:
@@ -485,7 +487,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                         mHandler.sendMessage(message);
                         return;
                     }
-                    models = MusicUtil.scanMusic();
+                    models = MusicUtil.scanMusic(getApplication());
 
                     message.what = SCAN_MUSIC_SUCCESS;
                     message.obj = models;
@@ -620,7 +622,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
 
         currSongName.setText(model.getSongName());
         currSongSinger.setText(model.getSingerName());
-        
+
     }
 
     /**
@@ -629,7 +631,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private void playMusic() {
         startSetvice();
         mini_player_start.setBackground(getResources().getDrawable(R.drawable.mini_pausebtn_xml));
-        
+
     }
 
     /**
@@ -659,5 +661,33 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         bundle.putInt("from", MusicPlayActivity.START_MODE_FROM_MINIPLAYER);
         UIHelper.showMusicPlayActivity(this, bundle);
         bundle = null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        // super.onBackPressed();
+        if (!MusicUtil.canExit(System.currentTimeMillis())) {
+            Log.d(TAG, "can not exit");
+            UIHelper.toast(this, R.string.exit_when_click_again);
+        } else {
+
+            Log.d(TAG, "isPlaying:" + isPlaying);
+            // if is paused , stop service
+            if (!isPlaying) {
+                Intent intent = new Intent(this, MusicPlayService.class);
+                stopService(intent);
+                intent = null;
+                Log.d(TAG, "music playing is paused,stop service");
+            }
+
+            // finish activity
+            super.onBackPressed();
+        }
+
     }
 }

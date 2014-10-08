@@ -24,6 +24,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources.Theme;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tcl.lzhang1.mymusic.AppContext;
@@ -140,6 +142,11 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     private TextView total_time = null;
 
     /**
+     * record the latest seek value
+     */
+    private int mSeekValue = 0;
+
+    /**
      * play progress bar
      */
     private MySeekBar music_seek_bar = null;
@@ -168,7 +175,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             if (null != intent && intent.getAction().equals(Contants.FILTER_PLAY_STATE_CHANGED)) {
                 curSong = (SongModel) intent.getSerializableExtra("model");
                 Log.d(TAG, "play activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
-                        + "play music[" + curSong!=null ?curSong.getSongName():"" + "]");
+                        + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
                 int time = intent.getIntExtra("time", 0);
                 String errmsg = intent.getStringExtra("errmsg");
                 switch (intent.getIntExtra("state", 0)) {
@@ -187,7 +194,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                         nav_title.setText(curSong.getSongName());
                         total_time.setText(MusicUtil.formatString(curSong.getMinutes(),
                                 curSong.getSeconds()));
-                        isPlaying =true;
+                        isPlaying = true;
                         pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
                         if (curSong.getFav() == 1) {
                             add_fav.setImageResource(R.drawable.add_fav_xml);
@@ -203,12 +210,18 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                         isPlaying = false;
                         break;
                     case PlayState.PLAY_RESUMED:
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                        isPlaying = true;
                         Log.d(TAG, "PLAY_RESUMED");
                         break;
                     case PlayState.PLAY_SEEK:
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                        isPlaying = true;
                         Log.d(TAG, "PLAY_SEEK");
                         break;
                     case PlayState.PLAY_STOPED:
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
+                        isPlaying = false;
                         Log.d(TAG, "PLAY_STOPED");
                         break;
                     default:
@@ -230,8 +243,13 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     private int min = 0, sec = 0;
 
     /**
+     * the played time
+     */
+    private int currentPlayedTime = 0;
+    /**
      * timer task
      */
+    @SuppressWarnings("unused")
     private TimerTask mTimerTask = new TimerTask() {
 
         @Override
@@ -245,7 +263,8 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                     sec++;
                     if (sec % 60 == 0) {
                         min++;
-                        sec = 0;pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
+                        sec = 0;
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
                     }
 
                     play_time.setText(MusicUtil.formatString(min, sec));
@@ -305,6 +324,11 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
          */
         public static final int ACTION_NEW = 6;
 
+        /**
+         * indicates seek
+         */
+        public static final int ACTION_SEEK = 7;
+
     }
 
     /**
@@ -327,6 +351,29 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
          */
         public static final int MODE_REPEAT_SINGLE = 5;
     }
+
+    private BroadcastReceiver mProgressedReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+            if (null != intent && Contants.FILTER_ACTION_SEEK_UPDATED.equals(intent.getAction())) {
+                curSong = (SongModel) intent.getSerializableExtra("song");
+                int currentPlayTime = intent.getIntExtra("playtime", 0);
+                currentPlayedTime = currentPlayTime;
+                float curPercent = intent.getFloatExtra("percent", 0.0f);
+                String displayStr = intent.getStringExtra("displaystr");
+                if (!isPlaying) {
+                    pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
+                } else {
+                    pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                }
+
+                play_time.setText(displayStr);
+                music_seek_bar.setProgress((int) (music_seek_bar.getMax() * curPercent));
+            }
+        }
+    };
 
     @Override
     public void initView() {
@@ -363,11 +410,45 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             setPlayMode(mAppContext.getPlayMode());
             add_fav = (ImageView) findViewById(R.id.add_fav);
             add_fav.setOnClickListener(this);
+            music_seek_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+                    if (DEBUG)
+                        Log.d(TAG, "onStopTrackingTouch");
+                    pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
+                    int playedTime = (int) (curSong.getTime() * (mSeekValue / 100f));
+                    playedTime /= 1000;
+
+                    play_time.setText(MusicUtil.formatString(((int) playedTime % 3600) / 60,
+                            ((int) playedTime % 3600) % 60));
+                    sendSeekBroadCast(mSeekValue, playedTime);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    // TODO Auto-generated method stub
+                    if (DEBUG)
+                        Log.d(TAG, "onStartTrackingTouch");
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    // TODO Auto-generated method stub
+                    if (DEBUG)
+                        Log.d(TAG,
+                                String.format("onStartTrackingTouch. progress:%s", progress + ""));
+                    mSeekValue = progress;
+                }
+            });
         }
 
         {
             registerReceiver(mMusicPlaySateChangedReciver, new IntentFilter(
                     Contants.FILTER_PLAY_STATE_CHANGED));
+            registerReceiver(mProgressedReceiver, new IntentFilter(
+                    Contants.FILTER_ACTION_SEEK_UPDATED));
         }
 
         {
@@ -399,8 +480,8 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                     isPlaying = true;
                     isInit = false;
                 } else if (mLanuchMode == START_MODE_FROM_MINIPLAYER) {
-                    if(!isPlaying){
-                        //display pasue button
+                    if (!isPlaying) {
+                        // display pasue button
                         pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
                         isInit = false;
                     }
@@ -439,7 +520,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                         Log.i(TAG, "send broadcast to start play music");
                         intent = new Intent(Contants.FILTER_PLAY_ACTION);
                         intent.putExtra("action", PlayAction.ACTION_START);
-                        
+
                         sendBroadcast(intent);
                         pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
                         isPlaying = true;
@@ -556,7 +637,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         if (null == timer) {
             timer = new Timer();
         }
-        timer.schedule(mTimerTask, 0, 1000);
+        // timer.schedule(mTimerTask, 0, 1000);
     }
 
     /**
@@ -592,6 +673,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     protected void onDestroy() {
         // TODO Auto-generated method stub
         unregisterReceiver(mMusicPlaySateChangedReciver);
+        unregisterReceiver(mProgressedReceiver);
         super.onDestroy();
     }
 
@@ -631,6 +713,21 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         intent.putExtra("value", value);
         sendBroadcast(intent);
         bundle = null;
+        intent = null;
+    }
+
+    /**
+     * send the seek broadcast to play service
+     * 
+     * @param seekValue the value to play
+     */
+    private void sendSeekBroadCast(int seekValue, int playedTime) {
+        int timeToPlay = (int) (curSong.getTime() * (seekValue / 100.0f));
+        Intent intent = new Intent(Contants.FILTER_PLAY_ACTION);
+        intent.putExtra("action", PlayAction.ACTION_SEEK);
+        intent.putExtra("seekvalue", timeToPlay);
+        intent.putExtra("playedtime", playedTime);
+        sendBroadcast(intent);
         intent = null;
     }
 }

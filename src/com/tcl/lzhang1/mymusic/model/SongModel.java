@@ -31,7 +31,7 @@ public class SongModel extends BaseModel {
     private Integer mSingerID = 0;// Singer ID
     private String mSingerName = "";// singer name
     private String mAblumName = "";// Ablulm name
-    private Integer mTime = 0;// how long
+    private long mTime = 0;// how long
     private String mSongName = "";// song name
     private int type = 0;
     private String file = "";
@@ -313,14 +313,14 @@ public class SongModel extends BaseModel {
     /**
      * @return the mTime
      */
-    public Integer getTime() {
+    public long getTime() {
         return mTime;
     }
 
     /**
      * @param mTime the mTime to set
      */
-    public void setTime(Integer mTime) {
+    public void setTime(long mTime) {
         this.mTime = mTime;
     }
 

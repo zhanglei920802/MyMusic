@@ -35,7 +35,7 @@ import com.tcl.lzhang1.mymusic.model.SongModel;
  * @author leizhang
  */
 public class SongImp implements DBOperator {
-    private final String INSERT_SQL = "insert into songs values(?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+    private final String INSERT_SQL = "insert into songs values(?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
     private final String UPDATE_SQL = "update songs set  type=?,name=?,singername=?,ablumname?,remark=?,file=?,singer_img=?,singer_img=?,ablum_img where id = ?";
     private final String DELETE_SQL_ID = "delete from songs where id = ?";
     private final String DELETE_SQL = "delete from songs where file = ?";
@@ -166,6 +166,7 @@ public class SongImp implements DBOperator {
                     model.setMinutes(datas.getInt(datas.getColumnIndex("minutes")));
                     model.setSeconds(datas.getInt(datas.getColumnIndex("seconds")));
                     model.setFav(datas.getInt(datas.getColumnIndex("fav")));
+                    model.setTime(datas.getLong(datas.getColumnIndex("time")));
                 }
                 songs.add(model);
             }
@@ -212,7 +213,7 @@ public class SongImp implements DBOperator {
                             i + 1, model.getType(), model.getSongName(), model.getSingerName(),
                             model.getAblumName(), model.getRemark(), model.getFile().trim(),
                             model.getSinger_img(), model.getAblum_img(), model.getHours(),
-                            model.getMinutes(), model.getSeconds(), 0
+                            model.getMinutes(), model.getSeconds(), 0,model.getTime()
                     };
                     db.execSQL(INSERT_SQL, bindArgs);
                 }
@@ -288,6 +289,7 @@ public class SongImp implements DBOperator {
                     model.setMinutes(datas.getInt(datas.getColumnIndex("minutes")));
                     model.setSeconds(datas.getInt(datas.getColumnIndex("seconds")));
                     model.setFav(datas.getInt(datas.getColumnIndex("fav")));
+                    model.setTime(datas.getLong(datas.getColumnIndex("time")));
                 }
                 songs.add(model);
             }

@@ -22,7 +22,12 @@ import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.db.DBOperator;
 import com.tcl.lzhang1.mymusic.db.imp.SongImp;
 
+import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.test.AndroidTestCase;
 
 public class MusicScanTest extends AndroidTestCase {
@@ -30,13 +35,27 @@ public class MusicScanTest extends AndroidTestCase {
         MusicUtil.getMusicInfo(new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/test.mp3"));
     }
-    
-    public void testRuningService(){
+
+    public void testRuningService() {
         MusicUtil.checkServiceIsRunning(getContext(), getContext().getPackageName());
     }
-    
-    public void testFindAll(){
+
+    public void testFindAll() {
         DBOperator mDbOperator = new SongImp(getContext());
         mDbOperator.findAll("select * from songs where fav=1");
+    }
+
+    public void testGetMusicInfo() {
+        ContentResolver contentResolver = getContext().getContentResolver();
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, new String[] {
+                MediaStore.Audio.AudioColumns.DURATION
+        }, " _data=?", new String[] {
+                Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/test.mp3"
+        }, null);
+        cursor.moveToFirst();
+        long time = cursor.getLong(0);
+        System.out.println("MusicScanTest.testGetMusicInfo(),time:" + time);
+        cursor.close();
     }
 }

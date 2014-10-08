@@ -27,9 +27,12 @@ import java.util.Random;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Environment;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -41,7 +44,10 @@ import com.tcl.lzhang1.mymusic.model.SongModel;
 /**
  * This is Music util
  * 
- * @author leizhang
+ * @author leizhang 503 case kEncodingShiftJIS: 504 enc = "shift-jis"; 505
+ *         break; 506 case kEncodingGBK: 507 enc = "gbk"; 508 break; 509 case
+ *         kEncodingBig5: 510 enc = "Big5"; 511 break; 512 case kEncodingEUCKR:
+ *         513 enc = "EUC-KR"; 514 break;
  */
 @SuppressLint("DefaultLocale")
 public class MusicUtil {
@@ -57,6 +63,7 @@ public class MusicUtil {
             ".mp3"
     };
 
+    private static Context sContext = null;
     private static List<SongModel> mSongs = new ArrayList<SongModel>();
 
     /**
@@ -67,10 +74,10 @@ public class MusicUtil {
      * @return
      * @throws SDCardUnMoutedException
      */
-    public static List<SongModel> scanMusic(String path)
+    public static List<SongModel> scanMusic(String path, Context context)
             throws SDCardUnMoutedException {
         if (TextUtils.isEmpty(path)) {
-            scanMusic();
+            scanMusic(context);
         }
         return null;
     }
@@ -81,8 +88,10 @@ public class MusicUtil {
      * @return
      * @throws SDCardUnMoutedException
      */
-    public static List<SongModel> scanMusic() throws SDCardUnMoutedException {
+    public static List<SongModel> scanMusic(Context context) throws SDCardUnMoutedException {
         // onle scan sdcard path
+
+        sContext = context;
 
         if (Environment.getExternalStorageState().equals(
                 Environment.MEDIA_UNMOUNTED)) {
@@ -197,27 +206,45 @@ public class MusicUtil {
             RandomAccessFile music = new RandomAccessFile(musicFile, "r");
             music.seek(music.length() - 128);
             music.read(buf);// read tag to buffer
-            // tag_v2
-            byte[] header = new byte[10];
-            music.seek(0);
-            music.read(header, 0, 10);
-            // if exits idc tag v2
-            if ("ID3".equalsIgnoreCase(new String(header, 0, 3))) {
-                // ID3Tag V2甯ч暱搴�
-                int ID3V2_frame_size = (int) (header[6] & 0x7F) * 0x200000
-                        | (int) (header[7] & 0x7F) * 0x400
-                        | (int) (header[8] & 0x7F) * 0x80
-                        | (int) (header[9] & 0x7F);
-                // 瀹氫綅鍒版煇涓�抚澶�
-                byte[] FrameHeader = new byte[4];
-                music.seek(ID3V2_frame_size + 10);
-                music.read(FrameHeader, 0, 4);
-                model = getTimeInfo(FrameHeader, ID3V2_frame_size, musicFile);
-            } else {
-                // 鐩存帴鑾峰彇甯уご
-                byte[] FrameHeader = new byte[4];
-                music.read(FrameHeader, 0, 4);
-                model = getTimeInfo(FrameHeader, 0, musicFile);
+            // // tag_v2
+            // byte[] header = new byte[10];
+            // music.seek(0);
+            // music.read(header, 0, 10);
+            // if ("ID3".equalsIgnoreCase(new String(header, 0, 3))) {
+            // int ID3V2_frame_size = (int) (header[6] & 0x7F) * 0x200000
+            // | (int) (header[7] & 0x7F) * 0x400
+            // | (int) (header[8] & 0x7F) * 0x80
+            // | (int) (header[9] & 0x7F);
+            // byte[] FrameHeader = new byte[4];
+            // music.seek(ID3V2_frame_size + 10);
+            // music.read(FrameHeader, 0, 4);
+            // model = getTimeInfo(FrameHeader, ID3V2_frame_size, musicFile);
+            // } else {
+            byte[] FrameHeader = new byte[4];
+            music.read(FrameHeader, 0, 4);
+            model = getTimeInfo(FrameHeader, 0, musicFile);
+            // }
+            // get the time len
+            try {
+                ContentResolver contentResolver = sContext.getContentResolver();
+                Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        new String[] {
+                            MediaStore.Audio.AudioColumns.DURATION
+                        }, "_data=?", new String[] {
+                            musicFile.getAbsolutePath()
+                        }, null);
+                cursor.moveToFirst();
+                long secs = cursor.getLong(0);
+                model.setTime(secs);
+                secs /= 1000;
+                model.setHours((int) secs / 3600);
+                model.setMinutes(((int) secs % 3600) / 60);
+                model.setSeconds(((int) secs % 3600) % 60);
+                cursor.close();
+            } catch (Exception e) {
+                // TODO: handle exception
+                model.setTime(0);
+                e.printStackTrace();
             }
 
             music.close();// close file
@@ -304,11 +331,8 @@ public class MusicUtil {
         getFrameInfo(model, FrameHeader);
         int frameSize = model.CalcFrameSize();
 
-        // 甯ф暟
-        // 甯ф�闀垮害 = 鏂囦欢闀垮害 - ID3 TagV2 - ID3 TagV1(鍥洪暱128)
         long frameCount = (model.getFileLength() - ID3V2_frame_size - 128) / frameSize;
 
-        // 鏃堕暱
         double secs = (double) frameCount / playFramesPerSec;
         model.setHours((int) secs / 3600);
         model.setMinutes(((int) secs % 3600) / 60);
@@ -322,7 +346,6 @@ public class MusicUtil {
      */
     public static void getFrameInfo(SongModel model, byte[] FrameHeader)
     {
-        // 姣旂壒鐜囨绱㈠瓧鍏�
         int[][] bitrateArray = new int[][] {
                 {
                         0, 0, 0, 0, 0, 0
@@ -374,7 +397,6 @@ public class MusicUtil {
                 }
         };
 
-        // 閲囨牱鐜囨绱㈠瓧鍏�
         int[][] simpArray = new int[][] {
                 {
                         44100, 22050, 11025
@@ -407,7 +429,6 @@ public class MusicUtil {
         }
         model.setVersion(version);
         int layer = 0;
-        // 灞傜骇
         switch ((FrameHeader[1] & 0x6) >> 1)
         {
             case 1: // Layer 3
@@ -424,15 +445,12 @@ public class MusicUtil {
                 break;
         }
         model.setLayer(layer);
-        // 鏄惁鏈塁RC淇濇姢
         model.setProtect(FrameHeader[1] & 0x1);
 
-        // 姣旂壒鐜囩储寮�
         int j = ((FrameHeader[2] & 0xf0) >> 4) + 1;
         int i = 0;
         switch (version)
         {
-        // 閫氳繃鐗堟湰 + 灞傜骇 鑾峰彇 BIT鐜�
             case 1:
                 switch (layer)
                 {
@@ -465,7 +483,6 @@ public class MusicUtil {
         }
         model.setBitrate(bitrateArray[j][i]);
 
-        // 鑾峰彇閲囨牱鐜�
         j = ((FrameHeader[2] & 0xc) >> 2);
         switch (version)
         {
@@ -481,10 +498,8 @@ public class MusicUtil {
         }
         model.setSimplingRate(simpArray[j][i]);
 
-        // 濉厖浣�
         model.setPaddingBits((FrameHeader[2] & 0x2) >> 1);
 
-        // 澹伴亾锛�涓虹珛浣撳０锛�涓哄崟澹伴亾
         model.setChannel(((FrameHeader[3] & 0xc0) >> 6) < 3 ? 1 : 0);
 
     }
@@ -560,4 +575,29 @@ public class MusicUtil {
         return Looper.getMainLooper() == Looper.myLooper();
     }
 
+    /**
+     * filed to record previous time stamp
+     */
+    private static long sPreviosTime = 0;
+
+    /**
+     * the slot time
+     */
+    public static final long SLOTTIME = 2000;
+
+    /**
+     * exit the application when back menu was double clicked.
+     * 
+     * @param timeStamp the latest time stamp
+     * @return return true if slop time is satisfied else return false
+     */
+    public static boolean canExit(long timeStamp) {
+        if (sPreviosTime == 0) {
+            sPreviosTime = timeStamp;
+            return false;
+        }
+        boolean needExit = timeStamp - sPreviosTime <= SLOTTIME;
+        sPreviosTime = timeStamp;
+        return needExit;
+    }
 }

@@ -111,7 +111,7 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
                         // TODO Auto-generated method stub
                         try {
 
-                            MusicUtil.scanMusic();
+                            MusicUtil.scanMusic(getApplication());
 
                         } catch (SDCardUnMoutedException e) {
                             // TODO Auto-generated catch block

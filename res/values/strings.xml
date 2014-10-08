@@ -37,5 +37,5 @@
     <string name="cur_play_mode">处于%s模式</string>
     <string name="cur_song">歌曲名称</string>
     <string name="cur_song_singer">歌曲歌手</string>
-
+	<string name="exit_when_click_again">再按一次返回桌面</string>
 </resources>
