@@ -56,7 +56,12 @@ import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
  * whileLog.d(LOG_TAG, "min=" + min + " sec=" + sec + ""); activity will exit
  * when user click back menu,so I create a timer & timer task, it will be
  * trigger the run method in period of 1s,it will send broadcast to UI
- * component,so UI component can update.
+ * component,so UI component can update. <br/>
+ * <br/>
+ * <b>music play list changed process<b/> Because play list is displayed by
+ * split,so,when a new page was added or a refresh operation occurred,we need to
+ * broadcast to other component in case of exception occurred.so I registered a
+ * broadcast in component which need to know music play list's state.
  * 
  * @author leizhang
  */
@@ -605,6 +610,29 @@ public class MusicPlayService extends Service {
         }
     };
 
+    /**
+     * 
+     */
+    private BroadcastReceiver mPlayListChanedReciever = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+            if (null != intent
+                    && Contants.FILTER_ACTION_PLAY_LIST_CHANGED.equals(intent.getAction())) {
+                SongsWrap songsWrap = (SongsWrap) intent.getSerializableExtra("songs");
+                if (null != songsWrap) {
+                    mSongs.clear();
+                    mSongs.addAll(songsWrap.getModels());
+                }
+
+                if (mSongs.isEmpty()) {
+                    stopSelf();
+                }
+            }
+        }
+    };
+
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
@@ -630,17 +658,22 @@ public class MusicPlayService extends Service {
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         registerReceiver(mPhoneBroadcastReceiver, filter);
         registerReceiver(mFavBroadcastReceiver, new IntentFilter(Contants.FILTER_ACTION_MARK_FAV));
+        registerReceiver(mPlayListChanedReciever, new IntentFilter(
+                Contants.FILTER_ACTION_PLAY_LIST_CHANGED));
         mAppContext = (AppContext) getApplication();
     }
 
     @Override
     public void onDestroy() {
         // TODO Auto-generated method stub
+
         unregisterReceiver(mPlayActionBroadcastReceiver);
         unregisterReceiver(mPlayModeBroadcastReceiver);
         unregisterReceiver(mHeadsetReceiver);
         unregisterReceiver(mPhoneBroadcastReceiver);
         unregisterReceiver(mFavBroadcastReceiver);
+        unregisterReceiver(mPlayListChanedReciever);
+
         sendBroadCast(null, PlayState.PLAY_STOPED, 0, "play stoped");
         if (mMusicMediaPlayer != null) {
             mMusicMediaPlayer.stop();
@@ -755,9 +788,10 @@ public class MusicPlayService extends Service {
                     // play mode
                     if (mPlayMode == PlayMode.MODE_REPEAT_SINGLE) {
                         playMusic(position, 0);
-                        sendBroadCast(mSongs.get(position), PlayState.PLAY_END, 0, null);
+                        sendBroadCast(mSongs.get(getValidPlayIndex(position)), PlayState.PLAY_END,
+                                0, null);
                     } else if (mPlayMode == PlayMode.MODE_REPEAT_ALL) {
-                        playMusic(position + 1, 0);
+                        playMusic(getValidPlayIndex(position + 1), 0);
                         sendBroadCast(mSongs.get(position + 1), PlayState.PLAY_END, 0, null);
                     } else if (mPlayMode == PlayMode.MODE_REPEAT_RANDOM) {
                         int randomIndex = MusicUtil.getRandomInt(mSongs.size());
@@ -884,5 +918,20 @@ public class MusicPlayService extends Service {
 
         sendBroadcast(intent);
         intent = null;
+    }
+
+    /**
+     * because play list will changed for refresh or load.so check the play
+     * index
+     * 
+     * @param index the index will be played
+     * @return if index is valid return it ,return 0 if not
+     */
+    public int getValidPlayIndex(int index) {
+        if (index > 0 && index < mSongs.size() - 1) {
+            return index;
+        } else {
+            return 0;
+        }
     }
 }

@@ -144,6 +144,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private Button login = null;
 
     /**
+     * 
+     */
+    private TextView welcome = null;
+
+    /**
      * is refresh
      */
     private boolean isRefreshing = true;
@@ -411,6 +416,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             mine_list.setOnItemClickListener(this);
             login = (Button) mine.findViewById(R.id.login);
             login.setOnClickListener(this);
+            welcome = (TextView) mine.findViewById(R.id.welcome);
+           
         }
 
         {
@@ -479,7 +486,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
 
                     List<SongModel> models;
                     Message message = mHandler.obtainMessage();
-                    models = (List<SongModel>) mDbOperator.findAll();
+                    models = (List<SongModel>) mDbOperator.sliptPage(1, UIHelper.PAGE_SIZE, null);
                     if (models != null && !models.isEmpty()) {
                         Log.d(TAG, "data base have datas");
                         message.what = SCAN_MUSIC_SUCCESS;
@@ -689,5 +696,23 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             super.onBackPressed();
         }
 
+    }
+    
+    /* (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onResume()
+     */
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        
+        if (AppContext.isLogined()) {
+            welcome.setText(String.format(getString(R.string.welcome_user), AppContext.sLoginUser.getUserName()));
+            login.setVisibility(View.GONE);
+            welcome.setVisibility(View.VISIBLE);
+        }else{
+            login.setVisibility(View.VISIBLE);
+            welcome.setVisibility(View.GONE);
+        }
     }
 }

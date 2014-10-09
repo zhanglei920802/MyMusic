@@ -5,17 +5,32 @@
     android:background="#f8f8f8"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/login"
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="fill"
-        android:layout_marginTop="20.0dip"
         android:layout_margin="8dip"
-        android:background="@drawable/setting_login_btn_bg"
-        android:text="@string/login"
-        android:textColor="@color/login_text2_register_color"
-        android:textSize="15.0sp" />
+        android:layout_marginTop="20.0dip" >
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/setting_login_btn_bg"
+            android:text="@string/login"
+            android:textColor="@color/login_text2_register_color"
+            android:textSize="15.0sp" />
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/reg_login"
+            android:textColor="@color/login_text1_register_color"
+            android:textSize="15.0sp"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <ListView
         android:id="@+id/mine_list"

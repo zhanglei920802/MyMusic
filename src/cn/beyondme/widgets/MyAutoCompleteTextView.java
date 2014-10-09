@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.view.View.OnFocusChangeListener;
 
@@ -38,7 +39,7 @@ import android.view.View.OnFocusChangeListener;
  * @version 1.0
  * @author 张雷
  */
-public class ClearableEditText extends EditText implements OnTouchListener,
+public class MyAutoCompleteTextView extends AutoCompleteTextView implements OnTouchListener,
         OnFocusChangeListener, TextWatcher {
 
     /** Log. @hide */
@@ -115,7 +116,7 @@ public class ClearableEditText extends EditText implements OnTouchListener,
      * @param attrs the attrs
      * @param defStyle the def style
      */
-    public ClearableEditText(Context context, AttributeSet attrs, int defStyle) {
+    public MyAutoCompleteTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
         // TODO Auto-generated constructor stub
@@ -127,7 +128,7 @@ public class ClearableEditText extends EditText implements OnTouchListener,
      * @param context the context
      * @param attrs the attrs
      */
-    public ClearableEditText(Context context, AttributeSet attrs) {
+    public MyAutoCompleteTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
         // TODO Auto-generated constructor stub
@@ -138,7 +139,7 @@ public class ClearableEditText extends EditText implements OnTouchListener,
      * 
      * @param context the context
      */
-    public ClearableEditText(Context context) {
+    public MyAutoCompleteTextView(Context context) {
         super(context);
         init();
         // TODO Auto-generated constructor stub
@@ -164,8 +165,8 @@ public class ClearableEditText extends EditText implements OnTouchListener,
     }
 
     /**
-     * <p>edit_text_uin
-     * Title: onTouch
+     * <p>
+     * edit_text_uin Title: onTouch
      * </p>
      * <p>
      * Description:

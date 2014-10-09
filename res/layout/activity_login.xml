@@ -60,7 +60,7 @@
                             android:layout_height="fill_parent"
                             android:orientation="horizontal" >
 
-                            <cn.beyondme.widgets.ClearableEditText
+                            <cn.beyondme.widgets.MyAutoCompleteTextView
                                 android:id="@+id/edit_text_uin"
                                 android:layout_width="0.0dip"
                                 android:layout_height="@dimen/login_line_height"
@@ -92,29 +92,37 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/m_login_uin_divider" >
 
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:orientation="horizontal" >
+                        <cn.beyondme.widgets.ClearableEditText
+                            android:id="@+id/edit_text_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/login_line_height"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_weight="1.0"
+                            android:background="@color/transparent"
+                            android:hint="密码"
+                            android:imeOptions="actionDone"
+                            android:longClickable="false"
+                            android:paddingLeft="0.0dip"
+                            android:password="true"
+                            android:scrollHorizontally="true"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:textColorHint="#ffcfcfcf"
+                            android:textSize="18.0sp" />
 
-                            <cn.beyondme.widgets.ClearableEditText
-                                android:id="@+id/edit_text_password"
-                                android:layout_width="0.0dip"
-                                android:layout_height="@dimen/login_line_height"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_weight="1.0"
-                                android:background="@color/transparent"
-                                android:hint="密码"
-                                android:imeOptions="actionDone"
-                                android:longClickable="false"
-                                android:paddingLeft="0.0dip"
-                                android:password="true"
-                                android:scrollHorizontally="true"
-                                android:singleLine="true"
-                                android:textColor="@android:color/black"
-                                android:textColorHint="#ffcfcfcf"
-                                android:textSize="18.0sp" />
-                        </LinearLayout>
+                        <CheckBox
+                            android:id="@+id/show_pwd"
+                            android:layout_width="40dip"
+                            android:layout_height="40dip"
+                            android:layout_marginLeft="5.0dip"
+                            android:layout_gravity="right|center_vertical"
+                            android:layout_marginRight="25.0dip"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:button="@drawable/pwd_show_xml"
+                            android:focusableInTouchMode="true"
+                            android:scaleType="centerInside"
+                            android:visibility="visible" />
                     </FrameLayout>
 
                     <ImageView

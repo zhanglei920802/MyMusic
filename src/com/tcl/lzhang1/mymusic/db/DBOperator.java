@@ -87,7 +87,7 @@ public interface DBOperator {
     /**
      * @param sql
      */
-    public BaseModel find(String sql);
+    public List<? extends BaseModel> find(String sql);
 
     /**
      * find all record
@@ -102,5 +102,15 @@ public interface DBOperator {
      * @param sql
      */
     public void executeSQL(String sql);
+
+    /**
+     * get data by split page
+     * 
+     * @param pageIndex pageIndex
+     * @param pageSize pageSize
+     * @param columnName order by name,null indicates default
+     * @return
+     */
+    public List<? extends BaseModel> sliptPage(int pageIndex, int pageSize, String columnName);
 
 }

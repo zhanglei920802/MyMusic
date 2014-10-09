@@ -52,5 +52,19 @@
     <string name="xlistview_header_last_time">上次更新时间：</string>
     <string name="xlistview_footer_hint_normal">点击查看更多</string>
     <string name="xlistview_footer_hint_ready">松开载入更多</string>
-
+    <string name="username_empty">用户名不能为空</string>
+    <string name="password_empty">密码不能为空</string>
+    <string name="email_empty">邮箱不能为空</string>
+    <string name="email_error_formart">错误的邮箱格式</string>
+    <string name="tel_empty">电话不能为空</string>
+    <string name="tel_error_format">电话格式不正确</string>
+    <string name="pwd_empty">密码不能为空</string>
+    <string name="re_pwd_empty">再次输入密码</string>
+    <string name="pwd_not_equal">两次输入的密码不同</string>
+    <string name="user_not_exit">对不起,没有此用户</string>
+    <string name="password_incorrect">密码不正确</string>
+    <string name="login_success">登录成功</string>
+    <string name="user_exit">该用户已经存在</string>
+    <string name="reg_success">注册成功</string>
+	<string name="welcome_user">%s,欢迎你回来.</string>
 </resources>

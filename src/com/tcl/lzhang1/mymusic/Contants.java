@@ -47,4 +47,9 @@ public class Contants {
      * action update progress
      */
     public static final String FILTER_ACTION_SEEK_UPDATED = "COM.TCL.LZHANG1.MYMUSIC.SEEKUPDATE";
+
+    /**
+     * indicates play list changed
+     */
+    public static final String FILTER_ACTION_PLAY_LIST_CHANGED = "COM.TCL.LZHANG1.MYMUSIC.PLAYLIST.CHANGED";
 }

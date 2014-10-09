@@ -22,6 +22,7 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tcl.lzhang1.mymusic.db.DBHelper;
@@ -213,7 +214,7 @@ public class SongImp implements DBOperator {
                             i + 1, model.getType(), model.getSongName(), model.getSingerName(),
                             model.getAblumName(), model.getRemark(), model.getFile().trim(),
                             model.getSinger_img(), model.getAblum_img(), model.getHours(),
-                            model.getMinutes(), model.getSeconds(), 0,model.getTime()
+                            model.getMinutes(), model.getSeconds(), 0, model.getTime()
                     };
                     db.execSQL(INSERT_SQL, bindArgs);
                 }
@@ -248,12 +249,12 @@ public class SongImp implements DBOperator {
         }
     }
 
-    /*model.setFav(0);
-     * (non-Javadoc)
+    /*
+     * model.setFav(0); (non-Javadoc)
      * @see com.tcl.lzhang1.mymusic.db.DBOperator#find(java.lang.String)
      */
     @Override
-    public BaseModel find(String sql) {
+    public List<? extends BaseModel> find(String sql) {
         return null;
         // TODO Auto-generated method stub
 
@@ -313,5 +314,49 @@ public class SongImp implements DBOperator {
             db.close();
             db = null;
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.db.DBOperator#sliptPage(int, int,
+     * java.lang.String)
+     */
+    @Override
+    public List<? extends BaseModel> sliptPage(int pageIndex, int pageSize, String columnName) {
+        // TODO Auto-generated method stub
+        List<SongModel> songs = new ArrayList<SongModel>();
+        SongModel model;
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        if (null != db) {
+            Cursor datas = db.rawQuery(" select * from songs" + (TextUtils.isEmpty(columnName) ? ""
+                    : "order by " + columnName) + "" + " limit " + pageSize + " offset "
+                            + (pageIndex - 1) * pageSize + "", null);
+            // do iterator
+            while (datas.moveToNext()) {
+                // obtain datas
+                model = new SongModel();
+                {
+                    model.setSongID(datas.getInt(datas.getColumnIndex("id")));
+                    model.setType(datas.getInt(datas.getColumnIndex("type")));
+                    model.setSongName(datas.getString(datas.getColumnIndex("name")));
+                    model.setSingerName(datas.getString(datas.getColumnIndex("singername")));
+                    model.setAblumName(datas.getString(datas.getColumnIndex("ablumname")));
+                    model.setRemark(datas.getString(datas.getColumnIndex("remark")));
+                    model.setFile(datas.getString(datas.getColumnIndex("file")));
+                    model.setSinger_img(datas.getString(datas.getColumnIndex("singer_img")));
+                    model.setAblum_img(datas.getString(datas.getColumnIndex("ablum_img")));
+                    model.setHours(datas.getInt(datas.getColumnIndex("hours")));
+                    model.setMinutes(datas.getInt(datas.getColumnIndex("minutes")));
+                    model.setSeconds(datas.getInt(datas.getColumnIndex("seconds")));
+                    model.setFav(datas.getInt(datas.getColumnIndex("fav")));
+                    model.setTime(datas.getLong(datas.getColumnIndex("time")));
+                }
+                songs.add(model);
+            }
+
+            datas.close();
+            datas = null;
+        }
+        return songs;
     }
 }

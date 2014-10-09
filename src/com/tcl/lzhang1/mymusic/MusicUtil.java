@@ -23,6 +23,8 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -62,7 +64,8 @@ public class MusicUtil {
     private static final String[] suffix = new String[] {
             ".mp3"
     };
-
+    private static final String EMAIL_PATTERN = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+    private static final String MOBILE_PATTERN = "1([\\d]{10})|((\\+[0-9]{2,4})?\\(?[0-9]+\\)?-?)?[0-9]{7,8}";
     private static Context sContext = null;
     private static List<SongModel> mSongs = new ArrayList<SongModel>();
 
@@ -599,5 +602,46 @@ public class MusicUtil {
         boolean needExit = timeStamp - sPreviosTime <= SLOTTIME;
         sPreviosTime = timeStamp;
         return needExit;
+    }
+
+    public static boolean isEmail(String string) {
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(string);
+        return matcher.matches();
+    }
+
+    public static boolean isMobileNO(String mobiles) {
+        Pattern p = Pattern
+                .compile(MOBILE_PATTERN);
+        Matcher m = p.matcher(mobiles);
+        return m.matches();
+    }
+
+    /**
+     * 对象转整数.
+     * 
+     * @param obj the obj
+     * @return 转换异常返回 0
+     */
+    public static int toInt(Object obj) {
+        if (obj == null)
+            return 0;
+        return toInt(obj.toString(), 0);
+    }
+
+    /**
+     * 字符串转整数.
+     * 
+     * @param str the str
+     * @param defValue the def value
+     * @return the int
+     */
+    public static int toInt(String str, int defValue) {
+        try {
+            return Integer.parseInt(str);
+        } catch (Exception e) {
+        }
+
+        return defValue;
     }
 }

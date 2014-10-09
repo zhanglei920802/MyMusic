@@ -16,6 +16,7 @@
 
 package com.tcl.lzhang1.mymusic.db.imp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -38,9 +39,9 @@ public class UserImp implements DBOperator {
     private DBHelper mDbHelper = null;
 
     private String LOG_TAG = "";
-    private String INSERT_SQL = "insert into user values(?,?)";
+    private String INSERT_SQL = "insert into user values(?,?,?,?,?)";
     private String DELETE_SQL_ID = "delete from user where  user_id=? ";
-    private String UPDATE_SQL = "update user set password=? where user_id";
+    private String UPDATE_SQL = "update user set islogin=? where user_id";
 
     private String SELECT_SQL_LIKE = "select * from user where user_id like ?";
 
@@ -57,7 +58,11 @@ public class UserImp implements DBOperator {
         // TODO Auto-generated method stub
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         if (null != db) {
-            Object[] bindArgs = new Object[] {};
+            UserModel model = (UserModel) addModel;
+            Object[] bindArgs = new Object[] {
+                    model.getUserName(), model.getPassword(), model.getIsLogin(), model.getEmail(),
+                    model.getTel()
+            };
             db.execSQL(INSERT_SQL, bindArgs);
 
             db.close();
@@ -100,7 +105,10 @@ public class UserImp implements DBOperator {
         // TODO Auto-generated method stub
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         if (null != db) {
-            Object[] updateArgs = new Object[] {};
+            UserModel model = (UserModel) updateModel;
+            Object[] updateArgs = new Object[] {
+                    model.getIsLogin()
+            };
             db.execSQL(UPDATE_SQL, updateArgs);
 
             db.close();
@@ -178,45 +186,81 @@ public class UserImp implements DBOperator {
      * @see com.tcl.lzhang1.mymusic.db.DBOperator#find(java.lang.String)
      */
     @Override
-    public BaseModel find(String sql) {
+    public List<? extends BaseModel> find(String sql) {
         // TODO Auto-generated method stub
 
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        UserModel model = new UserModel();
+        List<UserModel> model = new ArrayList<UserModel>();
         if (null != db) {
-            String[] selectionArgs = new String[] {
-                "'%" + sql + "%'"
-            };
-            Cursor cursor = db.rawQuery(SELECT_SQL_LIKE, selectionArgs);
+            Cursor cursor = db.rawQuery("SELECT * FROM USER WHERE USER_ID LIKE '" + sql + "%'",
+                    null);
 
-            cursor.moveToNext();
+            // cursor.moveToNext();
             // obtain datas
+            while (cursor.moveToNext()) {
+                model.add(new UserModel(cursor.getString(cursor.getColumnIndex("user_id")), cursor
+                        .getString(cursor.getColumnIndex("password"))));
+            }
 
             cursor.close();
             cursor = null;
             db.close();
             db = null;
+            return model;
         }
         return null;
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see com.tcl.lzhang1.mymusic.db.DBOperator#findAll(java.lang.String)
      */
     @Override
     public List<? extends BaseModel> findAll(String sql) {
         // TODO Auto-generated method stub
-        return null;
+        List<UserModel> songs = new ArrayList<UserModel>();
+        UserModel model;
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        if (null != db) {
+            Cursor datas = db.rawQuery(sql, null);
+            // do iterator
+            while (datas.moveToNext()) {
+                // obtain datas
+                model = new UserModel();
+                {
+                    model.setUserName(datas.getString(datas.getColumnIndex("user_id")));
+                    model.setPassword(datas.getString(datas.getColumnIndex("password")));
+                    model.setEmail(datas.getString(datas.getColumnIndex("email")));
+                    model.setTel(datas.getString(datas.getColumnIndex("tel")));
+                    model.setIsLogin(datas.getInt(datas.getColumnIndex("islogin")));
+                }
+                songs.add(model);
+            }
+
+            datas.close();
+            datas = null;
+        }
+        return songs;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see com.tcl.lzhang1.mymusic.db.DBOperator#executeSQL(java.lang.String)
      */
     @Override
     public void executeSQL(String sql) {
         // TODO Auto-generated method stub
-        
+
+    }
+
+    /* (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.db.DBOperator#sliptPage(int, int, java.lang.String)
+     */
+    @Override
+    public List<? extends BaseModel> sliptPage(int pageIndex, int pageSize, String columnName) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

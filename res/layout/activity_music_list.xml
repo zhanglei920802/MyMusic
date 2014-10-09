@@ -33,12 +33,12 @@
             android:textSize="15.0sp" />
     </RelativeLayout>
 
-    <ListView
+    <me.maxwin.view.XListView
         android:id="@+id/music_list"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
         android:visibility="gone" >
-    </ListView>
+    </me.maxwin.view.XListView>
 
 </LinearLayout>

@@ -38,12 +38,75 @@
                     android:layout_marginTop="42.0dip"
                     android:orientation="vertical" >
 
+                    <!-- username begin -->
+
+                    <FrameLayout
+                        android:id="@+id/reg_username_fl"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            style="@style/input_highlight_color"
+                            android:layout_width="1.0dip"
+                            android:layout_height="@dimen/login_line_height"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:saveEnabled="true"
+                            android:selectAllOnFocus="true"
+                            android:singleLine="true"
+                            android:visibility="visible" />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="horizontal" >
+
+                            <cn.beyondme.widgets.ClearableEditText
+                                android:id="@+id/edit_text_username"
+                                android:layout_width="0.0dip"
+                                android:layout_height="@dimen/login_line_height"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_weight="1.0"
+                                android:background="@color/transparent"
+                                android:hint="用户名"
+                                android:imeOptions="actionDone"
+                                android:longClickable="false"
+                                android:paddingLeft="0.0dip"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                android:textColor="@android:color/black"
+                                android:textColorHint="#ffcfcfcf"
+                                android:textSize="18.0sp" />
+
+                            <ImageButton
+                                android:id="@+id/clearUinBtn"
+                                android:layout_width="@dimen/search_delete_icon"
+                                android:layout_height="@dimen/search_delete_icon"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="5.0dip"
+                                android:layout_marginRight="10.0dip"
+                                android:background="@drawable/voice_search_clear_text_xml"
+                                android:scaleType="centerInside"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <ImageView
+                        android:id="@+id/reg_username_divide"
+                        android:layout_width="fill_parent"
+                        android:layout_height="1.0dip"
+                        android:layout_below="@+id/reg_username_fl"
+                        android:background="@color/common_green_divider_line_colcor" />
+                    <!-- username end -->
+
+
                     <!-- email begin -->
 
                     <FrameLayout
                         android:id="@+id/reg_email_fl"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" >
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/reg_username_divide" >
 
                         <TextView
                             style="@style/input_highlight_color"
@@ -90,6 +153,7 @@
                                 android:visibility="gone" />
                         </LinearLayout>
                     </FrameLayout>
+                    <!-- email end -->
 
                     <ImageView
                         android:id="@+id/reg_email_divide"
@@ -97,9 +161,6 @@
                         android:layout_height="1.0dip"
                         android:layout_below="@+id/reg_email_fl"
                         android:background="@color/common_green_divider_line_colcor" />
-                    <!-- email end -->
-
-
                     <!-- tel begin -->
 
                     <FrameLayout
@@ -170,41 +231,37 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/reg_tel_divide" >
 
-                        <LinearLayout
+                        <cn.beyondme.widgets.ClearableEditText
+                            android:id="@+id/edit_text_password"
                             android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:orientation="horizontal" >
+                            android:layout_height="@dimen/login_line_height"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_weight="1.0"
+                            android:background="@color/transparent"
+                            android:hint="密码"
+                            android:imeOptions="actionDone"
+                            android:longClickable="false"
+                            android:paddingLeft="0.0dip"
+                            android:password="true"
+                            android:scrollHorizontally="true"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:textColorHint="#ffcfcfcf"
+                            android:textSize="18.0sp" />
 
-                            <cn.beyondme.widgets.ClearableEditText
-                                android:id="@+id/edit_text_password"
-                                android:layout_width="0.0dip"
-                                android:layout_height="@dimen/login_line_height"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_weight="1.0"
-                                android:background="@color/transparent"
-                                android:hint="密码"
-                                android:imeOptions="actionDone"
-                                android:longClickable="false"
-                                android:paddingLeft="0.0dip"
-                                android:password="true"
-                                android:scrollHorizontally="true"
-                                android:singleLine="true"
-                                android:textColor="@android:color/black"
-                                android:textColorHint="#ffcfcfcf"
-                                android:textSize="18.0sp" />
-
-                            <ImageButton
-                                android:id="@+id/clearPwdBtn"
-                                android:layout_width="@dimen/search_delete_icon"
-                                android:layout_height="@dimen/search_delete_icon"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginLeft="5.0dip"
-                                android:layout_marginRight="10.0dip"
-                                android:layout_weight="0.0"
-                                android:background="@drawable/voice_search_clear_text_xml"
-                                android:scaleType="centerInside"
-                                android:visibility="gone" />
-                        </LinearLayout>
+                        <CheckBox
+                            android:id="@+id/show_pwd"
+                            android:layout_width="40dip"
+                            android:layout_height="40dip"
+                            android:layout_gravity="right|center_vertical"
+                            android:layout_marginLeft="5.0dip"
+                            android:layout_marginRight="25.0dip"
+                            android:button="@drawable/pwd_show_xml"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:scaleType="centerInside"
+                            android:visibility="visible" />
                     </FrameLayout>
 
                     <ImageView
@@ -223,41 +280,37 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/pwd_divide" >
 
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:orientation="horizontal" >
+                        <cn.beyondme.widgets.ClearableEditText
+                            android:id="@+id/edit_text_re_pwd"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/login_line_height"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_weight="1.0"
+                            android:background="@color/transparent"
+                            android:hint="重复密码"
+                            android:imeOptions="actionDone"
+                            android:longClickable="false"
+                            android:paddingLeft="0.0dip"
+                            android:password="true"
+                            android:scrollHorizontally="true"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:textColorHint="#ffcfcfcf"
+                            android:textSize="18.0sp" />
 
-                            <cn.beyondme.widgets.ClearableEditText
-                                android:id="@+id/edit_text_re_pwd"
-                                android:layout_width="0.0dip"
-                                android:layout_height="@dimen/login_line_height"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_weight="1.0"
-                                android:background="@color/transparent"
-                                android:hint="重复密码"
-                                android:imeOptions="actionDone"
-                                android:longClickable="false"
-                                android:paddingLeft="0.0dip"
-                                android:password="true"
-                                android:scrollHorizontally="true"
-                                android:singleLine="true"
-                                android:textColor="@android:color/black"
-                                android:textColorHint="#ffcfcfcf"
-                                android:textSize="18.0sp" />
-
-                            <ImageButton
-                                android:id="@+id/clearPwdBtn"
-                                android:layout_width="@dimen/search_delete_icon"
-                                android:layout_height="@dimen/search_delete_icon"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginLeft="5.0dip"
-                                android:layout_marginRight="10.0dip"
-                                android:layout_weight="0.0"
-                                android:background="@drawable/voice_search_clear_text_xml"
-                                android:scaleType="centerInside"
-                                android:visibility="gone" />
-                        </LinearLayout>
+                        <CheckBox
+                            android:id="@+id/show_re_pwd"
+                            android:layout_width="40dip"
+                            android:layout_height="40dip"
+                            android:layout_gravity="right|center_vertical"
+                            android:layout_marginLeft="5.0dip"
+                            android:layout_marginRight="25.0dip"
+                            android:button="@drawable/pwd_show_xml"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:scaleType="centerInside"
+                            android:visibility="visible" />
                     </FrameLayout>
 
                     <ImageView

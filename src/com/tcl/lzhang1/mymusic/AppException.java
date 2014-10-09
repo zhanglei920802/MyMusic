@@ -232,11 +232,9 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
 
             return false;
         } else {
-            System.out
-                    .println("================================AppException.handleException()====BEGIN================");
+          
             ex.printStackTrace();
-            System.out
-                    .println("================AppException.handleException()========================END==================");
+           
 
         }
 

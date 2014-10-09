@@ -28,7 +28,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private int DB_VERSION = 1;
     private String CREATE_SQL = "CREATE TABLE [songs] (  [id] INT,   [type] INT DEFAULT 2,   [name] NVARCHAR2 NOT NULL,   [singername] NVARCHAR2 NOT NULL,   [ablumname] NVARCHAR2 NOT NULL,  [remark] NVARCHAR2,  [file] NVARCHAR2 NOT NULL,  [singer_img] NVARCHAR2,  [ablum_img] CHAR,[hours] int ,  [minutes] int , [seconds] int ,[fav] INT DEFAULT 0, [time] int,CONSTRAINT [] PRIMARY KEY ([id]) ON CONFLICT ABORT)";
-    private String CREATE_USER_SQL = "CREATE TABLE [user] (  [user_id] NVARCHAR2,   [password] NVARCHAR2,   CONSTRAINT [] PRIMARY KEY ([user_id]))";
+    private String CREATE_USER_SQL = "CREATE TABLE [user] (  [user_id] NVARCHAR2,   [password] NVARCHAR2,[islogin] int,[email] NVARCHAR2,[tel] NVARCHAR2,   CONSTRAINT [] PRIMARY KEY ([user_id]))";
+
+    private final String INSERT_USER = "INSERT INTO USER VALUES(?,?,?,?,?)";
 
     /**
 	 * 
@@ -62,6 +64,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(CREATE_SQL);
         db.execSQL(CREATE_USER_SQL);
+        insertTestUsers(db);
     }
 
     /*
@@ -76,4 +79,30 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * create test values
+     */
+    private void insertTestUsers(SQLiteDatabase db) {
+        Object[] bindArgs = null;
+        for (int i = 0; i < 5; i++) {
+            bindArgs = new Object[] {
+                    "zhanglei" + i, "920802", "", "", ""
+            };
+            db.execSQL(INSERT_USER, bindArgs);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            bindArgs = new Object[] {
+                    "guest" + i, "920802", "", "", ""
+            };
+            db.execSQL(INSERT_USER, bindArgs);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            bindArgs = new Object[] {
+                    "vip" + i, "920802", "", "", ""
+            };
+            db.execSQL(INSERT_USER, bindArgs);
+        }
+    }
 }

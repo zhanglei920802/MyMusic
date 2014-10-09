@@ -35,6 +35,34 @@ import android.widget.Toast;
  * @author leizhang
  */
 public class UIHelper {
+    /** The Constant LISTVIEW_ACTION_INIT. */
+    public final static int LISTVIEW_ACTION_INIT = 0x01;
+
+    /** The Constant LISTVIEW_ACTION_REFRESH. */
+    public final static int LISTVIEW_ACTION_REFRESH = 0x02;
+
+    /** The Constant LISTVIEW_ACTION_SCROLL. */
+    public final static int LISTVIEW_ACTION_SCROLL = 0x03;
+
+    /** The Constant LISTVIEW_ACTION_CHANGE_CATALOG. */
+    public final static int LISTVIEW_ACTION_CHANGE_CATALOG = 0x04;
+
+    /** The Constant LISTVIEW_DATA_MORE. */
+    public final static int LISTVIEW_DATA_MORE = 0x01;
+
+    /** The Constant LISTVIEW_DATA_LOADING. */
+    public final static int LISTVIEW_DATA_LOADING = 0x02;
+
+    /** The Constant LISTVIEW_DATA_FULL. */
+    public final static int LISTVIEW_DATA_FULL = 0x03;
+
+    /** The Constant LISTVIEW_DATA_EMPTY. */
+    public final static int LISTVIEW_DATA_EMPTY = 0x04;
+
+    /**
+     * the pagesize
+     */
+    public final static int PAGE_SIZE = 20;
 
     /**
      * show Main Activity
@@ -67,13 +95,14 @@ public class UIHelper {
      * @param context
      * @param bundle
      */
-    public static void showMusicListActivity(Context context, Bundle bundle) {
+    public static void showMusicListActivity(Activity context, Bundle bundle) {
         Intent intent = new Intent(context, MusicListAcitivity.class);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
     }
 
     /**
@@ -95,26 +124,28 @@ public class UIHelper {
      * @param context
      * @param bundle
      */
-    public static void showRegActivity(Context context, Bundle bundle) {
+    public static void showRegActivity(Activity context, Bundle bundle) {
         Intent intent = new Intent(context, RegActivity.class);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.push_right_in, R.anim.no_horizontal_translation);
     }
 
     /**
      * @param context
      * @param bundle
      */
-    public static void showLoginActivity(Context context, Bundle bundle) {
+    public static void showLoginActivity(Activity context, Bundle bundle) {
         Intent intent = new Intent(context, LoginActivity.class);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
     }
 
     /**
@@ -136,16 +167,14 @@ public class UIHelper {
      */
     public static void toast(Context context, String text) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-        
+
     }
-    
+
     /**
      * 发送App异常崩溃报告.
      * 
-     * @param cont
-     *            the cont
-     * @param crashReport
-     *            the crash report
+     * @param cont the cont
+     * @param crashReport the crash report
      */
     public static void sendAppCrashReport(final Context cont,
             final String crashReport) {
@@ -167,8 +196,10 @@ public class UIHelper {
                         i.setType("message/rfc822"); // 真机
 
                         i.putExtra(Intent.EXTRA_EMAIL,
-                                new String[] { "794857063@qq.com" });
-                        i.putExtra(Intent.EXTRA_SUBJECT, "移动校园- 错误报告");
+                                new String[] {
+                                    "794857063@qq.com"
+                                });
+                        i.putExtra(Intent.EXTRA_SUBJECT, " 错误报告");
                         i.putExtra(Intent.EXTRA_TEXT, crashReport);
                         cont.startActivity(Intent.createChooser(i, "发送错误报告"));
                         // 退出
@@ -185,6 +216,16 @@ public class UIHelper {
                 AppManager.getInstance().AppExit(cont);
             }
         });
-        builder.show();
+        builder.create().show();
+    }
+
+    /**
+     * send play list changed listener
+     * 
+     * @param intent
+     * @param context
+     */
+    public static void sendPlayListChanedBroadCast(Intent intent, Context context) {
+        context.sendBroadcast(intent);
     }
 }

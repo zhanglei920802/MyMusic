@@ -17,10 +17,14 @@
 package com.tcl.lzhang1.mymusic.ui;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import me.maxwin.view.XListView;
+import me.maxwin.view.XListView.IXListViewListener;
 import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -64,7 +68,7 @@ import com.tcl.lzhang1.mymusic.ui.apdater.MusicListAdapter;
  * @author leizhang
  */
 public class MusicListAcitivity extends BaseActivity implements OnClickListener,
-        OnItemClickListener, OnItemLongClickListener {
+        OnItemClickListener, OnItemLongClickListener, IXListViewListener {
 
     /**
      * start mode local music ,default.
@@ -84,7 +88,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     /**
      * the list view
      */
-    private ListView mMusicList = null;
+    private XListView mMusicList = null;
 
     /**
      * the list adapter
@@ -128,6 +132,16 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     private DBOperator mDbOperator = null;
 
     /**
+     * filed indicates load data success
+     */
+    public static final int LOADDATA_SUCCESS = 6;
+
+    /**
+     * filed indicates load data failed
+     */
+    public static final int LOADDATA_FAILED = 7;
+
+    /**
      * the hander
      */
     private Handler mHandler = new Handler() {
@@ -145,7 +159,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                     if (null != mSongs) {
                         mSongs.clear();
                         List<SongModel> models = (List<SongModel>) msg.obj;
-                        
+
                         if (models == null || models.isEmpty()) {
                             no_musics.setVisibility(View.VISIBLE);
                             mMusicList.setVisibility(View.GONE);
@@ -157,6 +171,49 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                         musicListAdapter.notifyDataSetChanged();
                     }
                     break;
+                case LOADDATA_SUCCESS:
+                    if (null != msg) {
+
+                        if (msg.arg2 == UIHelper.LISTVIEW_ACTION_REFRESH) {
+                            mSongs.clear();
+                        }
+
+                        if (msg.arg1 < UIHelper.PAGE_SIZE) {// load finish
+                            mSongs.addAll((Collection<? extends SongModel>) msg.obj);
+                            mMusicList.setTag(UIHelper.LISTVIEW_DATA_FULL);
+                            musicListAdapter.notifyDataSetChanged();
+                            mMusicList.setPullLoadEnable(false);
+                        } else if (msg.arg1 == UIHelper.PAGE_SIZE) {
+                            mSongs.addAll((Collection<? extends SongModel>) msg.obj);
+                            mMusicList.setTag(UIHelper.LISTVIEW_DATA_MORE);
+                            musicListAdapter.notifyDataSetChanged();
+
+                        }
+
+                        if (musicListAdapter.getCount() < 1) {
+                            mMusicList.setTag(UIHelper.LISTVIEW_DATA_EMPTY);
+                            no_musics.setVisibility(View.VISIBLE);
+                            mMusicList.setVisibility(View.GONE);
+                        }
+
+                        if (msg.arg2 == UIHelper.LISTVIEW_ACTION_REFRESH) {
+                            mMusicList.setRefreshTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                    .format(Calendar.getInstance().getTime()));
+                            mMusicList.setSelection(0);
+                        }
+                        mMusicList.stopLoadMore();
+                        mMusicList.stopRefresh();
+                        sendPlayListChanedBroadCast();
+
+                    }
+                    break;
+                case LOADDATA_FAILED:
+                    mMusicList.setTag(UIHelper.LISTVIEW_DATA_MORE);
+                    mMusicList.setVisibility(View.VISIBLE);
+                    mMusicList.stopLoadMore();
+                    mMusicList.stopRefresh();
+                    break;
+
                 default:
 
                     break;
@@ -310,17 +367,16 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             //
             List<SongModel> mSongModels = new ArrayList<SongModel>();
             if (curStartMode == START_MODE_FAV) {
-               
+
                 for (SongModel songModel : mSongs) {
                     if (songModel.getFav() == 1) {
                         mSongModels.add(songModel);
                     }
                 }
-                
+
                 mSongs = mSongModels;
                 mSongModels = null;
             }
-           
 
         }
     }
@@ -380,7 +436,16 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         // TODO Auto-generated method stub
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_music_list);
-        mMusicList = (ListView) findViewById(R.id.music_list);
+        mMusicList = (XListView) findViewById(R.id.music_list);
+        if (curStartMode == START_MODE_LOCAL) {
+            mMusicList.setPullLoadEnable(true);
+            mMusicList.setPullRefreshEnable(true);
+            mMusicList.setXListViewListener(this);
+        } else {
+            mMusicList.setPullLoadEnable(false);
+            mMusicList.setPullRefreshEnable(false);
+        }
+
         mMusicList.setOnItemClickListener(this);
         musicListAdapter = new MusicListAdapter(this, mSongs);
         mMusicList.setAdapter(musicListAdapter);
@@ -580,5 +645,102 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         });
 
         builder.create().show();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see me.maxwin.view.XListView.IXListViewListener#onLoadMore()
+     */
+    @Override
+    public void onLoadMore() {
+        // TODO Auto-generated method stub
+        int lvDataState = MusicUtil.toInt(mMusicList.getTag());
+        if (UIHelper.LISTVIEW_DATA_MORE == lvDataState) {
+            mMusicList.setTag(UIHelper.LISTVIEW_DATA_LOADING);
+            int pageIndex = mSongs.size() / UIHelper.PAGE_SIZE + 1;
+            loadData(pageIndex, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_SCROLL, null, mHandler);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see me.maxwin.view.XListView.IXListViewListener#onRefresh()
+     */
+    @Override
+    public void onRefresh() {
+        // TODO Auto-generated method stub
+        // mMusicList.setRefreshTime(new
+        // SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
+        mMusicList.setPullLoadEnable(true);
+        loadData(1, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_REFRESH, null, mHandler);
+
+    }
+
+    /**
+     * load data
+     * 
+     * @param pageIndex
+     * @param pageSize
+     * @param tag
+     * @param orderCol
+     * @param handler
+     */
+    public void loadData(final int pageIndex, final int pageSize, final int tag,
+            final String orderCol, final Handler handler) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                Message message = handler.obtainMessage();
+                try {
+                    if (tag == UIHelper.LISTVIEW_ACTION_REFRESH) {// scan music
+
+                    }
+                    @SuppressWarnings("unchecked")
+                    List<SongModel> msongs = (List<SongModel>) mDbOperator.sliptPage(pageIndex,
+                            pageSize, orderCol);
+                    message.what = LOADDATA_SUCCESS;
+                    message.obj = msongs;
+                    message.arg1 = msongs.size();
+                    message.arg2 = tag;
+                    handler.sendMessage(message);
+                } catch (Exception e) {
+                    // TODO: handle exception
+                    e.printStackTrace();
+                    handler.sendEmptyMessage(LOADDATA_FAILED);
+                }
+
+            }
+        }).start();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        // super.onBackPressed();
+        onDestroy();
+        overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
+    }
+
+    /**
+     * send play list changed listener
+     * 
+     * @param intent
+     * @param context
+     */
+    public void sendPlayListChanedBroadCast() {
+        SongsWrap songsWrap = new SongsWrap(mSongs);
+        Intent intent = new Intent(Contants.FILTER_ACTION_PLAY_LIST_CHANGED);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("songs", songsWrap);
+        intent.putExtras(bundle);
+        bundle = null;
+        sendBroadcast(intent);
+        intent = null;
     }
 }

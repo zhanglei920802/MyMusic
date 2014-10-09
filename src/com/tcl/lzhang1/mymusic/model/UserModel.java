@@ -22,12 +22,14 @@ package com.tcl.lzhang1.mymusic.model;
 public class UserModel extends BaseModel {
     private String userName = null;
     private String password = null;
+    private int isLogin = 0;
+    private String email = "";
+    private String tel;
 
-    /**
-     * 
-     */
     public UserModel(String userName, String password) {
-        // TODO Auto-generated constructor stub
+        super();
+        this.userName = userName;
+        this.password = password;
     }
 
     /**
@@ -51,6 +53,30 @@ public class UserModel extends BaseModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getIsLogin() {
+        return isLogin;
+    }
+
+    public void setIsLogin(int isLogin) {
+        this.isLogin = isLogin;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
     }
 
     @Override
