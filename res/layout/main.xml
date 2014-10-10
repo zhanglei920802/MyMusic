@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/pageStripSize"
         android:layout_gravity="top"
+        android:background="@android:color/white"
         android:gravity="center_vertical"
         android:textSize="@dimen/default_text_size" />
 
@@ -18,8 +19,7 @@
         android:id="@+id/menu_page"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
-        android:background="@color/main_default_color" />
+        android:layout_weight="1" />
 
     <include layout="@layout/mini_player" />
     <!-- music of playing -->

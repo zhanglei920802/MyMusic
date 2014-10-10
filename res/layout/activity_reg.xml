@@ -362,7 +362,7 @@
                         android:background="@drawable/setting_login_btn_bg"
                         android:text="@string/reg"
                         android:textColor="@color/login_text2_register_color"
-                        android:textSize="15.0sp" />
+                        android:textSize="18.0sp" />
 
                     <!-- reg btn end -->
                 </RelativeLayout>

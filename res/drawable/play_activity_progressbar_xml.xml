@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list
-  xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <item android:id="@android:id/background">
         <nine-patch android:src="@drawable/play_activity_progress_outline" />
     </item>
@@ -14,4 +14,5 @@
             <nine-patch android:src="@drawable/play_activity_progressbar" />
         </clip>
     </item>
+
 </layer-list>
