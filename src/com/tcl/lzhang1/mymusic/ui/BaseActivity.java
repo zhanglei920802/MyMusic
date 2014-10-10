@@ -51,11 +51,11 @@ public abstract class BaseActivity extends Activity implements AcitivityInit {
      * @see android.app.Activity#onDestroy()
      */
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         // TODO Auto-generated method stub
         AppContext.mAppManger.finishActivity(this);
         super.onDestroy();
-       
+
     }
 
     /*

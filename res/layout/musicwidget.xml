@@ -104,7 +104,6 @@
         </LinearLayout>
 
         <ProgressBar
-            android:visibility="gone"
             android:id="@+id/widget_play_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="242.0dip"
@@ -112,7 +111,7 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="5.0dip"
             android:indeterminate="false"
-            android:max="1000"
+            android:max="100"
             android:progress="0"
             android:progressDrawable="@drawable/widgetprogressbar_xml"
             android:secondaryProgress="0" />

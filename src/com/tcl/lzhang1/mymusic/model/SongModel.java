@@ -38,102 +38,12 @@ public class SongModel extends BaseModel {
     private String singer_img = "";
     private String ablum_img = "";
     private String remark = "";
-    private int fav =0;//我喜欢的,1为真,0为假
+    private int fav = 0;// 我喜欢的,1为真,0为假
     
-    private int version; // MPEG版本（2+，2，1，0表示保留）
-    private int layer; // 层级(1,2,3,0表示保留)
-    private int protect; // 是否受CRC校验保护(1为保护，0为未保护）
-    private int frameSize; // 帧长度
-    private int bitrate; // 速率,bps
-    private int simplingRate; // 采样率
-    private int paddingBits; // 填充位数
-    private int channel; // 声道模式（1为立体声，0为单声道）
-
-    private String fileComplete;
-    private boolean hasID3Tag;
-    private String id3Title;
-    private String id3Artist;
-    private String id3Album;
-    private String id3Year;
-    private String id3Comment;
-    private byte id3TrackNumber;
-    private byte id3Genre;
     private long FileLength;
     private int hours;
     private int minutes;
     private int seconds;
-
-    public String getFileComplete() {
-        return fileComplete;
-    }
-
-    public void setFileComplete(String fileComplete) {
-        this.fileComplete = fileComplete;
-    }
-
-    public boolean isHasID3Tag() {
-        return hasID3Tag;
-    }
-
-    public void setHasID3Tag(boolean hasID3Tag) {
-        this.hasID3Tag = hasID3Tag;
-    }
-
-    public String getId3Title() {
-        return id3Title;
-    }
-
-    public void setId3Title(String id3Title) {
-        this.id3Title = id3Title;
-    }
-
-    public String getId3Artist() {
-        return id3Artist;
-    }
-
-    public void setId3Artist(String id3Artist) {
-        this.id3Artist = id3Artist;
-    }
-
-    public String getId3Album() {
-        return id3Album;
-    }
-
-    public void setId3Album(String id3Album) {
-        this.id3Album = id3Album;
-    }
-
-    public String getId3Year() {
-        return id3Year;
-    }
-
-    public void setId3Year(String id3Year) {
-        this.id3Year = id3Year;
-    }
-
-    public String getId3Comment() {
-        return id3Comment;
-    }
-
-    public void setId3Comment(String id3Comment) {
-        this.id3Comment = id3Comment;
-    }
-
-    public byte getId3TrackNumber() {
-        return id3TrackNumber;
-    }
-
-    public void setId3TrackNumber(byte id3TrackNumber) {
-        this.id3TrackNumber = id3TrackNumber;
-    }
-
-    public byte getId3Genre() {
-        return id3Genre;
-    }
-
-    public void setId3Genre(byte id3Genre) {
-        this.id3Genre = id3Genre;
-    }
 
     public long getFileLength() {
         return FileLength;
@@ -157,87 +67,6 @@ public class SongModel extends BaseModel {
 
     public void setSeconds(int seconds) {
         this.seconds = seconds;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public int getLayer() {
-        return layer;
-    }
-
-    public void setLayer(int layer) {
-        this.layer = layer;
-    }
-
-    public int getProtect() {
-        return protect;
-    }
-
-    public void setProtect(int protect) {
-        this.protect = protect;
-    }
-
-    public int getFrameSize() {
-        return frameSize;
-    }
-
-    public void setFrameSize(int frameSize) {
-        this.frameSize = frameSize;
-    }
-
-    public int getBitrate() {
-        return bitrate;
-    }
-
-    public void setBitrate(int bitrate) {
-        this.bitrate = bitrate;
-    }
-
-    public int getSimplingRate() {
-        return simplingRate;
-    }
-
-    public void setSimplingRate(int simplingRate) {
-        this.simplingRate = simplingRate;
-    }
-
-    public int getPaddingBits() {
-        return paddingBits;
-    }
-
-    public void setPaddingBits(int paddingBits) {
-        this.paddingBits = paddingBits;
-    }
-
-    public int getChannel() {
-        return channel;
-    }
-
-    public void setChannel(int channel) {
-        this.channel = channel;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public int CalcFrameSize()
-    {
-        // 计算帧长度的公式
-        this.frameSize = ((this.version == 1 ? 144 : 72) * 1000 * this.bitrate
-                / this.simplingRate) + this.paddingBits;
-
-        return this.frameSize;
     }
 
     /**
@@ -370,22 +199,6 @@ public class SongModel extends BaseModel {
         this.ablum_img = ablum_img;
     }
 
-    @Override
-    public String toString() {
-        return "SongModel [mSongID=" + mSongID + ", mAblumID=" + mAblumID + ", mSingerID="
-                + mSingerID + ", mSingerName=" + mSingerName + ", mAblumName=" + mAblumName
-                + ", mTime=" + mTime + ", mSongName=" + mSongName + ", type=" + type + ", file="
-                + file + ", singer_img=" + singer_img + ", ablum_img=" + ablum_img + ", remark="
-                + remark + ", version=" + version + ", layer=" + layer + ", protect=" + protect
-                + ", frameSize=" + frameSize + ", bitrate=" + bitrate + ", simplingRate="
-                + simplingRate + ", paddingBits=" + paddingBits + ", channel=" + channel
-                + ", fileComplete=" + fileComplete + ", hasID3Tag=" + hasID3Tag + ", id3Title="
-                + id3Title + ", id3Artist=" + id3Artist + ", id3Album=" + id3Album + ", id3Year="
-                + id3Year + ", id3Comment=" + id3Comment + ", id3TrackNumber=" + id3TrackNumber
-                + ", id3Genre=" + id3Genre + ", FileLength=" + FileLength + ", hours=" + hours
-                + ", minutes=" + minutes + ", seconds=" + seconds + "]";
-    }
-
     public int getMinutes() {
         return minutes;
     }
@@ -406,6 +219,30 @@ public class SongModel extends BaseModel {
      */
     public void setFav(int fav) {
         this.fav = fav;
+    }
+
+    /**
+     * @return the remark
+     */
+    public String getRemark() {
+        return remark;
+    }
+
+    /**
+     * @param remark the remark to set
+     */
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        return "SongModel [mSongID=" + mSongID + ", mAblumID=" + mAblumID + ", mSingerID="
+                + mSingerID + ", mSingerName=" + mSingerName + ", mAblumName=" + mAblumName
+                + ", mTime=" + mTime + ", mSongName=" + mSongName + ", type=" + type + ", file="
+                + file + ", singer_img=" + singer_img + ", ablum_img=" + ablum_img + ", remark="
+                + remark + ", fav=" + fav + ", FileLength=" + FileLength + ", hours=" + hours
+                + ", minutes=" + minutes + ", seconds=" + seconds + "]";
     }
 
 }

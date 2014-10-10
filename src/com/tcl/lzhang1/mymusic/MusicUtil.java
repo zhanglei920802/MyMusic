@@ -17,9 +17,6 @@
 package com.tcl.lzhang1.mymusic;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,9 +35,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.tcl.lzhang1.mymusic.exception.ErrorMusicLength;
 import com.tcl.lzhang1.mymusic.exception.SDCardUnMoutedException;
-import com.tcl.lzhang1.mymusic.exception.UnknownTagException;
 import com.tcl.lzhang1.mymusic.model.SongModel;
 
 /**
@@ -197,7 +192,7 @@ public class MusicUtil {
      * @return
      */
     public static SongModel getMusicInfo(File musicFile) {
-        SongModel model;
+        SongModel model = new SongModel();
         // retrun null if music file is null or is or directory
         if (musicFile == null || !musicFile.isFile()) {
             return null;
@@ -205,10 +200,11 @@ public class MusicUtil {
 
         byte[] buf = new byte[128];
         try {
-            // tag_v1
-            RandomAccessFile music = new RandomAccessFile(musicFile, "r");
-            music.seek(music.length() - 128);
-            music.read(buf);// read tag to buffer
+            // // tag_v1
+            // RandomAccessFile music = new RandomAccessFile(musicFile, "r");
+            //
+            // music.seek(music.length() - 128);
+            // music.read(buf);// read tag to buffer
             // // tag_v2
             // byte[] header = new byte[10];
             // music.seek(0);
@@ -223,26 +219,85 @@ public class MusicUtil {
             // music.read(FrameHeader, 0, 4);
             // model = getTimeInfo(FrameHeader, ID3V2_frame_size, musicFile);
             // } else {
-            byte[] FrameHeader = new byte[4];
-            music.read(FrameHeader, 0, 4);
-            model = getTimeInfo(FrameHeader, 0, musicFile);
+            // byte[] FrameHeader = new byte[4];
+            // music.read(FrameHeader, 0, 4);
+            // model = getTimeInfo(FrameHeader, 0, musicFile);
+            // }
+
+            // music.close();// close file
+            // check length
+            // if (buf.length != 128) {
+            // throw new
+            // ErrorMusicLength(String.format("error music info length, length is:%i",
+            // buf.length));
+            // }
+
+            //
+            // if (!"TAG".equalsIgnoreCase(new String(buf, 0, 3))) {
+            // throw new UnknownTagException("unknown tag exception");
+            // }
+            String songName = null;
+            // try {
+            // songName = new String(buf, 3, 30, "gbk").trim();
+            // } catch (UnsupportedEncodingException e) {
+            // // TODO: handle exception
+            // e.printStackTrace();
+            // songName = new String(buf, 3, 30).trim();
+            // }
+            String singerName = "";
+            // try {
+            // singerName = new String(buf, 33, 30, "gbk").trim();
+            // } catch (UnsupportedEncodingException e) {
+            // // TODO: handle exception
+            // singerName = new String(buf, 33, 30).trim();
+            // }
+            String ablum = "";
+            // try {
+            // ablum = new String(buf, 63, 30, "gbk").trim();
+            // } catch (UnsupportedEncodingException e) {
+            // // TODO: handle exception
+            // ablum = new String(buf, 63, 30).trim();
+            // }
+            String year = "";
+            // try {
+            // year = new String(buf, 93, 4, "gbk").trim();
+            // } catch (UnsupportedEncodingException e) {
+            // year = new String(buf, 93, 4).trim();
+            // // TODO: handle exception
+            // }
+
+            String reamrk = "";
+            // try {
+            // reamrk = new String(buf, 97, 28, "gbk").trim();
+            // } catch (UnsupportedEncodingException e) {
+            // // TODO: handle exception
+            // reamrk = new String(buf, 97, 28).trim();
             // }
             // get the time len
             try {
                 ContentResolver contentResolver = sContext.getContentResolver();
                 Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        new String[] {
-                            MediaStore.Audio.AudioColumns.DURATION
-                        }, "_data=?", new String[] {
+                        null, "_data=?", new String[] {
                             musicFile.getAbsolutePath()
                         }, null);
                 cursor.moveToFirst();
-                long secs = cursor.getLong(0);
+                long secs = cursor.getLong(cursor
+                        .getColumnIndex(MediaStore.Audio.AudioColumns.DURATION));
                 model.setTime(secs);
                 secs /= 1000;
                 model.setHours((int) secs / 3600);
                 model.setMinutes(((int) secs % 3600) / 60);
                 model.setSeconds(((int) secs % 3600) % 60);
+                if (TextUtils.isEmpty(songName)) {
+                    songName = cursor.getString(cursor
+                            .getColumnIndex(MediaStore.Audio.AudioColumns.TITLE));
+                    singerName = cursor.getString(cursor
+                            .getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST));
+                    ablum = cursor.getString(cursor
+                            .getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM));
+                    year = cursor.getString(cursor
+                            .getColumnIndex(MediaStore.Audio.AudioColumns.YEAR));
+                }
                 cursor.close();
             } catch (Exception e) {
                 // TODO: handle exception
@@ -250,46 +305,15 @@ public class MusicUtil {
                 e.printStackTrace();
             }
 
-            music.close();// close file
-            // check length
-            if (buf.length != 128) {
-                throw new ErrorMusicLength(String.format("error music info length, length is:%i",
-                        buf.length));
-            }
-
-            //
-            if (!"TAG".equalsIgnoreCase(new String(buf, 0, 3))) {
-                throw new UnknownTagException("unknown tag exception");
-            }
-
-            String songName = new String(buf, 3, 30, "gb2312").trim();
-            String singerName = new String(buf, 33, 30, "gb2312").trim();
-            String ablum = new String(buf, 63, 30, "gb2312").trim();
-            String year = new String(buf, 93, 4, "gb2312").trim();
-            String reamrk = new String(buf, 97, 28, "gb2312").trim();
-
             model.setSongName(songName);
             model.setSingerName(singerName);
             model.setAblumName(ablum);
             model.setFile(musicFile.getAbsolutePath());
-            model.setRemark(reamrk);
+            model.setRemark("");
 
-            music.close();// close file
             mSongs.add(model);
 
             return model;
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ErrorMusicLength e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (UnknownTagException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
@@ -326,186 +350,370 @@ public class MusicUtil {
         return new Random().nextInt(seed);
     }
 
-    public static SongModel getTimeInfo(byte[] FrameHeader, int ID3V2_frame_size, File musicFile)
-    {
-        double playFramesPerSec = 38.461538461538461538461538461538;
-        SongModel model = new SongModel();
-        model.setFileLength(musicFile.length());
-        getFrameInfo(model, FrameHeader);
-        int frameSize = model.CalcFrameSize();
+    // public static SongModel getTimeInfo(byte[] FrameHeader, int
+    // ID3V2_frame_size, File musicFile)
+    // {
+    // double playFramesPerSec = 38.461538461538461538461538461538;
+    // SongModel model = new SongModel();
+    // model.setFileLength(musicFile.length());
+    // getFrameInfo(model, FrameHeader);
+    // int frameSize = model.CalcFrameSize();
+    //
+    // long frameCount = (model.getFileLength() - ID3V2_frame_size - 128) /
+    // frameSize;
+    //
+    // double secs = (double) frameCount / playFramesPerSec;
+    // model.setHours((int) secs / 3600);
+    // model.setMinutes(((int) secs % 3600) / 60);
+    // model.setSeconds(((int) secs % 3600) % 60);
+    // return model;
+    // }
+    //
+    // /**
+    // * @param model
+    // * @param FrameHeader
+    // */
+    // public static void getFrameInfo(SongModel model, byte[] FrameHeader)
+    // {
+    // int[][] bitrateArray = new int[][] {
+    // {
+    // 0, 0, 0, 0, 0, 0
+    // },
+    // {
+    // 32, 32, 32, 32, 32, 8
+    // },
+    // {
+    // 64, 48, 40, 64, 48, 16
+    // },
+    // {
+    // 64, 48, 40, 64, 48, 16
+    // },
+    // {
+    // 96, 56, 48, 96, 56, 24
+    // },
+    // {
+    // 128, 64, 56, 128, 64, 32
+    // },
+    // {
+    // 160, 80, 64, 160, 80, 64
+    // },
+    // {
+    // 192, 96, 80, 192, 96, 80
+    // },
+    // {
+    // 224, 112, 96, 224, 112, 52
+    // },
+    // {
+    // 256, 128, 112, 256, 128, 64
+    // },
+    // {
+    // 288, 160, 128, 288, 160, 128
+    // },
+    // {
+    // 320, 192, 160, 320, 192, 160
+    // },
+    // {
+    // 352, 320, 192, 352, 320, 112
+    // },
+    // {
+    // 384, 256, 224, 384, 256, 128
+    // },
+    // {
+    // 448, 384, 320, 448, 384, 320
+    // },
+    // {
+    // 0, 0, 0, 0, 0, 0
+    // }
+    // };
+    //
+    // int[][] simpArray = new int[][] {
+    // {
+    // 44100, 22050, 11025
+    // },
+    // {
+    // 48000, 24000, 12000
+    // },
+    // {
+    // 32000, 16000, 8000
+    // },
+    // {
+    // 0, 0, 0
+    // }
+    // };
+    // int version = 0;
+    // switch ((FrameHeader[1] & 0x18) >> 3)
+    // {
+    // case 3: // MPEG version 1
+    // version = 1;
+    // break;
+    // case 2: // MPEG version 2
+    // version = 2;
+    // break;
+    // case 0: // MPEG version 2.5
+    // version = 3;
+    // break;
+    // case 1: // Reserve
+    // version = 0;
+    // break;
+    // }
+    // model.setVersion(version);
+    // int layer = 0;
+    // switch ((FrameHeader[1] & 0x6) >> 1)
+    // {
+    // case 1: // Layer 3
+    // layer = 3;
+    // break;
+    // case 2: // Layer 2
+    // layer = 2;
+    // break;
+    // case 3: // Layer 1
+    // layer = 1;
+    // break;
+    // case 0: // reserve
+    // layer = 0;
+    // break;
+    // }
+    // model.setLayer(layer);
+    // model.setProtect(FrameHeader[1] & 0x1);
+    //
+    // int j = ((FrameHeader[2] & 0xf0) >> 4) + 1;
+    // int i = 0; public static SongModel getTimeInfo(byte[] FrameHeader, int
+    // ID3V2_frame_size, File musicFile)
+    // {
+    // double playFramesPerSec = 38.461538461538461538461538461538;
+    // SongModel model = new SongModel();
+    // model.setFileLength(musicFile.length());
+    // getFrameInfo(model, FrameHeader);
+    // int frameSize = model.CalcFrameSize();
+    //
+    // long frameCount = (model.getFileLength() - ID3V2_frame_size - 128) /
+    // frameSize;
+    //
+    // double secs = (double) frameCount / playFramesPerSec;
+    // model.setHours((int) secs / 3600);
+    // model.setMinutes(((int) secs % 3600) / 60);
+    // model.setSeconds(((int) secs % 3600) % 60);
+    // return model;
+    // }
+    //
+    // /**
+    // * @param model
+    // * @param FrameHeader
+    // */
+    // public static void getFrameInfo(SongModel model, byte[] FrameHeader)
+    // {
+    // int[][] bitrateArray = new int[][] {
+    // {
+    // 0, 0, 0, 0, 0, 0
+    // },
+    // {
+    // 32, 32, 32, 32, 32, 8
+    // },
+    // {
+    // 64, 48, 40, 64, 48, 16
+    // },
+    // {
+    // 64, 48, 40, 64, 48, 16
+    // },
+    // {
+    // 96, 56, 48, 96, 56, 24
+    // },
+    // {
+    // 128, 64, 56, 128, 64, 32
+    // },
+    // {
+    // 160, 80, 64, 160, 80, 64
+    // },
+    // {
+    // 192, 96, 80, 192, 96, 80
+    // },
+    // {
+    // 224, 112, 96, 224, 112, 52
+    // },
+    // {
+    // 256, 128, 112, 256, 128, 64
+    // },
+    // {
+    // 288, 160, 128, 288, 160, 128
+    // },
+    // {
+    // 320, 192, 160, 320, 192, 160
+    // },
+    // {
+    // 352, 320, 192, 352, 320, 112
+    // },
+    // {
+    // 384, 256, 224, 384, 256, 128
+    // },
+    // {
+    // 448, 384, 320, 448, 384, 320
+    // },
+    // {
+    // 0, 0, 0, 0, 0, 0
+    // }
+    // };
+    //
+    // int[][] simpArray = new int[][] {
+    // {
+    // 44100, 22050, 11025
+    // },
+    // {
+    // 48000, 24000, 12000
+    // },
+    // {
+    // 32000, 16000, 8000
+    // },
+    // {
+    // 0, 0, 0
+    // }
+    // };
+    // int version = 0;
+    // switch ((FrameHeader[1] & 0x18) >> 3)
+    // {
+    // case 3: // MPEG version 1
+    // version = 1;
+    // break;
+    // case 2: // MPEG version 2
+    // version = 2;
+    // break;
+    // case 0: // MPEG version 2.5
+    // version = 3;
+    // break;
+    // case 1: // Reserve
+    // version = 0;
+    // break;
+    // }
+    // model.setVersion(version);
+    // int layer = 0;
+    // switch ((FrameHeader[1] & 0x6) >> 1)
+    // {
+    // case 1: // Layer 3
+    // layer = 3;
+    // break;
+    // case 2: // Layer 2
+    // layer = 2;
+    // break;
+    // case 3: // Layer 1
+    // layer = 1;
+    // break;
+    // case 0: // reserve
+    // layer = 0;
+    // break;
+    // }
+    // model.setLayer(layer);
+    // model.setProtect(FrameHeader[1] & 0x1);
+    //
+    // int j = ((FrameHeader[2] & 0xf0) >> 4) + 1;
+    // int i = 0;
+    // switch (version)
+    // {
+    // case 1:
+    // switch (layer)
+    // {
+    // case 1:
+    // i = 0;
+    // break;
+    // case 2:
+    // i = 1;
+    // break;
+    // case 3:
+    // i = 2;
+    // break;
+    // }
+    // break;
+    // case 2:
+    // case 3:
+    // switch (layer)
+    // {
+    // case 1:
+    // i = 3;
+    // break;
+    // case 2:
+    // i = 4;
+    // break;
+    // case 3:
+    // i = 5;
+    // break;
+    // }
+    // break;
+    // }
+    // model.setBitrate(bitrateArray[j][i]);
+    //
+    // j = ((FrameHeader[2] & 0xc) >> 2);
+    // switch (version)
+    // {
+    // case 1:
+    // i = 0;
+    // break;
+    // case 2:
+    // i = 1;
+    // break;
+    // case 3:
+    // i = 2;
+    // break;
+    // }
+    // model.setSimplingRate(simpArray[j][i]);
+    //
+    // model.setPaddingBits((FrameHeader[2] & 0x2) >> 1);
+    //
+    // model.setChannel(((FrameHeader[3] & 0xc0) >> 6) < 3 ? 1 : 0);
+    //
+    // }
 
-        long frameCount = (model.getFileLength() - ID3V2_frame_size - 128) / frameSize;
-
-        double secs = (double) frameCount / playFramesPerSec;
-        model.setHours((int) secs / 3600);
-        model.setMinutes(((int) secs % 3600) / 60);
-        model.setSeconds(((int) secs % 3600) % 60);
-        return model;
-    }
-
-    /**
-     * @param model
-     * @param FrameHeader
-     */
-    public static void getFrameInfo(SongModel model, byte[] FrameHeader)
-    {
-        int[][] bitrateArray = new int[][] {
-                {
-                        0, 0, 0, 0, 0, 0
-                },
-                {
-                        32, 32, 32, 32, 32, 8
-                },
-                {
-                        64, 48, 40, 64, 48, 16
-                },
-                {
-                        64, 48, 40, 64, 48, 16
-                },
-                {
-                        96, 56, 48, 96, 56, 24
-                },
-                {
-                        128, 64, 56, 128, 64, 32
-                },
-                {
-                        160, 80, 64, 160, 80, 64
-                },
-                {
-                        192, 96, 80, 192, 96, 80
-                },
-                {
-                        224, 112, 96, 224, 112, 52
-                },
-                {
-                        256, 128, 112, 256, 128, 64
-                },
-                {
-                        288, 160, 128, 288, 160, 128
-                },
-                {
-                        320, 192, 160, 320, 192, 160
-                },
-                {
-                        352, 320, 192, 352, 320, 112
-                },
-                {
-                        384, 256, 224, 384, 256, 128
-                },
-                {
-                        448, 384, 320, 448, 384, 320
-                },
-                {
-                        0, 0, 0, 0, 0, 0
-                }
-        };
-
-        int[][] simpArray = new int[][] {
-                {
-                        44100, 22050, 11025
-                },
-                {
-                        48000, 24000, 12000
-                },
-                {
-                        32000, 16000, 8000
-                },
-                {
-                        0, 0, 0
-                }
-        };
-        int version = 0;
-        switch ((FrameHeader[1] & 0x18) >> 3)
-        {
-            case 3: // MPEG version 1
-                version = 1;
-                break;
-            case 2: // MPEG version 2
-                version = 2;
-                break;
-            case 0: // MPEG version 2.5
-                version = 3;
-                break;
-            case 1: // Reserve
-                version = 0;
-                break;
-        }
-        model.setVersion(version);
-        int layer = 0;
-        switch ((FrameHeader[1] & 0x6) >> 1)
-        {
-            case 1: // Layer 3
-                layer = 3;
-                break;
-            case 2: // Layer 2
-                layer = 2;
-                break;
-            case 3: // Layer 1
-                layer = 1;
-                break;
-            case 0: // reserve
-                layer = 0;
-                break;
-        }
-        model.setLayer(layer);
-        model.setProtect(FrameHeader[1] & 0x1);
-
-        int j = ((FrameHeader[2] & 0xf0) >> 4) + 1;
-        int i = 0;
-        switch (version)
-        {
-            case 1:
-                switch (layer)
-                {
-                    case 1:
-                        i = 0;
-                        break;
-                    case 2:
-                        i = 1;
-                        break;
-                    case 3:
-                        i = 2;
-                        break;
-                }
-                break;
-            case 2:
-            case 3:
-                switch (layer)
-                {
-                    case 1:
-                        i = 3;
-                        break;
-                    case 2:
-                        i = 4;
-                        break;
-                    case 3:
-                        i = 5;
-                        break;
-                }
-                break;
-        }
-        model.setBitrate(bitrateArray[j][i]);
-
-        j = ((FrameHeader[2] & 0xc) >> 2);
-        switch (version)
-        {
-            case 1:
-                i = 0;
-                break;
-            case 2:
-                i = 1;
-                break;
-            case 3:
-                i = 2;
-                break;
-        }
-        model.setSimplingRate(simpArray[j][i]);
-
-        model.setPaddingBits((FrameHeader[2] & 0x2) >> 1);
-
-        model.setChannel(((FrameHeader[3] & 0xc0) >> 6) < 3 ? 1 : 0);
-
-    }
+    // switch (version)
+    // {
+    // case 1:
+    // switch (layer)
+    // {
+    // case 1:
+    // i = 0;
+    // break;
+    // case 2:
+    // i = 1;
+    // break;
+    // case 3:
+    // i = 2;
+    // break;
+    // }
+    // break;
+    // case 2:
+    // case 3:
+    // switch (layer)
+    // {
+    // case 1:
+    // i = 3;
+    // break;
+    // case 2:
+    // i = 4;
+    // break;
+    // case 3:
+    // i = 5;
+    // break;
+    // }
+    // break;
+    // }
+    // model.setBitrate(bitrateArray[j][i]);
+    //
+    // j = ((FrameHeader[2] & 0xc) >> 2);
+    // switch (version)
+    // {
+    // case 1:
+    // i = 0;
+    // break;
+    // case 2:
+    // i = 1;
+    // break;
+    // case 3:
+    // i = 2;
+    // break;
+    // }
+    // model.setSimplingRate(simpArray[j][i]);
+    //
+    // model.setPaddingBits((FrameHeader[2] & 0x2) >> 1);
+    //
+    // model.setChannel(((FrameHeader[3] & 0xc0) >> 6) < 3 ? 1 : 0);
+    //
+    // }
 
     /**
      * format time
@@ -549,7 +757,7 @@ public class MusicUtil {
      * @return
      */
     public static boolean checkServiceIsRunning(Context context, String serviceName) {
-        Log.d(LOG_TAG, "will check service :" + serviceName);
+        //Log.d(LOG_TAG, "will check service :" + serviceName);
         ActivityManager mActivityManager = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> mRunningServiceInfos = mActivityManager

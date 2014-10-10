@@ -39,6 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:ellipsize="end"
+                android:maxLength="8"
                 android:singleLine="true"
                 android:text="@string/cur_song"
                 android:textColor="@color/mini_player_song_name_color"
@@ -89,6 +90,18 @@
                 android:background="@drawable/miniplayer_next_btn_xml"
                 android:scaleType="centerInside" />
         </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/playSeekBar"
+            android:layout_width="fill_parent"
+            android:layout_height="2.0dip"
+            android:layout_below="@id/mini_player_action_rl"
+            android:maxHeight="1.0dip"
+            android:layout_marginTop="4dip"
+            android:minHeight="1.0dip"
+            android:progressDrawable="@drawable/mini_progress_bar"
+            android:thumb="@drawable/a_empty"
+            android:thumbOffset="0.0dip" />
     </RelativeLayout>
 
 </RelativeLayout>

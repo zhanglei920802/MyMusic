@@ -141,6 +141,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
      */
     public static final int LOADDATA_FAILED = 7;
 
+    private boolean isUnregister = false;
     /**
      * the hander
      */
@@ -386,9 +387,15 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
      * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onDestroy()
      */
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         // TODO Auto-generated method stub
-        unregisterReceiver(mFavBroadcastReceiver);
+        System.out.println("MusicListAcitivity.onDestroy()");
+        if (!isUnregister) {
+            Log.d(TAG, "un register");
+            unregisterReceiver(mFavBroadcastReceiver);
+            isUnregister = true;
+        }
+
         super.onDestroy();
     }
 
@@ -441,6 +448,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             mMusicList.setPullLoadEnable(true);
             mMusicList.setPullRefreshEnable(true);
             mMusicList.setXListViewListener(this);
+            mMusicList.setTag(UIHelper.LISTVIEW_DATA_MORE);
         } else {
             mMusicList.setPullLoadEnable(false);
             mMusicList.setPullRefreshEnable(false);
@@ -517,9 +525,15 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         Bundle bundle;
         switch (arg0.getId()) {
             case R.id.music_list: {
+                if (null == mSongs || mSongs.isEmpty()) {
+                    return;
+                }
                 bundle = new Bundle();
                 bundle.putSerializable("songs", new SongsWrap(mSongs));
-                bundle.putInt("index", arg2);
+                if (curStartMode == START_MODE_LOCAL)
+                    bundle.putInt("index", arg2 - 1);
+                else
+                    bundle.putInt("index", arg2 - 1);
                 bundle.putInt("time", 0);
                 UIHelper.showMusicPlayActivity(this, bundle);
                 bundle = null;
@@ -551,8 +565,12 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        showMusicListDialog(((SongModel) parent.getAdapter().getItem(position)).getFile(),
-                parent.getPositionForView(view));
+        if (curStartMode == START_MODE_LOCAL)
+            showMusicListDialog(mSongs.get(position - 1).getFile(),
+                    position - 1);
+        else
+            showMusicListDialog(mSongs.get(position - 1).getFile(),
+                    position - 1);
         return true;
     }
 
@@ -586,7 +604,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                                             if (file.isFile()) {// delete file
                                                 file.delete();
                                             }
-                                            // remove data from datasource
+                                            // remove data from data source
                                             mSongs.remove(position);
 
                                             // send message

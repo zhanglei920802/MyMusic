@@ -24,7 +24,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources.Theme;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -374,6 +373,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             }
         }
     };
+    private boolean isUnregister = false;
 
     @Override
     public void initView() {
@@ -388,7 +388,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    finish();
+                    onDestroy();
                 }
             });
             TAG = getPackageName() + "/" + MusicPlayActivity.class.getSimpleName();
@@ -419,6 +419,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                         Log.d(TAG, "onStopTrackingTouch");
                     pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
                     int playedTime = (int) (curSong.getTime() * (mSeekValue / 100f));
+                    overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
                     playedTime /= 1000;
 
                     play_time.setText(MusicUtil.formatString(((int) playedTime % 3600) / 60,
@@ -526,7 +527,8 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                         isPlaying = true;
                         isInit = false;
                     }
-
+                    overridePendingTransition(R.anim.no_horizontal_translation,
+                            R.anim.push_right_out);
                 } else {
                     intent = new Intent(Contants.FILTER_PLAY_ACTION);
                     intent.putExtra("action", PlayAction.ACTION_PAUSE);
@@ -603,6 +605,8 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
 
     /**
      * set current play mode
+     * overridePendingTransition(R.anim.no_horizontal_translation,
+     * R.anim.push_right_out);
      * 
      * @param playMode value to be set
      */
@@ -636,6 +640,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         isInit = false;
         if (null == timer) {
             timer = new Timer();
+            overridePendingTransition(R.anim.no_horizontal_translation, R.anim.push_right_out);
         }
         // timer.schedule(mTimerTask, 0, 1000);
     }
@@ -670,11 +675,18 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         // TODO Auto-generated method stub
-        unregisterReceiver(mMusicPlaySateChangedReciver);
-        unregisterReceiver(mProgressedReceiver);
+
+        if (!isUnregister) {
+            Log.d(TAG, "un register");
+            unregisterReceiver(mMusicPlaySateChangedReciver);
+            unregisterReceiver(mProgressedReceiver);
+            isUnregister = true;
+        }
+
         super.onDestroy();
+        overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
     }
 
     /**
@@ -730,4 +742,16 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         sendBroadcast(intent);
         intent = null;
     }
+
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        // super.onBackPressed();
+        onDestroy();
+    }
+
 }

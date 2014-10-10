@@ -82,9 +82,29 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
         scan_music.setOnClickListener(this);
         findViewById(R.id.more).setVisibility(View.GONE);
         MusicUtil.setMusicListener(this);
+        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                onDestroy();
+            }
+        });
 
     }
 
+    /*
+     * (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        // super.onBackPressed();
+        onDestroy();
+    }
+    
+    
     @Override
     public void initViewData() {
         // TODO Auto-generated method stub
@@ -186,4 +206,14 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
         }).start();
     }
 
+    /* (non-Javadoc)
+     * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onDestroy()
+     */
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        
+        super.onDestroy();
+        overridePendingTransition(R.anim.no_horizontal_translation, R.anim.push_right_out);
+    }
 }

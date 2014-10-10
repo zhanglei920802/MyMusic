@@ -95,13 +95,19 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
     private int tabTextSize = 12;
     private int tabTextColor = 0xFF666666;
     private Typeface tabTypeface = null;
-    private int tabTypefaceStyle = Typeface.BOLD;
+    private int tabTypefaceStyle = Typeface.NORMAL;
 
     private int lastScrollX = 0;
 
     private int tabBackgroundResId = R.drawable.background_tab;
 
     private Locale locale;
+
+    private int mCurrentSelected;
+
+    private int mTextSelectColor;
+
+    private int mTextUnselectdColor;
 
     public PagerSlidingTabStrip(Context context) {
         this(context, null);
@@ -292,11 +298,24 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                 TextView tab = (TextView) v;
                 tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize);
                 tab.setTypeface(tabTypeface, tabTypefaceStyle);
-                tab.setTextColor(tabTextColor);
+                tab.setBackgroundResource(R.drawable.selector_listview_xml);
+                if (mCurrentSelected == i) {
+                    if (mTextSelectColor == 0) {
+                        tab.setTextColor(indicatorColor);
+                    } else {
+                        tab.setTextColor(mTextSelectColor);
+                    }
+                } else {
+                    if (mTextSelectColor == 0) {
+                        tab.setTextColor(tabTextColor);
+                    } else {
+                        tab.setTextColor(mTextUnselectdColor);
+                    }
+                }
 
                 // setAllCaps() is only available from API 14, so the upper case
                 // is made manually if we are on a
-                // pre-ICS-build
+                // pre-ICS-buildd
                 if (textAllCaps) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                         tab.setAllCaps(true);
@@ -346,7 +365,8 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         View currentTab = tabsContainer.getChildAt(currentPosition);
         float lineLeft = currentTab.getLeft();
         float lineRight = currentTab.getRight();
-        LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) currentTab.getLayoutParams();
+        LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) currentTab
+                .getLayoutParams();
         params.weight = 1;
         currentTab.setLayoutParams(params);
         // if there is an offset, start interpolating left and right coordinates
@@ -368,16 +388,17 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         // draw underline
 
         rectPaint.setColor(underlineColor);
-        canvas.drawRect(0, height - underlineHeight, tabsContainer.getWidth(), height, rectPaint);
+        // canvas.drawRect(0, height - underlineHeight,
+        // tabsContainer.getWidth(), height, rectPaint);
 
         // draw divider
 
-        dividerPaint.setColor(dividerColor);
-        for (int i = 0; i < tabCount - 1; i++) {
-            View tab = tabsContainer.getChildAt(i);
-            canvas.drawLine(tab.getRight(), dividerPadding, tab.getRight(),
-                    height - dividerPadding, dividerPaint);
-        }
+        // dividerPaint.setColor(dividerColor);
+        // for (int i = 0; i < tabCount - 1; i++) {
+        // View tab = tabsContainer.getChildAt(i);
+        // canvas.drawLine(tab.getRight(), dividerPadding, tab.getRight(),
+        // height - dividerPadding, dividerPaint);
+        // }
     }
 
     private class PageListener implements OnPageChangeListener {
@@ -414,8 +435,19 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             if (delegatePageListener != null) {
                 delegatePageListener.onPageSelected(position);
             }
+
+            mCurrentSelected = position;
+            updateTabStyles();
         }
 
+    }
+
+    public void setTextSelectedColorRes(int res) {
+        this.mTextSelectColor = res;
+    }
+
+    public void setTextUnselectedColorRes(int res) {
+        this.mTextUnselectdColor = res;
     }
 
     public void setIndicatorColor(int indicatorColor) {

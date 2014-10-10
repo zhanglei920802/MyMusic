@@ -83,8 +83,16 @@ public class MusicAppWidget extends AppWidgetProvider {
      */
     private RemoteViews remoteViews;
     /**
-     * received the mode,when music playing state is changed,music play service
-     * will send broadcast
+     * rece <ProgressBar android:id="@+id/widget_play_progress"
+     * style="?android:attr/progressBarStyleHorizontal"
+     * android:layout_width="242.0dip" android:layout_height="2.0dip"
+     * android:layout_alignParentBottom="true"
+     * android:layout_marginBottom="5.0dip" android:indeterminate="false"
+     * android:max="1000" android:progress="0"
+     * android:progressDrawable="@drawable/widgetprogressbar_xml"
+     * android:secondaryProgress="0" android:visibility="visible" />ived the
+     * mode,when music playing state is changed,music play service will send
+     * broadcast
      */
     private SongModel mSongModel = null;
     /**
@@ -102,20 +110,33 @@ public class MusicAppWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(LOG_TAG, "appwidget receive broadcast..." + intent.getAction());
+
         isRunning = MusicUtil.checkServiceIsRunning(context,
                 MusicPlayService.class.getName());
-        if (intent != null && Contants.FILTER_PLAY_STATE_CHANGED.equals(intent.getAction())) {
+        if (intent != null
+                && (Contants.FILTER_PLAY_STATE_CHANGED.equals(intent.getAction()) || Contants.FILTER_ACTION_SEEK_UPDATED
+                        .equals(intent.getAction()))) {
+            Log.d(LOG_TAG, "appwidget receive broadcast..." + intent.getAction());
             // instance layout
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.musicwidget);
             mSongModel = (SongModel) intent.getSerializableExtra("model");
-            if (null == mSongModel) {
-                remoteViews = null;
-                return;
-            }
+
             // change the title
-            remoteViews.setTextViewText(R.id.title,
-                    mSongModel.getSongName() + "-" + mSongModel.getSingerName());
+            if (null != mSongModel) {
+                remoteViews.setTextViewText(R.id.title,
+                        mSongModel.getSongName() + "-" + mSongModel.getSingerName());
+
+            }
+
+            if (Contants.FILTER_ACTION_SEEK_UPDATED
+                    .equals(intent.getAction())) {
+                int progress = (int) (intent.getFloatExtra("percent", 0.0f) * 100);
+                Log.d(LOG_TAG, "progress:" + progress);
+                mSongModel = (SongModel) intent.getSerializableExtra("song");
+                remoteViews.setProgressBar(R.id.widget_play_progress, 100, progress, false);
+                remoteViews.setTextViewText(R.id.title,
+                        mSongModel.getSongName() + "-" + mSongModel.getSingerName());
+            }
 
             // change button state,according to the state value
             int state = intent.getIntExtra("state", PlayState.PLAY_NEW);
@@ -156,7 +177,7 @@ public class MusicAppWidget extends AppWidgetProvider {
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Log.d(LOG_TAG, "on update,appid'len:" + appWidgetIds.length);
+        // Log.d(LOG_TAG, "on update,appid'len:" + appWidgetIds.length);
         // judge appids
         if (null == appWidgetIds || appWidgetIds.length == 0) {
             return;
@@ -192,7 +213,7 @@ public class MusicAppWidget extends AppWidgetProvider {
                             intent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
                 } else {
-                    
+
                     intent = new Intent(context, MusicPlayService.class);
                     int playIndex = mAppContext.getPlayIndex();
                     intent.putExtra("index", playIndex == (mAppContext.getSongs().size() - 1) ? 0
@@ -227,7 +248,7 @@ public class MusicAppWidget extends AppWidgetProvider {
                             PendingIntent.FLAG_UPDATE_CURRENT);
                 } else
                 {
-                    
+
                     intent = new Intent(context, MusicPlayService.class);
                     int playIndex = mAppContext.getPlayIndex();
                     intent.putExtra("index", playIndex > 1 ? playIndex : 0);
@@ -247,7 +268,7 @@ public class MusicAppWidget extends AppWidgetProvider {
                 remoteViews.setOnClickPendingIntent(R.id.control_previous, pendingIntent);
             }
             // play pre end
-
+            // Log.d(LOG_TAG, "global songs:" + mAppContext.getSongs());
             // pause | play begin
             {
                 intent = new Intent();
@@ -289,17 +310,17 @@ public class MusicAppWidget extends AppWidgetProvider {
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
-        Log.d(LOG_TAG, "on onDeleted,appid'len:" + appWidgetIds.length);
+        // Log.d(LOG_TAG, "on onDeleted,appid'len:" + appWidgetIds.length);
     }
 
     @Override
     public void onEnabled(Context context) {
-        Log.d(LOG_TAG, "on onEnabled,appid'len:");
+        // Log.d(LOG_TAG, "on onEnabled,appid'len:");
     }
 
     @Override
     public void onDisabled(Context context) {
-        Log.d(LOG_TAG, "on onDisabled,appid'len:");
+        // Log.d(LOG_TAG, "on onDisabled,appid'len:");
     }
 
 }

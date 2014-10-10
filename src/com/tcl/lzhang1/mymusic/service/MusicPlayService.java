@@ -131,7 +131,7 @@ public class MusicPlayService extends Service {
                 case 1:
                     // Log.d(LOG_TAG, "thread ID:" +
                     // Thread.currentThread().getId());
-                    Log.d(LOG_TAG, "min=" + min + " sec=" + sec + "");
+                    // Log.d(LOG_TAG, "min=" + min + " sec=" + sec + "");
                     // send broadcast
                     if (mMusicMediaPlayer != null && mMusicMediaPlayer.isPlaying()) {
                         // sec++;
@@ -178,7 +178,9 @@ public class MusicPlayService extends Service {
                             timeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
                             Log.d(LOG_TAG, "request pause,cur pos is:" + timeToPlay);
                             mMusicMediaPlayer.pause();
-                            sendBroadCast(mSongs.get(play_index), PlayState.PLAY_PAUSED, 0, null);
+                            sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
+                                    PlayState.PLAY_PAUSED, 0,
+                                    null);
                         }
                         break;
                     case PlayAction.ACTION_NEW:
@@ -198,7 +200,9 @@ public class MusicPlayService extends Service {
                             Log.d(LOG_TAG, "recever broad cast to start play");
                             Log.d(LOG_TAG, "pause=start:isplaying:" + mMusicMediaPlayer.isPlaying());
                             mMusicMediaPlayer.start();
-                            sendBroadCast(mSongs.get(play_index), PlayState.PLAY_RESUMED, 0, null);
+                            sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
+                                    PlayState.PLAY_RESUMED, 0,
+                                    null);
                             // if (mMusicMediaPlayer.isPlaying())
                             // {
                             // Log.d(LOG_TAG, "pause=start:isplaying:" + true);
@@ -216,7 +220,8 @@ public class MusicPlayService extends Service {
                     case PlayAction.ACTION_STOP:
                         if (null != mMusicMediaPlayer) {
                             mMusicMediaPlayer.stop();
-                            sendBroadCast(null, PlayState.PLAY_STOPED, 0, "play stoped");
+                            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_STOPED,
+                                    0, "play stoped");
                         }
                         break;
                     case PlayAction.ACTION_PRE:
@@ -372,13 +377,17 @@ public class MusicPlayService extends Service {
                                 timeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
                                 Log.d(LOG_TAG, "request pause,cur pos is:" + timeToPlay);
                                 mMusicMediaPlayer.pause();
-                                sendBroadCast(mSongs.get(play_index), PlayState.PLAY_PAUSED, 0,
+                                sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
+                                        PlayState.PLAY_PAUSED,
+                                        0,
                                         null);
                             } else {
 
                                 Log.d(LOG_TAG, "recever app widget's broad cast to start play");
                                 mMusicMediaPlayer.start();
-                                sendBroadCast(mSongs.get(play_index), PlayState.PLAY_RESUMED, 0,
+                                sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
+                                        PlayState.PLAY_RESUMED,
+                                        0,
                                         null);
 
                             }
@@ -486,6 +495,8 @@ public class MusicPlayService extends Service {
          * music playing was resumed
          */
         public static final int PLAY_RESUMED = 7;
+
+        public static final int NO_SONGS = 8;
     }
 
     // plug & unplug headset
@@ -504,7 +515,7 @@ public class MusicPlayService extends Service {
                     mMusicMediaPlayer.pause();
                     // send paused broadcast
                     Log.d(LOG_TAG, "music playing was paused,send broadcast to UI thread......");
-                    sendBroadCast(null, PlayState.PLAY_PAUSED, 0, null);
+                    sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_PAUSED, 0, null);
                 }
             }
         }
@@ -529,14 +540,17 @@ public class MusicPlayService extends Service {
                         Log.d(LOG_TAG, "receiver state :CALL_STATE_IDLE");
                         if (mMusicMediaPlayer != null) {
                             mMusicMediaPlayer.start();
-                            sendBroadCast(mSongs.get(play_index), PlayState.PLAY_RESUMED, 0, null);
+                            sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
+                                    PlayState.PLAY_RESUMED, 0,
+                                    null);
                         }
 
                         break;
                     case TelephonyManager.CALL_STATE_OFFHOOK:
                         if (mMusicMediaPlayer != null && mMusicMediaPlayer.isPlaying()) {
                             mMusicMediaPlayer.pause();
-                            sendBroadCast(null, PlayState.PLAY_PAUSED, 0, null);
+                            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_PAUSED,
+                                    0, null);
                         }
                         Log.d(LOG_TAG, "receiver state :CALL_STATE_OFFHOOK");
                         // calling
@@ -544,7 +558,8 @@ public class MusicPlayService extends Service {
                     case TelephonyManager.CALL_STATE_RINGING:// ring
                         if (mMusicMediaPlayer.isPlaying()) {
                             mMusicMediaPlayer.pause();
-                            sendBroadCast(null, PlayState.PLAY_PAUSED, 0, null);
+                            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_PAUSED,
+                                    0, null);
                         }
                         Log.d(LOG_TAG, "receiver state :CALL_STATE_RINGING");
                         break;
@@ -674,7 +689,7 @@ public class MusicPlayService extends Service {
         unregisterReceiver(mFavBroadcastReceiver);
         unregisterReceiver(mPlayListChanedReciever);
 
-        sendBroadCast(null, PlayState.PLAY_STOPED, 0, "play stoped");
+        sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_STOPED, 0, "play stoped");
         if (mMusicMediaPlayer != null) {
             mMusicMediaPlayer.stop();
             mMusicMediaPlayer.reset();
@@ -703,10 +718,12 @@ public class MusicPlayService extends Service {
             play_index = intent.getIntExtra("index", 0);
             timeToPlay = intent.getIntExtra("time", 0);
         }
-        if (null == mSongs) {
-            mSongs = new ArrayList<SongModel>();
+        if (null == mSongs || mSongs.isEmpty()) {
+            sendStateBroadCast(MusicPlayService.this, null, PlayState.NO_SONGS, 0, null);
+            stopSelf();
+            return;
         }
-        sendBroadcast(new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE));
+
         // if (null != intent) {play_error
         // play_index = intent.getIntExtra("index", 0);
         // timeToPlay = intent.getIntExtra("time", 0);
@@ -743,16 +760,19 @@ public class MusicPlayService extends Service {
     public void playMusic(final int position, final int time_position) {
         try {
             play_index = position;
-            Log.d(LOG_TAG, "play music[name:" + mSongs.get(play_index).getSongName() + "]");
+            Log.d(LOG_TAG, "playMusic().play music[name:" + mSongs.get(play_index).getSongName()
+                    + "]");
             mMusicMediaPlayer.setDataSource(mSongs.get(position).getFile());
             mMusicMediaPlayer.prepareAsync();
             mMusicMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+
                     // TODO Auto-generated method stub
                     mp.start();
-                    sendBroadCast(mSongs.get(position), PlayState.PLAY_NEW, 0, null);
+                    sendStateBroadCast(MusicPlayService.this, mSongs.get(position),
+                            PlayState.PLAY_NEW, 0, null);
                     // createStatusBarNotification(mSongs.get(position).getSongName());
                     mp.seekTo(time_position);
 
@@ -774,7 +794,8 @@ public class MusicPlayService extends Service {
                     // TODO Auto-generated method stub
                     mp.reset();
                     mp.release();
-                    sendBroadCast(null, PlayState.PLAY_ERROR, 0, "play error");
+                    sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_ERROR, 0,
+                            "play error");
                     return false;
                 }
             });
@@ -788,15 +809,19 @@ public class MusicPlayService extends Service {
                     // play mode
                     if (mPlayMode == PlayMode.MODE_REPEAT_SINGLE) {
                         playMusic(position, 0);
-                        sendBroadCast(mSongs.get(getValidPlayIndex(position)), PlayState.PLAY_END,
+                        sendStateBroadCast(MusicPlayService.this,
+                                mSongs.get(getValidPlayIndex(position)),
+                                PlayState.PLAY_END,
                                 0, null);
                     } else if (mPlayMode == PlayMode.MODE_REPEAT_ALL) {
                         playMusic(getValidPlayIndex(position + 1), 0);
-                        sendBroadCast(mSongs.get(position + 1), PlayState.PLAY_END, 0, null);
+                        sendStateBroadCast(MusicPlayService.this, mSongs.get(position + 1),
+                                PlayState.PLAY_END, 0, null);
                     } else if (mPlayMode == PlayMode.MODE_REPEAT_RANDOM) {
                         int randomIndex = MusicUtil.getRandomInt(mSongs.size());
                         playMusic(randomIndex, 0);
-                        sendBroadCast(mSongs.get(randomIndex), PlayState.PLAY_END, 0, null);
+                        sendStateBroadCast(MusicPlayService.this, mSongs.get(randomIndex),
+                                PlayState.PLAY_END, 0, null);
                     }
 
                 }
@@ -804,19 +829,19 @@ public class MusicPlayService extends Service {
         } catch (IllegalArgumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            sendBroadCast(null, PlayState.PLAY_ERROR, 0, "play error");
+            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_ERROR, 0, "play error");
         } catch (SecurityException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            sendBroadCast(null, PlayState.PLAY_ERROR, 0, "play error");
+            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_ERROR, 0, "play error");
         } catch (IllegalStateException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            sendBroadCast(null, PlayState.PLAY_ERROR, 0, "play error");
+            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_ERROR, 0, "play error");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            sendBroadCast(null, PlayState.PLAY_ERROR, 0, "play error");
+            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_ERROR, 0, "play error");
         }
     }
 
@@ -853,7 +878,8 @@ public class MusicPlayService extends Service {
      * @param playState the new state {@linkplain PlayState}
      * @param time new time when user seeked
      */
-    private void sendBroadCast(BaseModel model, int playState, int time, String errMsg) {
+    public static void sendStateBroadCast(Context context, BaseModel model, int playState,
+            int time, String errMsg) {
         Intent intent = new Intent(Contants.FILTER_PLAY_STATE_CHANGED);
         intent.putExtra("state", playState);
         if (null != model) {
@@ -871,7 +897,9 @@ public class MusicPlayService extends Service {
             intent.putExtra("errmsg", errMsg);
         }
 
-        sendBroadcast(intent);
+        context.sendBroadcast(intent);
+
+        Log.d(LOG_TAG, "send play state changed broadcast.");
         intent = null;
     }
 

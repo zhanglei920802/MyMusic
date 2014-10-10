@@ -97,7 +97,7 @@ public class SpalashActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
 

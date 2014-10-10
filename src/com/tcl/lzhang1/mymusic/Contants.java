@@ -25,19 +25,19 @@ public class Contants {
     /**
      * action indicates play music
      */
-    public static final String FILTER_PLAY_ACTION = "com.tcl.lzhang1.mymusic.play";
+    public static final String FILTER_PLAY_ACTION = "COM.TCL.LZHANG1.MYMUSIC.PLAY";
     /**
      * filed indicates play mode
      */
-    public static final String FILTER_PLAY_MODE = "com.tcl.lzhang1.mymusic.play.mode";
+    public static final String FILTER_PLAY_MODE = "COM.TCL.LZHANG1.MYMUSIC.PLAY.MODE";
     /**
      * filed indicates play state changed
      */
-    public static final String FILTER_PLAY_STATE_CHANGED = "com.tcl.lzhang1.mymusic.play.state.change";
+    public static final String FILTER_PLAY_STATE_CHANGED = "COM.TCL.LZHANG1.MYMUSIC.PLAY.STATE.CHANGE";
     /**
      * filed indicates widgets play action
      */
-    public static final String FILTER_WIDGET_PLAY_ACTION = "com.tcl.lzhang1.mymusic.widget.play";
+    public static final String FILTER_WIDGET_PLAY_ACTION = "COM.TCL.LZHANG1.MYMUSIC.WIDGET.PLAY";
     /**
      * filed indicates mark read action
      */

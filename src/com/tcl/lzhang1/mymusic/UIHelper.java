@@ -16,6 +16,7 @@
 
 package com.tcl.lzhang1.mymusic;
 
+import com.tcl.lzhang1.mymusic.ui.BaseActivity;
 import com.tcl.lzhang1.mymusic.ui.LoginActivity;
 import com.tcl.lzhang1.mymusic.ui.MainActivity;
 import com.tcl.lzhang1.mymusic.ui.MusicListAcitivity;
@@ -29,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -70,11 +72,12 @@ public class UIHelper {
      * @param activity
      * @param bundle
      */
-    public static void showMainActivity(Activity activity, Bundle bundle) {
+    public static void showMainActivity(BaseActivity activity, Bundle bundle) {
         Intent intent = new Intent();
         intent.setClass(activity, MainActivity.class);
         activity.startActivity(intent);
-        activity.finish();
+        activity.onDestroy();
+        activity.overridePendingTransition(R.anim.push_right_in, R.anim.no_horizontal_translation);
     }
 
     /**
@@ -83,10 +86,11 @@ public class UIHelper {
      * @param contex
      * @param bundle
      */
-    public static void showScanMusicActivity(Context contex, Bundle bundle) {
+    public static void showScanMusicActivity(Activity contex, Bundle bundle) {
         Intent intent = new Intent();
         intent.setClass(contex, MusicScanAcitivity.class);
         contex.startActivity(intent);
+        contex.overridePendingTransition(R.anim.push_right_in, R.anim.no_horizontal_translation);
     }
 
     /**
@@ -111,13 +115,14 @@ public class UIHelper {
      * @param context
      * @param bundle
      */
-    public static void showMusicPlayActivity(Context context, Bundle bundle) {
+    public static void showMusicPlayActivity(Activity context, Bundle bundle) {
         Intent intent = new Intent(context, MusicPlayActivity.class);
         if (null != bundle) {
             intent.putExtras(bundle);
         }
 
         context.startActivity(intent);
+        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
     }
 
     /**
@@ -178,6 +183,7 @@ public class UIHelper {
      */
     public static void sendAppCrashReport(final Context cont,
             final String crashReport) {
+        System.out.println("UIHelper.sendAppCrashReport():context=" + cont.getClass().getName());
         AlertDialog.Builder builder = new AlertDialog.Builder(cont);
 
         builder.setIcon(android.R.drawable.ic_dialog_info);

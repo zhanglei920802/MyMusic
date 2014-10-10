@@ -28,7 +28,7 @@
     <string name="login_not_register1_qq">没有账号?点击这里</string>
     <string name="reg_login">已有帐号?点击这里</string>
     <string name="login_not_register2_qq">快速注册</string>
-    <string name="login">登录</string>
+    <string name="login">登    录</string>
     <string name="reg">注册</string>
     <string name="user_reg">用户注册</string>
     <string name="refreshing_music_stand_by">刷新中,请稍候...</string>

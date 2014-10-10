@@ -245,7 +245,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
         }
 
         final String crashReport = getCrashReport(context, ex);
-
+        System.out.println("AppException.handleException()");
         new Thread() {
             @Override
             public void run() {
@@ -315,7 +315,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             String storageState = Environment.getExternalStorageState();
             if (storageState.equals(Environment.MEDIA_MOUNTED)) {
                 savePath = Environment.getExternalStorageDirectory()
-                        .getAbsolutePath() + "/Android/data/cn.cdut.app/Log/";
+                        .getAbsolutePath() + "/Android/data/com.tcl.lzhang1.mymusic/Log/";
                 File file = new File(savePath);
                 if (!file.exists()) {
                     file.mkdirs();
@@ -333,7 +333,7 @@ public class AppException extends Exception implements UncaughtExceptionHandler 
             fw = new FileWriter(logFile, true);
             pw = new PrintWriter(fw);
             pw.println("--------------------" + (new Date().toLocaleString())
-                    + "---------------------");
+                    + "-------------------setDefaultUncaughtExceptionHandler--");
             ex.printStackTrace(pw);
             pw.close();
             fw.close();

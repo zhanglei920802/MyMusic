@@ -16,12 +16,14 @@
 
 package com.tcl.lzhang1.mymusic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,6 +34,8 @@ import com.tcl.lzhang1.mymusic.db.imp.UserImp;
 import com.tcl.lzhang1.mymusic.exception.SDCardUnMoutedException;
 import com.tcl.lzhang1.mymusic.model.SongModel;
 import com.tcl.lzhang1.mymusic.model.UserModel;
+import com.tcl.lzhang1.mymusic.service.MusicPlayService;
+import com.tcl.lzhang1.mymusic.service.MusicPlayService.PlayState;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
 
 /**
@@ -43,8 +47,6 @@ import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
 public class AppContext extends Application {
 
     public static AppManager mAppManger;
-
-    private List<SongModel> models;
 
     private String TAG = "AppContext";
 
@@ -59,10 +61,6 @@ public class AppContext extends Application {
     private DBOperator mUserOperator = null;
 
     public static boolean sRegSuccess = false;
-
-    public List<SongModel> getSongs() {
-        return models;
-    }
 
     public int getPlayIndex() {
         return mPlayIndex;
@@ -146,9 +144,10 @@ public class AppContext extends Application {
         mSharedPreferences = null;
     }
 
+    private List<SongModel> models = new ArrayList<SongModel>();
+
     @SuppressWarnings("unchecked")
     private void scanMusic() {
-
         new Thread(new Runnable() {
 
             @Override
@@ -160,12 +159,14 @@ public class AppContext extends Application {
                     models = (List<SongModel>) mDbOperator.sliptPage(1, UIHelper.PAGE_SIZE, null);
                     if (models != null && !models.isEmpty()) {
                         Log.d(TAG, "data base have datas");
+                        MusicPlayService.sendStateBroadCast(AppContext.this, null, PlayState.NO_SONGS, 0, "");
                         return;
                     }
                     models = MusicUtil.scanMusic(AppContext.this);
-
+                    MusicPlayService.sendStateBroadCast(AppContext.this, null, PlayState.NO_SONGS, 0, "");
                     Log.d(TAG, "scan music finished,send message .....");
                     mDbOperator.saveAll(models);
+                    
                 } catch (SDCardUnMoutedException e) {
                     Log.d(TAG, "scan music failed:unmouted sdcard");
                 } catch (Exception e) {
@@ -173,7 +174,6 @@ public class AppContext extends Application {
                 }
             }
         }).start();
-
     }
 
     /**
@@ -181,7 +181,17 @@ public class AppContext extends Application {
      */
     public PackageInfo getPackageInfo() {
         // TODO Auto-generated method stub
-        return getPackageInfo();
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            packageInfo = new PackageInfo();
+        }
+
+        return packageInfo;
+
     }
 
     public void saveLoginUserPrefer(String user_id) {
@@ -198,5 +208,13 @@ public class AppContext extends Application {
     public static boolean isLogined() {
         return sLoginUser != null
                 && !TextUtils.isEmpty(sLoginUser.getUserName()) && sLoginUser.getIsLogin() == 1;
+    }
+
+    /**
+     * @return
+     */
+    public List<SongModel> getSongs() {
+        // TODO Auto-generated method stub
+        return models;
     }
 }

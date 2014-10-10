@@ -31,7 +31,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +40,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.tcl.lzhang1.mymusic.AppContext;
@@ -124,7 +124,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private List<HashMap<String, String>> mList;
 
     /**
-     * the adapter
+     * the adaptermMusicPlaySateChangedReciver
      */
     private MineAdapter mineAdapter = null;
 
@@ -201,6 +201,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      * current song
      */
     private SongModel curSong;
+
+    private SeekBar playSeekBar = null;
     // process music play state changed
     private BroadcastReceiver mMusicPlaySateChangedReciver = new BroadcastReceiver() {
 
@@ -326,6 +328,25 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         };
     };
 
+    private BroadcastReceiver mProgressReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+            if (null != mProgressReceiver
+                    && Contants.FILTER_ACTION_SEEK_UPDATED.equals(intent.getAction())) {
+
+                int progress = (int) (intent.getFloatExtra("percent", 0.0f) * 100);
+                curSong = (SongModel) intent.getSerializableExtra("song");
+                currSongName.setText(curSong.getSongName());
+                currSongSinger.setText(curSong.getSingerName());
+                playSeekBar.setProgress(progress);
+            }
+        }
+    };
+
+    private boolean isUnregister = false;
+
     /**
      * mark music fav or not
      * 
@@ -382,6 +403,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             mini_player_start.setOnClickListener(this);
             currSongName = (TextView) findViewById(R.id.currSongName);
             currSongSinger = (TextView) findViewById(R.id.currSongSinger);
+            playSeekBar = (SeekBar) findViewById(R.id.playSeekBar);
+
         }
 
         {
@@ -401,8 +424,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
 
             // mPagerTabStrip.setTextSpacing(50);
             // mPagerTabStrip.setTextColor(Color.BLACK);
-            mPagerTabStrip.setIndicatorColor(Color.GREEN);
-            mPagerTabStrip.setIndicatorHeight(10);
+            mPagerTabStrip.setIndicatorColorResource(R.color.main_tab_clolor);
+            mPagerTabStrip.setUnderlineColor(Color.WHITE);
+            mPagerTabStrip.setTextColor(Color.BLACK);
+            mPagerTabStrip.setIndicatorHeight(7);
+            // mPagerTabStrip.setTabBackground(android.R.color.white);
             mPageAdapter = new MyPageAdapter(this, mViews, mMenuTitles);
             mViewPager.setAdapter(mPageAdapter);
 
@@ -417,7 +443,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             login = (Button) mine.findViewById(R.id.login);
             login.setOnClickListener(this);
             welcome = (TextView) mine.findViewById(R.id.welcome);
-           
+
         }
 
         {
@@ -425,6 +451,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                     Contants.FILTER_ACTION_MARK_FAV));
             registerReceiver(mMusicPlaySateChangedReciver, new IntentFilter(
                     Contants.FILTER_PLAY_STATE_CHANGED));
+            registerReceiver(mProgressReceiver, new IntentFilter(
+                    Contants.FILTER_ACTION_SEEK_UPDATED));
         }
     }
 
@@ -433,10 +461,17 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onDestroy()
      */
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
+        System.out.println("MainActivity.onDestroy()");
         // TODO Auto-generated method stub
-        unregisterReceiver(mFavBroadcastReceiver);
-        unregisterReceiver(mMusicPlaySateChangedReciver);
+        if (!isUnregister) {
+            Log.d(TAG, "un register");
+            unregisterReceiver(mFavBroadcastReceiver);
+            unregisterReceiver(mMusicPlaySateChangedReciver);
+            unregisterReceiver(mProgressReceiver);
+            isUnregister = true;
+        }
+
         super.onDestroy();
     }
 
@@ -564,9 +599,15 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 UIHelper.showLoginActivity(this, null);
                 break;
             case R.id.mini_player_ablum:
+                if (isRefreshing) {
+                    return;
+                }
                 shouMusicPlay(curSong, isPlaying);
                 break;
             case R.id.mini_player_pre: {
+                if (isRefreshing) {
+                    return;
+                }
                 intent = new Intent(Contants.FILTER_PLAY_ACTION);
                 intent.putExtra("action", PlayAction.ACTION_PRE);
                 sendBroadcast(intent);
@@ -576,6 +617,9 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             }
                 break;
             case R.id.mini_player_next: {
+                if (isRefreshing) {
+                    return;
+                }
                 intent = new Intent(Contants.FILTER_PLAY_ACTION);
                 intent.putExtra("action", PlayAction.ACTION_NEXT);
                 sendBroadcast(intent);
@@ -585,6 +629,9 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             }
                 break;
             case R.id.mini_player_start:
+                if (isRefreshing) {
+                    return;
+                }
                 if (!isPlaying) {
                     if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {
                         curSong = mSongModels.get(mAppContext.getPlayIndex());
@@ -697,20 +744,22 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         }
 
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
      * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onResume()
      */
     @Override
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
-        
+
         if (AppContext.isLogined()) {
-            welcome.setText(String.format(getString(R.string.welcome_user), AppContext.sLoginUser.getUserName()));
+            welcome.setText(String.format(getString(R.string.welcome_user),
+                    AppContext.sLoginUser.getUserName()));
             login.setVisibility(View.GONE);
             welcome.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             login.setVisibility(View.VISIBLE);
             welcome.setVisibility(View.GONE);
         }
