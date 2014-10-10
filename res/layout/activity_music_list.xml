@@ -6,40 +6,19 @@
 
     <include layout="@layout/nav_common_bar" />
 
-    <RelativeLayout
-        android:id="@+id/no_musics"
+    <com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip
+        android:id="@+id/pagerStrip"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dip"
-        android:visibility="visible" >
+        android:layout_height="@dimen/pageStripSize"
+        android:layout_gravity="top"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/default_text_size" />
 
-        <TextView
-            android:id="@+id/no_music_labels"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/no_musics" />
-
-        <Button
-            android:id="@+id/scan_music"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/no_music_labels"
-            android:layout_gravity="fill"
-            android:layout_marginTop="20.0dip"
-            android:background="@drawable/setting_login_btn_bg"
-            android:text="@string/scan_music_in_sdcard"
-            android:textColor="@color/login_text2_register_color"
-            android:textSize="15.0sp" />
-    </RelativeLayout>
-
-    <me.maxwin.view.XListView
-        android:id="@+id/music_list"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/menu_page"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
-        android:listSelector="@drawable/selector_listview_xml"
-        android:visibility="gone" >
-    </me.maxwin.view.XListView>
+        android:layout_weight="1" />
 
 </LinearLayout>

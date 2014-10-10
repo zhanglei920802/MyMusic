@@ -521,7 +521,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
 
                     List<SongModel> models;
                     Message message = mHandler.obtainMessage();
-                    models = (List<SongModel>) mDbOperator.sliptPage(1, UIHelper.PAGE_SIZE, null);
+                    models = (List<SongModel>) mDbOperator.findAll();
                     if (models != null && !models.isEmpty()) {
                         Log.d(TAG, "data base have datas");
                         message.what = SCAN_MUSIC_SUCCESS;

@@ -272,7 +272,7 @@ public class MusicPlayService extends Service {
                                     break;
                             }
 
-                            playMusic(play_index, 0);
+                            playMusic(getValidPlayIndex(play_index), 0);
                             // }
                         }
                         break;

@@ -22,6 +22,7 @@ import com.tcl.lzhang1.mymusic.ui.MainActivity;
 import com.tcl.lzhang1.mymusic.ui.MusicListAcitivity;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity;
 import com.tcl.lzhang1.mymusic.ui.MusicScanAcitivity;
+import com.tcl.lzhang1.mymusic.ui.PlayListActivity;
 import com.tcl.lzhang1.mymusic.ui.RegActivity;
 
 import android.app.Activity;
@@ -94,6 +95,24 @@ public class UIHelper {
     }
 
     /**
+     * show play list
+     * 
+     * @param context
+     * @param bundle
+     */
+    public static void showPlayListAcitity(Activity context, Bundle bundle) {
+
+        Intent intent = new Intent(context, PlayListActivity.class);
+        if (null != bundle) {
+            intent.putExtras(bundle);
+        }
+
+        context.startActivity(intent);
+        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
+
+    }
+
+    /**
      * show Music List Activity
      * 
      * @param context
@@ -122,7 +141,7 @@ public class UIHelper {
         }
 
         context.startActivity(intent);
-        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
+//        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
     }
 
     /**

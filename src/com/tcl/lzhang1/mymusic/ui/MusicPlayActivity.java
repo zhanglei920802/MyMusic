@@ -394,6 +394,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             TAG = getPackageName() + "/" + MusicPlayActivity.class.getSimpleName();
             nav_title = (TextView) findViewById(R.id.nav_title);
             go_list = (TextView) findViewById(R.id.go_list);
+            go_list.setOnClickListener(this);
             play_song_name = (TextView) findViewById(R.id.play_song_name);
             ablum_name = (TextView) findViewById(R.id.ablum_name);
             preBtn = (ImageView) findViewById(R.id.preBtn);
@@ -577,7 +578,9 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             }
                 break;
             case R.id.go_list:
-
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("songs", mSongsWrap);
+                UIHelper.showPlayListAcitity(this, bundle);
                 break;
             case R.id.add_fav:
 
@@ -597,6 +600,10 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                     markFav(curSong.getFile(), true);
                     sendMarkBroadcast(curSong, true);
                 }
+                break;
+            case R.id.back:
+
+                onDestroy();
                 break;
             default:
                 break;

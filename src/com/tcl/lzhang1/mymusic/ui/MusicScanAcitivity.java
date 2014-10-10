@@ -103,8 +103,7 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
         // super.onBackPressed();
         onDestroy();
     }
-    
-    
+
     @Override
     public void initViewData() {
         // TODO Auto-generated method stub
@@ -140,9 +139,12 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
                     }
                 }).start();
                 break;
+            case R.id.back:
+
+                onDestroy();
+                break;
             default:
 
-                break;
         }
     }
 
@@ -206,13 +208,14 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
         }).start();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see com.tcl.lzhang1.mymusic.ui.BaseActivity#onDestroy()
      */
     @Override
     public void onDestroy() {
         // TODO Auto-generated method stub
-        
+
         super.onDestroy();
         overridePendingTransition(R.anim.no_horizontal_translation, R.anim.push_right_out);
     }

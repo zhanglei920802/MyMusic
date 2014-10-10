@@ -67,4 +67,5 @@
     <string name="user_exit">该用户已经存在</string>
     <string name="reg_success">注册成功</string>
 	<string name="welcome_user">%s,欢迎你回来.</string>
+	<string name="play_list">播放列表</string>
 </resources>

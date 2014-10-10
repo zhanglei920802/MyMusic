@@ -36,6 +36,6 @@
         android:layout_marginRight="5dip"
         android:background="@drawable/sel_nav_bar_play_go_list"
         android:clickable="true"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </RelativeLayout>

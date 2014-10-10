@@ -16,5 +16,10 @@
         <item>按歌手排序</item>
         <item>扫描</item>
     </string-array>
+    <string-array name="music_menu">
+        <item>歌曲</item>
+        <item>歌手</item>
+        <item>专辑</item>
+    </string-array>
 
 </resources>

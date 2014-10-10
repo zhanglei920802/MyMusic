@@ -240,7 +240,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener, OnCl
         // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.back:
-                finish();
+                onDestroy();
                 break;
             case R.id.button_login: {
                 String username = edit_text_uin.getText().toString();
@@ -336,8 +336,16 @@ public class LoginActivity extends BaseActivity implements OnClickListener, OnCl
     @Override
     public void onBackPressed() {
 
-//        super.onBackPressed();
+        // super.onBackPressed();
         onDestroy();
+        overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
+    }
+
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+
         overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
     }
 
