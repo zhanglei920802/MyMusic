@@ -173,8 +173,8 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             // TODO Auto-generated method stub
             if (null != intent && intent.getAction().equals(Contants.FILTER_PLAY_STATE_CHANGED)) {
                 curSong = (SongModel) intent.getSerializableExtra("model");
-                Log.d(TAG, "play activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
-                        + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
+//                Log.d(TAG, "play activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
+//                        + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
                 int time = intent.getIntExtra("time", 0);
                 String errmsg = intent.getStringExtra("errmsg");
                 switch (intent.getIntExtra("state", 0)) {

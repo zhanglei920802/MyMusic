@@ -397,6 +397,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         }
 
         super.onDestroy();
+        overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
     }
 
     /**
@@ -448,7 +449,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             mMusicList.setPullLoadEnable(true);
             mMusicList.setPullRefreshEnable(true);
             mMusicList.setXListViewListener(this);
-            mMusicList.setTag(UIHelper.LISTVIEW_DATA_MORE);
+            mMusicList.setTag(UIHelper.LISTVIEW_DATA_FULL);
+            mMusicList.setPullLoadEnable(false);
         } else {
             mMusicList.setPullLoadEnable(false);
             mMusicList.setPullRefreshEnable(false);
@@ -509,7 +511,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 UIHelper.showScanMusicActivity(this, null);
                 break;
             case R.id.back:
-                finish();
+                onDestroy();
                 break;
             case R.id.more:
                 showListMore();

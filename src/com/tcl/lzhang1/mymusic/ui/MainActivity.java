@@ -323,6 +323,23 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 boolean value = intent.getBooleanExtra("value", false);
                 if (model != null) {
                     markFav(model.getFile(), value);
+
+                    // update fav
+                    fav_count = 0;
+                    for (SongModel songModel : mSongModels) {
+                        if (songModel.getFav() == 1) {
+                            fav_count++;
+                        }
+
+                    }
+
+                    if (null != mSongModels && !mSongModels.isEmpty()) {
+                        Map<String, String> map = null;
+
+                        map = mList.get(1);
+                        map.put("value", MusicUtil.formatString1(fav_count));
+                    }
+                    mineAdapter.notifyDataSetChanged();
                 }
             }
         };
@@ -521,7 +538,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
 
                     List<SongModel> models;
                     Message message = mHandler.obtainMessage();
-                    models = (List<SongModel>) mDbOperator.sliptPage(1, UIHelper.PAGE_SIZE, null);
+                    models = (List<SongModel>) mDbOperator.findAll();
                     if (models != null && !models.isEmpty()) {
                         Log.d(TAG, "data base have datas");
                         message.what = SCAN_MUSIC_SUCCESS;
