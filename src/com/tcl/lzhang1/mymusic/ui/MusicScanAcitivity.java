@@ -139,9 +139,12 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
                     }
                 }).start();
                 break;
+            case R.id.back:
+
+                onDestroy();
+                break;
             default:
 
-                break;
         }
     }
 

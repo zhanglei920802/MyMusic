@@ -36,9 +36,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -60,15 +62,66 @@ import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.UIHelper;
 import com.tcl.lzhang1.mymusic.db.DBOperator;
 import com.tcl.lzhang1.mymusic.db.imp.SongImp;
+import com.tcl.lzhang1.mymusic.model.AlbumModel;
+import com.tcl.lzhang1.mymusic.model.SingerModel;
 import com.tcl.lzhang1.mymusic.model.SongModel;
 import com.tcl.lzhang1.mymusic.model.SongsWrap;
+import com.tcl.lzhang1.mymusic.ui.apdater.AlbumListAdapter;
 import com.tcl.lzhang1.mymusic.ui.apdater.MusicListAdapter;
+import com.tcl.lzhang1.mymusic.ui.apdater.MyPageAdapter;
+import com.tcl.lzhang1.mymusic.ui.apdater.SingerListAdapter;
+import com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip;
 
 /**
  * @author leizhang
  */
 public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         OnItemClickListener, OnItemLongClickListener, IXListViewListener {
+
+    /**
+     * title
+     */
+    private PagerSlidingTabStrip mPagerTabStrip = null;
+
+    /**
+     * the viewpager
+     */
+    private ViewPager mViewPager = null;
+
+    /**
+     * the views
+     */
+    private List<View> mViews = null;
+
+    /**
+     * the layout inflator
+     */
+    private LayoutInflater mLayoutInflater = null;
+
+    /**
+     * the all music
+     */
+    private View all = null;
+
+    /**
+     * all singer
+     */
+    private View singer = null;
+
+    /**
+     * all album
+     */
+    private View album = null;
+
+    /**
+     * titles
+     */
+    private String[] mMenuTitles = null;
+
+    /**
+     * the adapter
+     */
+    private MyPageAdapter mPageAdapter = null;
 
     /**
      * start mode local music ,default.
@@ -91,6 +144,10 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     private XListView mMusicList = null;
 
     /**
+     * 
+     */
+    private ListView mMusicListv1 = null;
+    /**
      * the list adapter
      */
     private MusicListAdapter musicListAdapter = null;
@@ -110,6 +167,55 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
      */
     private Button scan_music = null;
 
+    /**
+     * 
+     */
+    private ListView music_list_singer = null;
+
+    /**
+     * the list adapter
+     */
+    private SingerListAdapter singerListAdapter = null;
+
+    /**
+     * the songs
+     */
+    private List<SingerModel> mSingers = new ArrayList<SingerModel>();
+
+    /**
+     * no music
+     */
+    private RelativeLayout no_musics_singer = null;
+
+    /**
+     * scan music button
+     */
+    private Button scan_music_singer = null;
+
+    /**
+     * 
+     */
+    private ListView music_list_album = null;
+
+    /**
+     * the list adapter
+     */
+    private AlbumListAdapter albumListAdapter = null;
+
+    /**
+     * the songs
+     */
+    private List<AlbumModel> mAblums = new ArrayList<AlbumModel>();
+
+    /**
+     * no music
+     */
+    private RelativeLayout no_musics_album = null;
+
+    /**
+     * scan music button
+     */
+    private Button scan_music__album = null;
     /**
      * back button
      */
@@ -443,9 +549,9 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     public void initView() {
         // TODO Auto-generated method stub
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_music_list);
-        mMusicList = (XListView) findViewById(R.id.music_list);
+
         if (curStartMode == START_MODE_LOCAL) {
+<<<<<<< HEAD
             mMusicList.setPullLoadEnable(true);
             mMusicList.setPullRefreshEnable(true);
             mMusicList.setXListViewListener(this);
@@ -455,37 +561,166 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             mMusicList.setPullLoadEnable(false);
             mMusicList.setPullRefreshEnable(false);
         }
+=======
+>>>>>>> c37d08196b48ed4b02dc814a229c1fde8d09d22b
 
-        mMusicList.setOnItemClickListener(this);
-        musicListAdapter = new MusicListAdapter(this, mSongs);
-        mMusicList.setAdapter(musicListAdapter);
-        no_musics = (RelativeLayout) findViewById(R.id.no_musics);
-        scan_music = (Button) findViewById(R.id.scan_music);
-        scan_music.setOnClickListener(this);
-        if (mSongs == null || mSongs.isEmpty()) {
-            no_musics.setVisibility(View.VISIBLE);
-            mMusicList.setVisibility(View.GONE);
-        } else {
-            no_musics.setVisibility(View.GONE);
-            mMusicList.setVisibility(View.VISIBLE);
-        }
+            setContentView(R.layout.activity_music_list);
+            // wrap
+            {
 
-        {
-            back = (TextView) findViewById(R.id.back);
-            back.setOnClickListener(this);
-            nav_title = (TextView) findViewById(R.id.nav_title);
-            if (curStartMode == START_MODE_LOCAL) {
-                nav_title.setText(R.string.local_music);
-            } else if (curStartMode == START_MODE_FAV) {
-                nav_title.setText(R.string.fav_music);
+                mViewPager = (ViewPager) findViewById(R.id.menu_page);
+                mPagerTabStrip = (PagerSlidingTabStrip) findViewById(R.id.pagerStrip);
+                mViews = new ArrayList<View>();
+                mLayoutInflater = getLayoutInflater();
+
+                all = mLayoutInflater.inflate(R.layout.activity_music_list_all, null);
+                mViews.add(all);
+                singer = mLayoutInflater.inflate(R.layout.activity_music_list_singer, null);
+                mViews.add(singer);
+                album = mLayoutInflater.inflate(R.layout.activity_music_list_album, null);
+                mViews.add(album);
+                mMenuTitles = getResources().getStringArray(R.array.music_menu);
+
+                // all begin
+                {
+                    mMusicList = (XListView) all.findViewById(R.id.music_list);
+                    if (curStartMode == START_MODE_LOCAL) {
+                        mMusicList.setPullLoadEnable(true);
+                        mMusicList.setPullRefreshEnable(true);
+                        mMusicList.setXListViewListener(this);
+                        mMusicList.setTag(UIHelper.LISTVIEW_DATA_MORE);
+                    } else {
+                        mMusicList.setPullLoadEnable(false);
+                        mMusicList.setPullRefreshEnable(false);
+                    }
+
+                    mMusicList.setOnItemClickListener(this);
+                    musicListAdapter = new MusicListAdapter(this, mSongs);
+                    mMusicList.setAdapter(musicListAdapter);
+                    no_musics = (RelativeLayout) all.findViewById(R.id.no_musics);
+                    scan_music = (Button) all.findViewById(R.id.scan_music);
+                    scan_music.setOnClickListener(this);
+                    if (mSongs == null || mSongs.isEmpty()) {
+                        no_musics.setVisibility(View.VISIBLE);
+                        mMusicList.setVisibility(View.GONE);
+                    } else {
+                        no_musics.setVisibility(View.GONE);
+                        mMusicList.setVisibility(View.VISIBLE);
+                    }
+
+                    // delete dialog
+                    {
+                        mMusicList.setOnItemLongClickListener(this);
+                    }
+                }// all end
+
+                // singer begin
+                {
+
+                    music_list_singer = (ListView) singer.findViewById(R.id.music_list_singer);
+                    music_list_singer.setOnItemClickListener(this);
+                    singerListAdapter = new SingerListAdapter(this, mSingers);
+                    music_list_singer.setAdapter(singerListAdapter);
+                    no_musics_singer = (RelativeLayout) singer.findViewById(R.id.no_musics_singer);
+                    scan_music_singer = (Button) singer.findViewById(R.id.scan_music_singer);
+                    scan_music_singer.setOnClickListener(this);
+                    if (mSingers == null || mSingers.isEmpty()) {
+                        no_musics_singer.setVisibility(View.VISIBLE);
+                        music_list_singer.setVisibility(View.GONE);
+                    } else {
+                        no_musics_singer.setVisibility(View.GONE);
+                        music_list_singer.setVisibility(View.VISIBLE);
+                    }
+
+                    // delete dialog
+                    {
+                        music_list_singer.setOnItemLongClickListener(this);
+                    }
+
+                }// singer end
+
+                // ablum begin
+                {
+
+                    music_list_album = (ListView) album.findViewById(R.id.music_list_alubm);
+
+                    music_list_album.setOnItemClickListener(this);
+                    albumListAdapter = new AlbumListAdapter(this, mAblums);
+                    music_list_album.setAdapter(albumListAdapter);
+                    no_musics_album = (RelativeLayout) album.findViewById(R.id.no_musics_album);
+                    scan_music__album = (Button) album.findViewById(R.id.scan_music_album);
+                    scan_music__album.setOnClickListener(this);
+                    if (mAblums == null || mAblums.isEmpty()) {
+                        no_musics_album.setVisibility(View.VISIBLE);
+                        music_list_album.setVisibility(View.GONE);
+                    } else {
+                        no_musics_album.setVisibility(View.GONE);
+                        music_list_album.setVisibility(View.VISIBLE);
+                    }
+
+                    // delete dialog
+                    {
+                        music_list_album.setOnItemLongClickListener(this);
+                    }
+
+                }// ablum end
+
+                // mPagerTabStrip.setTextSpacing(50);
+                // mPagerTabStrip.setTextColor(Color.BLACK);
+                mPagerTabStrip.setIndicatorColorResource(R.color.main_tab_clolor);
+                mPagerTabStrip.setUnderlineColor(Color.WHITE);
+                mPagerTabStrip.setTextColor(Color.BLACK);
+                mPagerTabStrip.setIndicatorHeight(7);
+                // mPagerTabStrip.setTabBackground(android.R.color.white);
+                mPageAdapter = new MyPageAdapter(this, mViews, mMenuTitles);
+                mViewPager.setAdapter(mPageAdapter);
+
+                mPagerTabStrip.setViewPager(mViewPager);
+
             }
+        } else {
+            setContentView(R.layout.activity_music_list_v1);
 
-            more = (TextView) findViewById(R.id.more);
-            more.setOnClickListener(this);
+            {
+                mMusicListv1 = (ListView) findViewById(R.id.music_list);
+
+                mMusicListv1.setOnItemClickListener(this);
+                musicListAdapter = new MusicListAdapter(this, mSongs);
+                mMusicListv1.setAdapter(musicListAdapter);
+                no_musics = (RelativeLayout) findViewById(R.id.no_musics);
+                scan_music = (Button) findViewById(R.id.scan_music);
+                scan_music.setOnClickListener(this);
+                if (mSongs == null || mSongs.isEmpty()) {
+                    no_musics.setVisibility(View.VISIBLE);
+                    mMusicListv1.setVisibility(View.GONE);
+                } else {
+                    no_musics.setVisibility(View.GONE);
+                    mMusicListv1.setVisibility(View.VISIBLE);
+                }
+
+                // delete dialog
+                {
+                    mMusicListv1.setOnItemLongClickListener(this);
+                }
+            }// all end
+
         }
-        // delete dialog
+
+        // common
         {
-            mMusicList.setOnItemLongClickListener(this);
+            {
+                back = (TextView) findViewById(R.id.back);
+                back.setOnClickListener(this);
+                nav_title = (TextView) findViewById(R.id.nav_title);
+                if (curStartMode == START_MODE_LOCAL) {
+                    nav_title.setText(R.string.local_music);
+                } else if (curStartMode == START_MODE_FAV) {
+                    nav_title.setText(R.string.fav_music);
+                }
+
+                more = (TextView) findViewById(R.id.more);
+                more.setOnClickListener(this);
+            }
         }
         {
             registerReceiver(mFavBroadcastReceiver, new IntentFilter(
@@ -507,6 +742,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     public void onClick(View v) {
         // TODO Auto-generated method stub
         switch (v.getId()) {
+            case R.id.scan_music_album:
+            case R.id.scan_music_singer:
             case R.id.scan_music:
                 UIHelper.showScanMusicActivity(this, null);
                 break;
@@ -535,8 +772,13 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 if (curStartMode == START_MODE_LOCAL)
                     bundle.putInt("index", arg2 - 1);
                 else
-                    bundle.putInt("index", arg2 - 1);
+                {
+                    bundle.putInt("index", arg2);
+                    sendPlayListChanedBroadCast();
+                }
+
                 bundle.putInt("time", 0);
+                // Log.d(TAG, "msongs:" + mSongs.toString());
                 UIHelper.showMusicPlayActivity(this, bundle);
                 bundle = null;
             }
@@ -571,8 +813,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
             showMusicListDialog(mSongs.get(position - 1).getFile(),
                     position - 1);
         else
-            showMusicListDialog(mSongs.get(position - 1).getFile(),
-                    position - 1);
+            showMusicListDialog(mSongs.get(position).getFile(),
+                    position);
         return true;
     }
 

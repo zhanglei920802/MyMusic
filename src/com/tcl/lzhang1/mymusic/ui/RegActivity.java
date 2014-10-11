@@ -193,6 +193,13 @@ public class RegActivity extends BaseActivity implements OnClickListener {
         overridePendingTransition(R.anim.no_horizontal_translation, R.anim.push_right_out);
     }
 
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        overridePendingTransition(R.anim.no_horizontal_translation, R.anim.push_right_out);
+    }
+
     /*
      * (non-Javadoc)
      * @see android.view.View.OnClickListener#onClick(android.view.View)

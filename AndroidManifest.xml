@@ -56,7 +56,10 @@
             android:name="com.tcl.lzhang1.mymusic.ui.MusicPlayActivity"
             android:launchMode="singleTask" >
         </activity>
-
+        <activity
+            android:name="com.tcl.lzhang1.mymusic.ui.PlayListActivity"
+            android:launchMode="singleTask" >
+        </activity>
         <!-- service -->
         <service
             android:name="com.tcl.lzhang1.mymusic.service.MusicPlayService"
