@@ -11,13 +11,13 @@
     <RelativeLayout
         android:id="@+id/main_rl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/player_album_height"
         android:layout_weight="1" >
 
         <RelativeLayout
             android:id="@+id/album_img"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/player_album_height"
             android:layout_marginTop="2dip"
             android:background="@drawable/default_play_activity_bg1" >
         </RelativeLayout>
@@ -50,6 +50,7 @@
                         android:maxLength="8"
                         android:padding="5dip"
                         android:text="歌曲名称"
+                        android:textColor="@android:color/white"
                         android:textSize="18sp" />
 
                     <TextView
@@ -59,6 +60,7 @@
                         android:layout_below="@id/play_song_name"
                         android:padding="5dip"
                         android:text="专辑名称"
+                        android:textColor="@android:color/white"
                         android:textSize="18sp" />
                 </LinearLayout>
 

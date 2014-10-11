@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="album_margin">2.0dip</dimen>
+    <dimen name="album_padding">10.0dip</dimen>
+    <dimen name="page_item_bottom_height">28.0dip</dimen>
+    <dimen name="page_item_bottom_font_size">11.0dip</dimen>
+    <dimen name="my_music_view_account_bg_cover_hieght">-71.0dip</dimen>
+    <dimen name="my_music_view_username_margin_top">4.0dip</dimen>
+    <dimen name="scann_anim_img_size">175.0dip</dimen>
+    <dimen name="scan_anim_img_margin_top">30.0dip</dimen>
+    <dimen name="scan_filter_rl_margin_top">35.0dip</dimen>
+    <dimen name="scan_folder_filter_item_text_width">160.0dip</dimen>
+    <dimen name="scan_result_path_text_width">110.0dip</dimen>
+    <dimen name="player_album_height">240.0px</dimen>
+
+</resources>

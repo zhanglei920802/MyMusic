@@ -184,7 +184,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private ImageView mini_player_start = null;
 
     /**
-     * the next button
+     * the next button   android:paddingTop="5dip"
+       android:paddingBottom="5dip"
      */
     private ImageView mini_player_next = null;
 
@@ -298,7 +299,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                         }
 
                         // when obtain informations done , update music
-                        updateMiniPlayInfo(mSongModels.get(mAppContext.getPlayIndex()));
+                        updateMiniPlayInfo(mSongModels);
 
                         isRefreshing = false;
                         mineAdapter.notifyDataSetChanged();
@@ -616,13 +617,13 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 UIHelper.showLoginActivity(this, null);
                 break;
             case R.id.mini_player_ablum:
-                if (isRefreshing) {
+                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
                     return;
                 }
                 shouMusicPlay(curSong, isPlaying);
                 break;
             case R.id.mini_player_pre: {
-                if (isRefreshing) {
+                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
                     return;
                 }
                 intent = new Intent(Contants.FILTER_PLAY_ACTION);
@@ -634,7 +635,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             }
                 break;
             case R.id.mini_player_next: {
-                if (isRefreshing) {
+                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
                     return;
                 }
                 intent = new Intent(Contants.FILTER_PLAY_ACTION);
@@ -646,7 +647,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             }
                 break;
             case R.id.mini_player_start:
-                if (isRefreshing) {
+                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
                     return;
                 }
                 if (!isPlaying) {
@@ -693,6 +694,23 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
 
         currSongName.setText(model.getSongName());
         currSongSinger.setText(model.getSingerName());
+
+    }
+
+    /**
+     * update mini player informations
+     * 
+     * @param index
+     */
+    private void updateMiniPlayInfo(List<SongModel> models) {
+        if (models.isEmpty()) {
+            currSongName.setText(R.string.no_musics);
+            currSongSinger.setVisibility(View.GONE);
+        } else {
+            SongModel model = models.get(mAppContext.getPlayIndex());
+            currSongName.setText(model.getSongName());
+            currSongSinger.setText(model.getSingerName());
+        }
 
     }
 

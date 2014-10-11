@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="player_ctrl_item_padding">34.0dip</dimen>
+    <dimen name="player_ctrl_volume_length">274.0dip</dimen>
+    <dimen name="album_margin">21.0dip</dimen>
+    <dimen name="album_padding">7.0dip</dimen>
+    <dimen name="launcher_long_axis_start_padding">17.0dip</dimen>
+    <dimen name="launcher_short_axis_start_padding">17.0dip</dimen>
+    <dimen name="launcher_long_axis_end_padding">36.0dip</dimen>
+    <dimen name="launcher_short_axis_end_padding">17.0dip</dimen>
+    <dimen name="page_item_bottom_height">39.0dip</dimen>
+    <dimen name="page_item_bottom_font_size">15.0dip</dimen>
+    <dimen name="widget_width">350.0dip</dimen>
+    <dimen name="widget_height">96.0dip</dimen>
+    <dimen name="widget_icon_width">43.0dip</dimen>
+    <dimen name="widget_icon_height">43.0dip</dimen>
+    <dimen name="widget_large_icon_width">46.0dip</dimen>
+    <dimen name="widget_large_icon_height">46.0dip</dimen>
+    <dimen name="widget_ctrl_panel_height">60.0dip</dimen>
+    <dimen name="my_music_view_account_bg_cover_hieght">-80.0dip</dimen>
+    <dimen name="my_music_view_username_margin_top">12.0dip</dimen>
+    <dimen name="my_music_item_margin_top">32.0dip</dimen>
+    <dimen name="scann_anim_img_size">235.0dip</dimen>
+    <dimen name="scan_anim_img_margin_top">85.0dip</dimen>
+    <dimen name="scan_filter_rl_margin_top">60.0dip</dimen>
+    <dimen name="scan_folder_filter_item_text_width">240.0dip</dimen>
+    <dimen name="player_album_height">720.0px</dimen>
+
+</resources>

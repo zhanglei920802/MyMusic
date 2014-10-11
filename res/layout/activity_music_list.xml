@@ -9,7 +9,7 @@
     <com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip
         android:id="@+id/pagerStrip"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/pageStripSize"
+        android:layout_height="@dimen/page_item_bottom_height"
         android:layout_gravity="top"
         android:background="@android:color/white"
         android:gravity="center_vertical"

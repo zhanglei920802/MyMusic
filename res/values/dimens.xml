@@ -2,19 +2,29 @@
 <resources>
 
     <dimen name="pageStripSize">50dip</dimen>
-    <dimen name="widget_width">300.0dip</dimen>
-    <dimen name="widget_height">96.0dip</dimen>
     <dimen name="widget_album_width">86.0dip</dimen>
     <dimen name="widget_album_margin_left">0.0dip</dimen>
-    <dimen name="widget_icon_width">42.0dip</dimen>
-    <dimen name="widget_icon_height">42.0dip</dimen>
-    <dimen name="widget_large_icon_width">36.0dip</dimen>
-    <dimen name="widget_large_icon_height">36.0dip</dimen>
-    <dimen name="widget_ctrl_panel_height">36.0dip</dimen>
     <dimen name="default_text_size">16sp</dimen>
     <dimen name="login_line_height">46.0dip</dimen>
     <dimen name="login_center_height">139.0dip</dimen>
     <dimen name="search_delete_icon">20.0dip</dimen>
     <dimen name="topbar_height">56.0dip</dimen>
+    <dimen name="album_margin">15.0dip</dimen>
+    <dimen name="album_padding">6.0dip</dimen>
+    <dimen name="send_song_detail_topview_margin_top">80.0dip</dimen>
+    <dimen name="send_song_detail_marginTop1">18.0dip</dimen>
+    <dimen name="send_song_detail_marginTop2">7.0dip</dimen>
+    <dimen name="send_song_detail_marginTop3">20.0dip</dimen>
+    <dimen name="send_song_detail_marginTop4">10.0dip</dimen>
+    <dimen name="widget_width">350.0dip</dimen>
+    <dimen name="widget_height">96.0dip</dimen>
+    <dimen name="widget_icon_width">42.0dip</dimen>
+    <dimen name="widget_icon_height">42.0dip</dimen>
+    <dimen name="widget_large_icon_width">36.0dip</dimen>
+    <dimen name="widget_large_icon_height">36.0dip</dimen>
+    <dimen name="widget_ctrl_panel_height">36.0dip</dimen>
+    <dimen name="my_music_view_account_bg_cover_hieght">-80.0dip</dimen>
+    <dimen name="my_music_view_username_margin_top">12.0dip</dimen>
+    <dimen name="player_album_height">800.0px</dimen>
 
 </resources>

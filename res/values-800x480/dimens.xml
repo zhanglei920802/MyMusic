@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="album_margin">15.0dip</dimen>
+    <dimen name="album_padding">9.0dip</dimen>
+    <dimen name="page_item_bottom_height">34.0dip</dimen>
+    <dimen name="page_item_bottom_font_size">12.0dip</dimen>
+    <dimen name="newsongpub_item_bottom_font_size">10.0dip</dimen>
+    <dimen name="scann_anim_img_size">210.0dip</dimen>
+    <dimen name="scan_anim_img_margin_top">70.0dip</dimen>
+    <dimen name="scan_filter_rl_margin_top">50.0dip</dimen>
+    <dimen name="scan_folder_filter_item_text_width">220.0dip</dimen>
+    <dimen name="scan_result_path_text_width">115.0dip</dimen>
+    <dimen name="player_album_height">480.0px</dimen>
+
+</resources>

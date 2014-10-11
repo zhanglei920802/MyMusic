@@ -7,15 +7,16 @@
         android:id="@+id/mini_player_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/mini_player_background"
-        android:padding="5dip" >
+        android:paddingBottom="4dip"
+        android:background="@drawable/mini_player_background" >
 
         <RelativeLayout
             android:id="@+id/mini_player_ablum_rl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true" >
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dip" >
 
             <ImageView
                 android:id="@+id/mini_player_ablum"
@@ -39,9 +40,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:ellipsize="end"
-                android:maxLength="8"
+                android:maxLength="5"
                 android:singleLine="true"
-                android:text="@string/cur_song"
+                android:text="点击播放音乐"
                 android:textColor="@color/mini_player_song_name_color"
                 android:textSize="13.0sp" />
 
@@ -54,7 +55,6 @@
                 android:layout_marginTop="4.0dip"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@string/cur_song_singer"
                 android:textColor="@color/mini_player_song_name_color"
                 android:textSize="13.0sp" />
         </RelativeLayout>
@@ -64,6 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dip"
             android:orientation="horizontal" >
 
             <ImageView
@@ -96,8 +97,8 @@
             android:layout_width="fill_parent"
             android:layout_height="2.0dip"
             android:layout_below="@id/mini_player_action_rl"
-            android:maxHeight="1.0dip"
             android:layout_marginTop="4dip"
+            android:maxHeight="1.0dip"
             android:minHeight="1.0dip"
             android:progressDrawable="@drawable/mini_progress_bar"
             android:thumb="@drawable/a_empty"
