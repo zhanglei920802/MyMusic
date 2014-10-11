@@ -17,6 +17,8 @@
 package com.tcl.lzhang1.mymusic;
 
 import java.io.File;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -35,7 +37,9 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.tcl.lzhang1.mymusic.exception.ErrorMusicLength;
 import com.tcl.lzhang1.mymusic.exception.SDCardUnMoutedException;
+import com.tcl.lzhang1.mymusic.exception.UnknownTagException;
 import com.tcl.lzhang1.mymusic.model.SongModel;
 
 /**
@@ -200,15 +204,15 @@ public class MusicUtil {
 
         byte[] buf = new byte[128];
         try {
-            // // tag_v1
-            // RandomAccessFile music = new RandomAccessFile(musicFile, "r");
-            //
-            // music.seek(music.length() - 128);
-            // music.read(buf);// read tag to buffer
-            // // tag_v2
-            // byte[] header = new byte[10];
-            // music.seek(0);
-            // music.read(header, 0, 10);
+            // tag_v1
+            RandomAccessFile music = new RandomAccessFile(musicFile, "r");
+
+            music.seek(music.length() - 128);
+            music.read(buf);// read tag to buffer
+            // tag_v2
+            byte[] header = new byte[10];
+            music.seek(0);
+            music.read(header, 0, 10);
             // if ("ID3".equalsIgnoreCase(new String(header, 0, 3))) {
             // int ID3V2_frame_size = (int) (header[6] & 0x7F) * 0x200000
             // | (int) (header[7] & 0x7F) * 0x400
@@ -224,18 +228,16 @@ public class MusicUtil {
             // model = getTimeInfo(FrameHeader, 0, musicFile);
             // }
 
-            // music.close();// close file
+            music.close();// close file
             // check length
-            // if (buf.length != 128) {
-            // throw new
-            // ErrorMusicLength(String.format("error music info length, length is:%i",
-            // buf.length));
-            // }
+            if (buf.length != 128) {
+                throw new ErrorMusicLength(String.format("error music info length, length is:%i",
+                        buf.length));
+            }
 
-            //
-            // if (!"TAG".equalsIgnoreCase(new String(buf, 0, 3))) {
-            // throw new UnknownTagException("unknown tag exception");
-            // }
+            if (!"TAG".equalsIgnoreCase(new String(buf, 0, 3))) {
+                throw new UnknownTagException("unknown tag exception");
+            }
             String songName = null;
             // try {
             // songName = new String(buf, 3, 30, "gbk").trim();
@@ -299,6 +301,44 @@ public class MusicUtil {
                             .getColumnIndex(MediaStore.Audio.AudioColumns.YEAR));
                 }
                 cursor.close();
+
+                //
+                if (TextUtils.isEmpty(songName)) {
+                    try {
+                        songName = new String(buf, 3, 30, "gbk").trim();
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO: handle exception
+                        e.printStackTrace();
+                        songName = new String(buf, 3, 30).trim();
+                    }
+                    try {
+                        singerName = new String(buf, 33, 30, "gbk").trim();
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO: handle exception
+                        singerName = new String(buf, 33, 30).trim();
+                    }
+                    try {
+                        ablum = new String(buf, 63, 30, "gbk").trim();
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO: handle exception
+                        ablum = new String(buf, 63, 30).trim();
+                    }
+                    try {
+                        year = new String(buf, 93, 4, "gbk").trim();
+                    } catch (UnsupportedEncodingException e) {
+                        year = new String(buf, 93, 4).trim();
+                        // TODO: handle exception
+                    }
+
+                    try {
+                        reamrk = new String(buf, 97, 28, "gbk").trim();
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO: handle exception
+                        reamrk = new String(buf, 97, 28).trim();
+                    }
+
+                }
+                // get the time len
             } catch (Exception e) {
                 // TODO: handle exception
                 model.setTime(0);
@@ -757,7 +797,7 @@ public class MusicUtil {
      * @return
      */
     public static boolean checkServiceIsRunning(Context context, String serviceName) {
-        //Log.d(LOG_TAG, "will check service :" + serviceName);
+        // Log.d(LOG_TAG, "will check service :" + serviceName);
         ActivityManager mActivityManager = (ActivityManager) context
                 .getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> mRunningServiceInfos = mActivityManager
@@ -768,7 +808,7 @@ public class MusicUtil {
             }
 
             if (serviceName.equals(runningServiceInfo.service.getClassName())) {
-                Log.d(LOG_TAG, "service[" + serviceName + "] is running");
+                // Log.d(LOG_TAG, "service[" + serviceName + "] is running");
                 return true;
             }
 
@@ -851,5 +891,27 @@ public class MusicUtil {
         }
 
         return defValue;
+    }
+
+    /**
+     * get the index of play list
+     * 
+     * @param list
+     * @param key
+     * @return
+     */
+    public static int getIndexOfList(List<SongModel> list, String key) {
+        if (null == list || list.isEmpty()) {
+            return 0;
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            SongModel model = list.get(i);
+            if (key.equals(model.getFile())) {
+                return i;
+            }
+        }
+
+        return 0;
     }
 }

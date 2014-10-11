@@ -80,7 +80,7 @@ public class MusicPlayService extends Service {
     /**
      * current play index
      */
-    private int play_index = 0;// the special index to play
+    private static int play_index = 0;// the special index to play
 
     /**
      * Log.d(LOG_TAG, "min=" + min + " sec=" + sec + ""); the songs to be play
@@ -760,7 +760,7 @@ public class MusicPlayService extends Service {
     public void playMusic(final int position, final int time_position) {
         try {
             play_index = getValidPlayIndex(position);
-            
+
             mMusicMediaPlayer.setDataSource(mSongs.get(position).getFile());
             mMusicMediaPlayer.prepareAsync();
             mMusicMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -887,7 +887,7 @@ public class MusicPlayService extends Service {
             intent.putExtras(bundle);
             bundle = null;
         }
-
+        intent.putExtra("index", play_index);
         if (playState == PlayState.PLAY_SEEK) {
             intent.putExtra("time", time);
         }

@@ -184,8 +184,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private ImageView mini_player_start = null;
 
     /**
-     * the next button   android:paddingTop="5dip"
-       android:paddingBottom="5dip"
+     * the next button android:paddingTop="5dip" android:paddingBottom="5dip"
      */
     private ImageView mini_player_next = null;
 
@@ -212,6 +211,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             // TODO Auto-generated method stub
             if (null != intent && intent.getAction().equals(Contants.FILTER_PLAY_STATE_CHANGED)) {
                 curSong = (SongModel) intent.getSerializableExtra("model");
+                mAppContext.savePlayIndex(intent.getIntExtra("index", 0));
                 try {
                     Log.d(TAG, "main activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
                             + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
@@ -626,9 +626,16 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
                     return;
                 }
-                intent = new Intent(Contants.FILTER_PLAY_ACTION);
-                intent.putExtra("action", PlayAction.ACTION_PRE);
-                sendBroadcast(intent);
+                if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {// service
+                                                                                               // not
+                                                                                               // running
+                    playMusic(0);
+                } else {
+                    intent = new Intent(Contants.FILTER_PLAY_ACTION);
+                    intent.putExtra("action", PlayAction.ACTION_PRE);
+                    sendBroadcast(intent);
+                }
+
                 mini_player_start.setBackground(getResources().getDrawable(
                         R.drawable.mini_playbtn_xml));
                 isPlaying = false;
@@ -638,9 +645,16 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
                     return;
                 }
-                intent = new Intent(Contants.FILTER_PLAY_ACTION);
-                intent.putExtra("action", PlayAction.ACTION_NEXT);
-                sendBroadcast(intent);
+                if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {// service
+                                                                                               // not
+                                                                                               // running
+                    playMusic(2);
+                } else {// service not running
+                    intent = new Intent(Contants.FILTER_PLAY_ACTION);
+                    intent.putExtra("action", PlayAction.ACTION_NEXT);
+                    sendBroadcast(intent);
+                }
+
                 mini_player_start.setBackground(getResources().getDrawable(
                         R.drawable.mini_playbtn_xml));
                 isPlaying = false;
@@ -653,7 +667,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                 if (!isPlaying) {
                     if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {
                         curSong = mSongModels.get(mAppContext.getPlayIndex());
-                        playMusic();
+                        playMusic(1);
                         isPlaying = true;
                     } else {
                         Log.i(TAG, "send broadcast to start play music");
@@ -717,8 +731,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     /**
      * play music
      */
-    private void playMusic() {
-        startSetvice();
+    private void playMusic(int tag) {
+        startSetvice(tag);
         mini_player_start.setBackground(getResources().getDrawable(R.drawable.mini_pausebtn_xml));
 
     }
@@ -726,14 +740,41 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     /**
      * start play service
      */
-    private void startSetvice() {
+    private void startSetvice(int tag) {
         Intent intent = new Intent(this, MusicPlayService.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("songs", new SongsWrap(mSongModels));
-        bundle.putInt("index", mAppContext.getPlayIndex());
+        switch (tag) {
+            case 0:
+                bundle.putInt("index", getValidPlayIndex(mAppContext.getPlayIndex() - 1));
+                break;
+            case 1:
+                bundle.putInt("index", mAppContext.getPlayIndex());
+                break;
+            case 2:
+                bundle.putInt("index", getValidPlayIndex(mAppContext.getPlayIndex() + 1));
+                break;
+            default:
+                break;
+        }
+
         bundle.putInt("time", mAppContext.getPlayTime());
         intent.putExtras(bundle);
         startService(intent);
+    }
+
+    /**
+     * get the valid index
+     * 
+     * @param index
+     * @return
+     */
+    public int getValidPlayIndex(int index) {
+        if (index > 0 && index < mSongModels.size() - 1) {
+            return index;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -743,8 +784,22 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      * @param isRunning indicates play is running
      */
     private void shouMusicPlay(SongModel currentSong, boolean isRunning) {
+        if (null == currentSong) {
+            currentSong = mSongModels.get(getValidPlayIndex(mAppContext.getPlayIndex()));
+
+            if (null == currentSong) {
+                currSongName.setText("N/A");
+                currSongSinger.setText("N/A");
+                return;
+            }
+        }
+
+        Log.d(TAG, "shouMusicPlay.current play song :" + currentSong.getSongName());
+
         Bundle bundle = new Bundle();
+
         bundle.putSerializable("song", currentSong);
+        bundle.putInt("index", MusicUtil.getIndexOfList(mSongModels, curSong.getFile()));
         bundle.putSerializable("songs", new SongsWrap(mSongModels));
         bundle.putBoolean("isrunning", isRunning);
         bundle.putInt("from", MusicPlayActivity.START_MODE_FROM_MINIPLAYER);

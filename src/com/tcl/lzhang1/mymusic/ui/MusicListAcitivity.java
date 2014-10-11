@@ -670,10 +670,10 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 {
                     mMusicList = (XListView) all.findViewById(R.id.music_list);
                     if (curStartMode == START_MODE_LOCAL) {
-                        mMusicList.setPullLoadEnable(true);
-                        mMusicList.setPullRefreshEnable(true);
+                        mMusicList.setPullLoadEnable(false);
+                        mMusicList.setPullRefreshEnable(false);
                         mMusicList.setXListViewListener(this);
-                        mMusicList.setTag(UIHelper.LISTVIEW_DATA_MORE);
+                        mMusicList.setTag(UIHelper.LISTVIEW_DATA_FULL);
                     } else {
                         mMusicList.setPullLoadEnable(false);
                         mMusicList.setPullRefreshEnable(false);

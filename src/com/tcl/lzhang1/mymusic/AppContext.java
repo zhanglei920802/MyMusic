@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
@@ -77,6 +78,7 @@ public class AppContext extends Application {
      */
     public void savePlayIndex(int playIndex) {
 
+        this.mPlayIndex = playIndex;
         SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mSharedPreferences.edit().putInt("playindex", playIndex).commit();
         mSharedPreferences = null;
@@ -93,6 +95,7 @@ public class AppContext extends Application {
      * @param playTime
      */
     public void savePlayTime(int playTime) {
+        this.mPlayTime = playTime;
         SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mSharedPreferences.edit().putInt("playtime", playTime).commit();
         mSharedPreferences = null;
@@ -118,7 +121,6 @@ public class AppContext extends Application {
         mUserOperator = new UserImp(this);
         scanMusic();
         readConfigs();
-
         Thread.setDefaultUncaughtExceptionHandler(AppException
                 .getAppExceptionHandler());
     }
@@ -159,14 +161,16 @@ public class AppContext extends Application {
                     models = (List<SongModel>) mDbOperator.sliptPage(1, UIHelper.PAGE_SIZE, null);
                     if (models != null && !models.isEmpty()) {
                         Log.d(TAG, "data base have datas");
-                        MusicPlayService.sendStateBroadCast(AppContext.this, null, PlayState.NO_SONGS, 0, "");
+                        MusicPlayService.sendStateBroadCast(AppContext.this, null,
+                                PlayState.NO_SONGS, 0, "");
                         return;
                     }
                     models = MusicUtil.scanMusic(AppContext.this);
-                    MusicPlayService.sendStateBroadCast(AppContext.this, null, PlayState.NO_SONGS, 0, "");
+                    MusicPlayService.sendStateBroadCast(AppContext.this, null, PlayState.NO_SONGS,
+                            0, "");
                     Log.d(TAG, "scan music finished,send message .....");
                     mDbOperator.saveAll(models);
-                    
+
                 } catch (SDCardUnMoutedException e) {
                     Log.d(TAG, "scan music failed:unmouted sdcard");
                 } catch (Exception e) {

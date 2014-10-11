@@ -173,8 +173,10 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             // TODO Auto-generated method stub
             if (null != intent && intent.getAction().equals(Contants.FILTER_PLAY_STATE_CHANGED)) {
                 curSong = (SongModel) intent.getSerializableExtra("model");
-//                Log.d(TAG, "play activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
-//                        + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
+                // Log.d(TAG, "play activity receive action:" +
+                // Contants.FILTER_PLAY_STATE_CHANGED
+                // + "play music[" + curSong != null ? curSong.getSongName() :
+                // "" + "]");
                 int time = intent.getIntExtra("time", 0);
                 String errmsg = intent.getStringExtra("errmsg");
                 switch (intent.getIntExtra("state", 0)) {
@@ -367,7 +369,12 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                 } else {
                     pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
                 }
-
+                play_song_name.setText(curSong.getSongName());
+                ablum_name.setText(curSong.getSingerName());
+                nav_title.setText(curSong.getSongName());
+                total_time.setText(MusicUtil.formatString(curSong.getMinutes(),
+                        curSong.getSeconds()));
+                isPlaying = true;
                 play_time.setText(displayStr);
                 music_seek_bar.setProgress((int) (music_seek_bar.getMax() * curPercent));
             }
@@ -467,8 +474,17 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             }
             boolean isPlayServiceRunning = MusicUtil.checkServiceIsRunning(this,
                     MusicPlayService.class.getName());
-            if (!isPlayServiceRunning && mLanuchMode == START_MODE_FROM_MUSIC_LIST) {
-                playMusic();
+            if (!isPlayServiceRunning) {
+                if (mLanuchMode == START_MODE_FROM_MUSIC_LIST) {
+                    playMusic();
+                } else if (mLanuchMode == START_MODE_FROM_MUSIC_LIST) {
+                    // service not running ,so un play service,in addtion ,add
+                    // play lists
+                    playMusic();
+                    isInit = false;
+
+                }
+
             } else {// if music is playing
                 if (mLanuchMode == START_MODE_FROM_MUSIC_LIST) {
                     Intent intent = new Intent();
@@ -482,15 +498,19 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
                     isPlaying = true;
                     isInit = false;
                 } else if (mLanuchMode == START_MODE_FROM_MINIPLAYER) {
-                    if (!isPlaying) {
+                    if (!isPlaying) {// is running & paused.so just resume
                         // display pasue button
-                        pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+                        resumePlay();
+                        pausebtn.setBackground(getResources().getDrawable(R.drawable.playbtn_xml));
                         isInit = false;
+                    } else {
+                        // do nothing
                     }
                 }
 
             }
 
+            // Log.d(TAG, "oncreate .song："+curSong.getSongName());
         }
     }
 
@@ -515,7 +535,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
             }
                 break;
             case R.id.pausebtn:
-                if (!isPlaying) {
+                if (!isPlaying) {// paused
                     if (isInit) {
                         playMusic();
                     } else {
@@ -652,6 +672,18 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         // timer.schedule(mTimerTask, 0, 1000);
     }
 
+    /***
+     * resume play music
+     */
+    public void resumePlay() {
+        Intent intent = new Intent(Contants.FILTER_PLAY_ACTION);
+        intent.putExtra("action", PlayAction.ACTION_START);
+        sendBroadcast(intent);
+        pausebtn.setBackground(getResources().getDrawable(R.drawable.pausebtn_xml));
+        isPlaying = true;
+        isInit = false;
+    }
+
     /**
      * send broadcast to service in order to change play mode
      * 
@@ -693,7 +725,7 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         }
 
         super.onDestroy();
-        overridePendingTransition(R.anim.no_vertical_tanslation, R.anim.push_down_out);
+        overridePendingTransition(R.anim.no_horizontal_translation, R.anim.push_right_out);
     }
 
     /**
