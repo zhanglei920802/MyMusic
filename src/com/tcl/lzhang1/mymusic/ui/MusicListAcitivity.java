@@ -61,6 +61,8 @@ import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.UIHelper;
 import com.tcl.lzhang1.mymusic.db.DBOperator;
+import com.tcl.lzhang1.mymusic.db.imp.AlbumImp;
+import com.tcl.lzhang1.mymusic.db.imp.SingerImp;
 import com.tcl.lzhang1.mymusic.db.imp.SongImp;
 import com.tcl.lzhang1.mymusic.model.AlbumModel;
 import com.tcl.lzhang1.mymusic.model.SingerModel;
@@ -77,6 +79,16 @@ import com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip;
  */
 public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         OnItemClickListener, OnItemLongClickListener, IXListViewListener {
+
+    /**
+     * 
+     */
+    public static final int LOAD_SINGER_SUCCESS = 10;
+
+    /**
+     * 
+     */
+    public static final int LOAD_ALBUM_SUCCESS = 11;
 
     /**
      * title
@@ -134,6 +146,15 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     public static final int START_MODE_FAV = 2;
 
     /**
+     * 
+     */
+    public static final int START_MODE_SINGER = 3;
+
+    /**
+     * 
+     */
+    public static final int START_MODE_ALBUM = 4;
+    /**
      * current start mode
      */
     private int curStartMode = START_MODE_LOCAL;
@@ -180,7 +201,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     /**
      * the songs
      */
-    private List<SingerModel> mSingers = new ArrayList<SingerModel>();
+    private List<SingerModel> mSingers = null;
 
     /**
      * no music
@@ -188,7 +209,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     private RelativeLayout no_musics_singer = null;
 
     /**
-     * scan music button
+     * scan music mSongsbutton
      */
     private Button scan_music_singer = null;
 
@@ -205,7 +226,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     /**
      * the songs
      */
-    private List<AlbumModel> mAblums = new ArrayList<AlbumModel>();
+    private List<AlbumModel> mAblums = null;
 
     /**
      * no music
@@ -248,6 +269,27 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     public static final int LOADDATA_FAILED = 7;
 
     private boolean isUnregister = false;
+
+    /**
+     * 
+     */
+    private String mAlbumname = "";
+
+    /**
+     * 
+     */
+    private String mSingerName = "";
+
+    /**
+     * 
+     */
+    private DBOperator mSingerOperate = null;
+
+    /**
+     * 
+     */
+    private DBOperator mAlbumOperate = null;
+
     /**
      * the hander
      */
@@ -320,7 +362,37 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                     mMusicList.stopLoadMore();
                     mMusicList.stopRefresh();
                     break;
+                case LOAD_ALBUM_SUCCESS:
+                    if (null != msg) {
+                        if (mAblums == null || mAblums.isEmpty()) {
+                            no_musics_album.setVisibility(View.VISIBLE);
+                            music_list_album.setVisibility(View.GONE);
+                            Log.d(TAG, "no alumbs.");
+                        } else {
+                            // Log.d(TAG, "alumbs:" + mAblums);
+                            no_musics_album.setVisibility(View.GONE);
+                            music_list_album.setVisibility(View.VISIBLE);
+                            albumListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    break;
+                case LOAD_SINGER_SUCCESS:
+                    if (null != msg) {
 
+                        if (mSingers == null || mSingers.isEmpty()) {
+                            Log.d(TAG, "no singers");
+                            no_musics_singer.setVisibility(View.VISIBLE);
+                            music_list_singer.setVisibility(View.GONE);
+
+                        } else {
+                            // Log.d(TAG, "singers:" + mSingers);
+                            no_musics_singer.setVisibility(View.GONE);
+                            music_list_singer.setVisibility(View.VISIBLE);
+                            singerListAdapter.notifyDataSetChanged();
+                        }
+
+                    }
+                    break;
                 default:
 
                     break;
@@ -483,6 +555,14 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
 
                 mSongs = mSongModels;
                 mSongModels = null;
+            } else if (curStartMode == START_MODE_ALBUM) {
+
+                mAlbumname = bundle.getString("albumname");
+
+            } else if (curStartMode == START_MODE_SINGER) {
+
+                mSingerName = bundle.getString("singername");
+
             }
 
         }
@@ -550,20 +630,25 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         // TODO Auto-generated method stub
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        if (curStartMode == START_MODE_LOCAL) {
-<<<<<<< HEAD
-            mMusicList.setPullLoadEnable(true);
-            mMusicList.setPullRefreshEnable(true);
-            mMusicList.setXListViewListener(this);
-            mMusicList.setTag(UIHelper.LISTVIEW_DATA_FULL);
-            mMusicList.setPullLoadEnable(false);
-        } else {
-            mMusicList.setPullLoadEnable(false);
-            mMusicList.setPullRefreshEnable(false);
-        }
-=======
->>>>>>> c37d08196b48ed4b02dc814a229c1fde8d09d22b
-
+        if (curStartMode == START_MODE_LOCAL) {/*
+                                                * <<<<<<< HEAD
+                                                * mMusicList.setPullLoadEnable
+                                                * (true);
+                                                * mMusicList.setPullRefreshEnable
+                                                * (true);
+                                                * mMusicList.setXListViewListener
+                                                * (this);
+                                                * mMusicList.setTag(UIHelper
+                                                * .LISTVIEW_DATA_FULL);
+                                                * mMusicList
+                                                * .setPullLoadEnable(false); }
+                                                * else {
+                                                * mMusicList.setPullLoadEnable
+                                                * (false);
+                                                * mMusicList.setPullRefreshEnable
+                                                * (false); } ======= >>>>>>>
+                                                * c37d08196b48ed4b02dc814a229c1fde8d09d22b
+                                                */
             setContentView(R.layout.activity_music_list);
             // wrap
             {
@@ -634,7 +719,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
 
                     // delete dialog
                     {
-                        music_list_singer.setOnItemLongClickListener(this);
+                        // music_list_singer.setOnItemLongClickListener(this);
                     }
 
                 }// singer end
@@ -660,7 +745,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
 
                     // delete dialog
                     {
-                        music_list_album.setOnItemLongClickListener(this);
+                        // music_list_album.setOnItemLongClickListener(this);
                     }
 
                 }// ablum end
@@ -677,6 +762,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
 
                 mPagerTabStrip.setViewPager(mViewPager);
 
+                // loadSingerAndAlbum();
             }
         } else {
             setContentView(R.layout.activity_music_list_v1);
@@ -702,6 +788,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 {
                     mMusicListv1.setOnItemLongClickListener(this);
                 }
+
             }// all end
 
         }
@@ -716,6 +803,10 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                     nav_title.setText(R.string.local_music);
                 } else if (curStartMode == START_MODE_FAV) {
                     nav_title.setText(R.string.fav_music);
+                } else if (curStartMode == START_MODE_SINGER) {
+                    nav_title.setText(mSingerName);
+                } else if (curStartMode == START_MODE_ALBUM) {
+                    nav_title.setText(mAlbumname);
                 }
 
                 more = (TextView) findViewById(R.id.more);
@@ -732,10 +823,25 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
      * (non-Javadoc)
      * @see com.tcl.lzhang1.mymusic.ui.AcitivityInit#initViewData()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void initViewData() {
         // TODO Auto-generated method stub
         mDbOperator = new SongImp(this);
+        mSingerOperate = new SingerImp(this);
+        mAlbumOperate = new AlbumImp(this);
+        mSingers = (List<SingerModel>) mSingerOperate
+                .findAll("select count(*) as count,singername from songs group by singername");
+        mAblums = (List<AlbumModel>) mAlbumOperate
+                .findAll("select count(*) as count,ablumname from songs group by ablumname");
+
+        if (curStartMode == START_MODE_ALBUM) {
+            mSongs = (List<SongModel>) mDbOperator.findAll("select * from songs where ablumname='"
+                    + mAlbumname + "'");
+        } else if (curStartMode == START_MODE_SINGER) {
+            mSongs = (List<SongModel>) mDbOperator.findAll("select * from songs where singername='"
+                    + mSingerName + "'");
+        }
     }
 
     @Override
@@ -751,7 +857,11 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 onDestroy();
                 break;
             case R.id.more:
-                showListMore();
+                if (curStartMode == START_MODE_LOCAL && mPagerTabStrip != null
+                        && mPagerTabStrip.getCurSelection() == 0) {
+                    showListMore();
+                }
+
                 break;
             default:
                 break;
@@ -761,7 +871,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         // TODO Auto-generated method stub
-        Bundle bundle;
+        Bundle bundle = null;
         switch (arg0.getId()) {
             case R.id.music_list: {
                 if (null == mSongs || mSongs.isEmpty()) {
@@ -783,7 +893,34 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 bundle = null;
             }
                 break;
+            case R.id.music_list_singer:
+                if (mSingers == null || mSingers.isEmpty()) {
+                    return;
+                }
+                bundle = new Bundle();
+                bundle.putInt("startmode", START_MODE_SINGER);
+                SingerModel model = mSingers.get(arg2);
+                if (null == model) {
+                    return;
+                }
+                bundle.putString("singername", model.getSinger_name());
+                UIHelper.showMusicListActivity(this, bundle);
+                break;
 
+            case R.id.music_list_alubm:
+
+                if (mAblums == null || mAblums.isEmpty()) {
+                    return;
+                }
+                bundle = new Bundle();
+                bundle.putInt("startmode", START_MODE_ALBUM);
+                AlbumModel model1 = mAblums.get(arg2);
+                if (null == model1) {
+                    return;
+                }
+                bundle.putString("albumname", model1.getAlbum_name());
+                UIHelper.showMusicListActivity(this, bundle);
+                break;
             default:
                 break;
         }
@@ -1004,5 +1141,40 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         bundle = null;
         sendBroadcast(intent);
         intent = null;
+    }
+
+    /**
+     * load singer and album data
+     */
+    public void loadSingerAndAlbum() {
+        if (null == mSingerOperate) {
+            mSingerOperate = new SingerImp(this);
+        }
+
+        if (null == mAlbumOperate) {
+            mAlbumOperate = new AlbumImp(this);
+        }
+
+        new Thread(new Runnable() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                mSingers = (List<SingerModel>) mSingerOperate
+                        .findAll("select count(*) as count,singername from songs group by singername");
+                Message msg = mHandler.obtainMessage();
+                msg.what = LOAD_SINGER_SUCCESS;
+                msg.obj = mSingers;
+                mHandler.sendMessage(msg);
+
+                mAblums = (List<AlbumModel>) mAlbumOperate
+                        .findAll("select count(*) as count,ablumname from songs group by ablumname");
+                msg = mHandler.obtainMessage();
+                msg.what = LOAD_ALBUM_SUCCESS;
+                msg.obj = mAblums;
+                mHandler.sendMessage(msg);
+            }
+        }).start();
     }
 }

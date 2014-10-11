@@ -638,4 +638,8 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         };
     }
 
+    public int getCurSelection() {
+        return mCurrentSelected;
+    }
+
 }

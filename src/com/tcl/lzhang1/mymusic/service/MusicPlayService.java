@@ -759,9 +759,8 @@ public class MusicPlayService extends Service {
      */
     public void playMusic(final int position, final int time_position) {
         try {
-            play_index = position;
-            Log.d(LOG_TAG, "playMusic().play music[name:" + mSongs.get(play_index).getSongName()
-                    + "]");
+            play_index = getValidPlayIndex(position);
+            
             mMusicMediaPlayer.setDataSource(mSongs.get(position).getFile());
             mMusicMediaPlayer.prepareAsync();
             mMusicMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {

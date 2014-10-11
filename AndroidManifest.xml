@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name="com.tcl.lzhang1.mymusic.ui.MusicListAcitivity"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
             android:screenOrientation="portrait" >
         </activity>
         <activity

@@ -116,7 +116,7 @@ public class MusicAppWidget extends AppWidgetProvider {
         if (intent != null
                 && (Contants.FILTER_PLAY_STATE_CHANGED.equals(intent.getAction()) || Contants.FILTER_ACTION_SEEK_UPDATED
                         .equals(intent.getAction()))) {
-            Log.d(LOG_TAG, "appwidget receive broadcast..." + intent.getAction());
+//            Log.d(LOG_TAG, "appwidget receive broadcast..." + intent.getAction());
             // instance layout
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.musicwidget);
             mSongModel = (SongModel) intent.getSerializableExtra("model");
@@ -131,7 +131,7 @@ public class MusicAppWidget extends AppWidgetProvider {
             if (Contants.FILTER_ACTION_SEEK_UPDATED
                     .equals(intent.getAction())) {
                 int progress = (int) (intent.getFloatExtra("percent", 0.0f) * 100);
-                Log.d(LOG_TAG, "progress:" + progress);
+//                Log.d(LOG_TAG, "progress:" + progress);
                 mSongModel = (SongModel) intent.getSerializableExtra("song");
                 remoteViews.setProgressBar(R.id.widget_play_progress, 100, progress, false);
                 remoteViews.setTextViewText(R.id.title,
@@ -221,7 +221,7 @@ public class MusicAppWidget extends AppWidgetProvider {
                     int time = mAppContext.getPlayTime();
                     intent.putExtra("time", time);
                     if (null != mAppContext && mAppContext.getSongs() != null) {
-                        Log.d(LOG_TAG, "Application has global songs");
+//                        Log.d(LOG_TAG, "Application has global songs");
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("songs", new SongsWrap(mAppContext.getSongs()));
                         intent.putExtras(bundle);
@@ -255,7 +255,7 @@ public class MusicAppWidget extends AppWidgetProvider {
                     int time = mAppContext.getPlayTime();
                     intent.putExtra("time", time);
                     if (null != mAppContext && mAppContext.getSongs() != null) {
-                        Log.d(LOG_TAG, "Application has global songs");
+//                        Log.d(LOG_TAG, "Application has global songs");
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("songs", new SongsWrap(mAppContext.getSongs()));
                         intent.putExtras(bundle);
