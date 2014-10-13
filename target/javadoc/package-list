@@ -4,9 +4,12 @@ com.tcl.lzhang1.mymusic.db
 com.tcl.lzhang1.mymusic.db.imp
 com.tcl.lzhang1.mymusic.exception
 com.tcl.lzhang1.mymusic.model
+com.tcl.lzhang1.mymusic.patterns
 com.tcl.lzhang1.mymusic.service
 com.tcl.lzhang1.mymusic.test
 com.tcl.lzhang1.mymusic.ui
 com.tcl.lzhang1.mymusic.ui.apdater
 com.tcl.lzhang1.mymusic.ui.appwidgets
 com.tcl.lzhang1.mymusic.ui.widget
+douzi.android.view
+me.maxwin.view
