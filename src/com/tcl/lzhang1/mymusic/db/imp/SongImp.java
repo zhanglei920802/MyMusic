@@ -329,7 +329,7 @@ public class SongImp implements DBOperator {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         if (null != db) {
             Cursor datas = db.rawQuery(" select * from songs" + (TextUtils.isEmpty(columnName) ? ""
-                    : "order by " + columnName) + "" + " limit " + pageSize + " offset "
+                    : " order by " + columnName) + "" + " limit " + pageSize + " offset "
                             + (pageIndex - 1) * pageSize + "", null);
             // do iterator
             while (datas.moveToNext()) {

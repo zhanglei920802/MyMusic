@@ -16,7 +16,10 @@
 
 package com.tcl.lzhang1.mymusic;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -24,6 +27,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -914,4 +924,96 @@ public class MusicUtil {
 
         return 0;
     }
+
+    /**
+     * 获取一个HttpPost对象
+     * 
+     * @param url 请求Url
+     * @param json 发送数据
+     * @return
+     * @throws AppException
+     */
+    public static HttpPost getHttpPost(String url, JSONObject json) {
+        HttpPost httpPost = null;
+
+        HttpEntity enity = null;
+
+        try {
+
+            httpPost = new HttpPost(url);
+            httpPost.addHeader("Content-Type",
+                    "application/json; charset=utf-8");
+            enity = new StringEntity(json.toString(), "utf-8");
+            httpPost.setEntity(enity);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+
+        } finally {
+
+            if (null != enity) {
+                try {
+                    enity.consumeContent();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                enity = null;
+            }
+
+        }
+
+        return httpPost;
+    }
+
+    /**
+     * 发送一个Post请求
+     * 
+     * @param post
+     * @return
+     * @throws AppException
+     */
+    public static byte[] doHttpPost(HttpPost post) throws AppException {
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+
+        if (null == post) {
+            return null;
+
+        }
+        HttpResponse response;
+        HttpEntity httpentity = null;
+        InputStream ins = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            response = httpclient.execute(post);
+            httpentity = response.getEntity();
+            ins = httpentity.getContent();
+
+            baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len = 0;
+
+            while ((len = ins.read(buffer)) != -1) {
+                baos.write(buffer, 0, len);
+            }
+
+            baos.flush();
+            httpentity.consumeContent();
+            ins.close();
+            baos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e instanceof AppException) {
+                throw (AppException) e;
+            }
+        } finally {
+            ins = null;
+            httpentity = null;
+            httpclient = null;
+
+        }
+
+        return baos.toByteArray();
+    }
+    
+    
 }

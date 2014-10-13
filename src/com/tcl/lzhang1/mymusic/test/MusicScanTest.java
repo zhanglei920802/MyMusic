@@ -47,15 +47,22 @@ public class MusicScanTest extends AndroidTestCase {
 
     public void testGetMusicInfo() {
         ContentResolver contentResolver = getContext().getContentResolver();
-        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, new String[] {
-                MediaStore.Audio.AudioColumns.DURATION
-        }, " _data=?", new String[] {
-                Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/test.mp3"
-        }, null);
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                new String[] {
+                    MediaStore.Audio.AudioColumns.DURATION
+                }, " _data=?", new String[] {
+                    Environment.getExternalStorageDirectory().getAbsolutePath()
+                            + "/test.mp3"
+                }, null);
         cursor.moveToFirst();
         long time = cursor.getLong(0);
         System.out.println("MusicScanTest.testGetMusicInfo(),time:" + time);
         cursor.close();
+    }
+
+    public void testHttp() {
+        // byte[] data =
+        // MusicUtil.doHttpPost(MusicUtil.getHttpPost("http://shopcgi.qqmusic.qq.com/fcgi-bin/shopsearch.fcg?",
+        // ""));
     }
 }

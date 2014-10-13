@@ -16,6 +16,14 @@
 
 package com.tcl.lzhang1.mymusic;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+
 import com.tcl.lzhang1.mymusic.ui.BaseActivity;
 import com.tcl.lzhang1.mymusic.ui.LoginActivity;
 import com.tcl.lzhang1.mymusic.ui.MainActivity;
@@ -24,15 +32,6 @@ import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity;
 import com.tcl.lzhang1.mymusic.ui.MusicScanAcitivity;
 import com.tcl.lzhang1.mymusic.ui.PlayListActivity;
 import com.tcl.lzhang1.mymusic.ui.RegActivity;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 /**
  * @author leizhang
@@ -142,6 +141,7 @@ public class UIHelper {
 
         context.startActivity(intent);
 //        context.overridePendingTransition(R.anim.push_up_in, R.anim.no_vertical_tanslation);
+        context.overridePendingTransition(R.anim.push_right_in, R.anim.no_horizontal_translation);
     }
 
     /**

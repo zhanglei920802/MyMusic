@@ -705,6 +705,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         if (null == model) {
             return;
         }
+        curSong = model;
 
         currSongName.setText(model.getSongName());
         currSongSinger.setText(model.getSingerName());
@@ -717,11 +718,13 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      * @param index
      */
     private void updateMiniPlayInfo(List<SongModel> models) {
+      
         if (models.isEmpty()) {
             currSongName.setText(R.string.no_musics);
             currSongSinger.setVisibility(View.GONE);
         } else {
             SongModel model = models.get(mAppContext.getPlayIndex());
+            curSong = model;
             currSongName.setText(model.getSongName());
             currSongSinger.setText(model.getSingerName());
         }

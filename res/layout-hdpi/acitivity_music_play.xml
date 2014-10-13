@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/default_play_bg"
+    android:orientation="vertical" >
+
+    <include layout="@layout/nav_bar_play" />
+    <!-- ablum img -->
+
+    <RelativeLayout
+        android:id="@+id/main_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+
+        <RelativeLayout
+            android:id="@+id/album_img_rl"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/player_album_height" >
+
+            <!-- album img begin -->
+
+            <ImageView
+                android:id="@+id/album_img"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/player_album_height"
+                android:background="@drawable/default_play_activity_bg1"
+                android:scaleType="centerInside" />
+            <!-- album img end -->
+
+
+            <!-- song name & ablum name begin -->
+
+            <RelativeLayout
+                android:id="@+id/music_info_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/album_img"
+                android:layout_marginBottom="5dip"
+                android:padding="5dip" >
+
+                <LinearLayout
+                    android:id="@+id/song_info_ll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/play_song_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLength="8"
+                        android:padding="5dip"
+                        android:text="歌曲名称"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/ablum_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/play_song_name"
+                        android:layout_marginTop="5dip"
+                        android:padding="5dip"
+                        android:text="专辑名称"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/add_fav"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dip"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/add_fav_not_xml" />
+            </RelativeLayout>
+
+            <!-- song name & ablum name end -->
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/album_img_rl"
+            android:layout_marginBottom="5dip"
+            android:orientation="vertical" >
+
+            <com.tcl.lzhang1.mymusic.ui.widget.MySeekBar
+                android:id="@+id/music_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:clickable="true"
+                android:focusable="false"
+                android:max="100"
+                android:maxHeight="16.0dip"
+                android:progress="0"
+                android:progressDrawable="@drawable/play_activity_progressbar_xml"
+                android:thumb="@drawable/play_progress_thumb"
+                android:thumbOffset="6.0dip" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/music_seek_bar"
+                android:gravity="center"
+                android:paddingLeft="13dip"
+                android:paddingRight="13dip" >
+
+                <TextView
+                    android:id="@+id/play_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="00:00" />
+
+                <TextView
+                    android:id="@+id/total_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="00:00" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dip"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dip"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <View
+                    android:layout_width="23dip"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/playmode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/playmode_repeate_all" />
+
+                <View
+                    android:layout_width="23dip"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/preBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/miniplayer_pre_btn_xml" />
+
+                <View
+                    android:layout_width="23dip"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/pausebtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/playbtn_xml"
+                    android:scaleType="centerInside" />
+
+                <View
+                    android:layout_width="23dip"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/nextBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/miniplayer_next_btn_xml" />
+
+                <View
+                    android:layout_width="23dip"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:id="@+id/shareBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/share_button_for_playing" />
+
+                <View
+                    android:layout_width="23dip"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

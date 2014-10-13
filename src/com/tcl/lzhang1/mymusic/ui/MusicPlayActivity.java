@@ -16,6 +16,7 @@
 
 package com.tcl.lzhang1.mymusic.ui;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -791,6 +793,19 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
         // TODO Auto-generated method stub
         // super.onBackPressed();
         onDestroy();
+    }
+
+    public void showShare(View view) {
+
+        SongModel model = curSong;
+        if (model == null) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, "我正在听"+model.getSongName()+"-"+model.getSingerName()+",快去下载吧！");
+        startActivity(Intent.createChooser(intent, "请选择操作"));
     }
 
 }

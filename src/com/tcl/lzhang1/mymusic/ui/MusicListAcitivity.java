@@ -290,6 +290,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
      */
     private DBOperator mAlbumOperate = null;
 
+    private String orderCol = null;
+
     /**
      * the hander
      */
@@ -452,60 +454,51 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 }
                 switch (position) {
                     case 0:
-                        Log.d(TAG, "sort by song");
-                        new Thread(new Runnable() {
-
-                            @SuppressWarnings("unchecked")
-                            @Override
-                            public void run() {
-                                // TODO Auto-generated method stub
-                                List<SongModel> models = null;
-                                if (curStartMode == START_MODE_LOCAL) {
-
-                                    models = (List<SongModel>) mDbOperator
-                                            .findAll("select * from songs order by name");
-                                } else if (curStartMode == START_MODE_FAV) {
-
-                                    models = (List<SongModel>) mDbOperator
-                                            .findAll("select * from songs where fav=1 order by name ");
-                                }
-                                if (null != models) {
-                                    Message message = mHandler.obtainMessage();
-                                    message.what = 2;
-                                    message.obj = models;
-                                    mHandler.sendMessage(message);
-                                }
-                            }
-                        }).start();
+                        /*
+                         * Log.d(TAG, "sort by song"); new Thread(new Runnable()
+                         * {
+                         * @SuppressWarnings("unchecked")
+                         * @Override public void run() { // TODO Auto-generated
+                         * method stub List<SongModel> models = null; if
+                         * (curStartMode == START_MODE_LOCAL) { models =
+                         * (List<SongModel>) mDbOperator
+                         * .findAll("select * from songs order by name"); } else
+                         * if (curStartMode == START_MODE_FAV) { models =
+                         * (List<SongModel>) mDbOperator
+                         * .findAll("select * from songs where fav=1 order by name "
+                         * ); } if (null != models) { Message message =
+                         * mHandler.obtainMessage(); message.what = 2;
+                         * message.obj = models; mHandler.sendMessage(message);
+                         * } } }).start();
+                         */
+                        mMusicList.setPullLoadEnable(true);
+                        orderCol = "name";
+                        loadData(1, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_REFRESH, "name",
+                                mHandler);
 
                         break;
                     case 1:
-                        Log.d(TAG, "sort by singer");
-                        new Thread(new Runnable() {
-
-                            @SuppressWarnings({
-                                    "unchecked"
-                            })
-                            @Override
-                            public void run() {
-                                // TODO Auto-generated method stub
-                                List<SongModel> models = null;
-
-                                if (curStartMode == START_MODE_LOCAL) {
-                                    models = (List<SongModel>) mDbOperator
-                                            .findAll("select * from songs order by singername");
-                                } else if (curStartMode == START_MODE_FAV) {
-                                    models = (List<SongModel>) mDbOperator
-                                            .findAll("select * from songs where fav=1  order by singername");
-                                }
-                                if (null != models) {
-                                    Message message = mHandler.obtainMessage();
-                                    message.what = 2;
-                                    message.obj = models;
-                                    mHandler.sendMessage(message);
-                                }
-                            }
-                        }).start();
+                        /*
+                         * Log.d(TAG, "sort by singer"); new Thread(new
+                         * Runnable() {
+                         * @SuppressWarnings({ "unchecked" })
+                         * @Override public void run() { // TODO Auto-generated
+                         * method stub List<SongModel> models = null; if
+                         * (curStartMode == START_MODE_LOCAL) { models =
+                         * (List<SongModel>) mDbOperator
+                         * .findAll("select * from songs order by singername");
+                         * } else if (curStartMode == START_MODE_FAV) { models =
+                         * (List<SongModel>) mDbOperator .findAll(
+                         * "select * from songs where fav=1  order by singername"
+                         * ); } if (null != models) { Message message =
+                         * mHandler.obtainMessage(); message.what = 2;
+                         * message.obj = models; mHandler.sendMessage(message);
+                         * } } }).start();
+                         */
+                        mMusicList.setPullLoadEnable(true);
+                        orderCol = "singername";
+                        loadData(1, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_REFRESH,
+                                "singername", mHandler);
                         break;
                     case 2:
                         UIHelper.showScanMusicActivity(MusicListAcitivity.this, null);
@@ -671,7 +664,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                     mMusicList = (XListView) all.findViewById(R.id.music_list);
                     if (curStartMode == START_MODE_LOCAL) {
                         mMusicList.setPullLoadEnable(false);
-                        mMusicList.setPullRefreshEnable(false);
+                        mMusicList.setPullRefreshEnable(true);
                         mMusicList.setXListViewListener(this);
                         mMusicList.setTag(UIHelper.LISTVIEW_DATA_FULL);
                     } else {
@@ -1057,7 +1050,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         if (UIHelper.LISTVIEW_DATA_MORE == lvDataState) {
             mMusicList.setTag(UIHelper.LISTVIEW_DATA_LOADING);
             int pageIndex = mSongs.size() / UIHelper.PAGE_SIZE + 1;
-            loadData(pageIndex, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_SCROLL, null, mHandler);
+            loadData(pageIndex, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_SCROLL, orderCol, mHandler);
         }
     }
 
@@ -1071,7 +1064,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
         // mMusicList.setRefreshTime(new
         // SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime()));
         mMusicList.setPullLoadEnable(true);
-        loadData(1, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_REFRESH, null, mHandler);
+        
+        loadData(1, UIHelper.PAGE_SIZE, UIHelper.LISTVIEW_ACTION_REFRESH, orderCol, mHandler);
 
     }
 
@@ -1094,8 +1088,9 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 Message message = handler.obtainMessage();
                 try {
                     if (tag == UIHelper.LISTVIEW_ACTION_REFRESH) {// scan music
-
+                        
                     }
+
                     @SuppressWarnings("unchecked")
                     List<SongModel> msongs = (List<SongModel>) mDbOperator.sliptPage(pageIndex,
                             pageSize, orderCol);

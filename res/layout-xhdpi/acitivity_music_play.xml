@@ -183,6 +183,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:scaleType="centerInside"
+                        android:onClick="showShare"
                         android:src="@drawable/share_button_for_playing" />
 
                     <View
