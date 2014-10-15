@@ -175,6 +175,7 @@ public class SongImp implements DBOperator {
             datas.close();
             datas = null;
         }
+        db.close();
         return songs;
     }
 
@@ -194,6 +195,7 @@ public class SongImp implements DBOperator {
             cursor = null;
             return count;
         }
+        db.close();
         return 0;
     }
 
@@ -298,6 +300,7 @@ public class SongImp implements DBOperator {
             datas.close();
             datas = null;
         }
+        db.close();
         return songs;
     }
 
@@ -357,6 +360,7 @@ public class SongImp implements DBOperator {
             datas.close();
             datas = null;
         }
+        db.close();
         return songs;
     }
 }

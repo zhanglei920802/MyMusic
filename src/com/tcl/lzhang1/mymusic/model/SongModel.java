@@ -105,7 +105,7 @@ public class SongModel extends BaseModel {
     }
 
     /**
-     * @param mSingerID the mSingerID to set
+     * @param mSingerID the mSingerID to setmsg
      */
     public void setSingerID(Integer mSingerID) {
         this.mSingerID = mSingerID;
@@ -146,7 +146,7 @@ public class SongModel extends BaseModel {
         return mTime;
     }
 
-    /**
+    /**msg
      * @param mTime the mTime to set
      */
     public void setTime(long mTime) {

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="64.0dip" >
+
+    <RelativeLayout
+        android:id="@+id/toppart"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/notification_large_icon_width"
+            android:layout_height="@dimen/notification_large_icon_height"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="6.0dip"
+            android:layout_marginTop="6.0dip"
+            android:paddingLeft="2.0dip"
+            android:paddingRight="5.0dip"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_notification" />
+
+        <LinearLayout
+            android:id="@+id/noti_right_part"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="3.0dip"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/btnPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@null"
+                android:paddingLeft="10.0dip"
+                android:paddingRight="9.0dip"
+                android:src="@drawable/notification_play" />
+
+            <ImageButton
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@null"
+                android:paddingLeft="9.0dip"
+                android:paddingRight="6.0dip"
+                android:src="@drawable/notification_next" />
+
+            <ImageButton
+                android:id="@+id/btnExit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@null"
+                android:paddingLeft="12.0dip"
+                android:paddingRight="12.0dip"
+                android:src="@drawable/notification_exit" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3.0dip"
+            android:layout_toLeftOf="@id/noti_right_part"
+            android:layout_toRightOf="@id/icon" >
+
+            <TextView
+                android:id="@+id/trackname"
+                style="@style/NotificationTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/artistalbum"
+                style="@style/NotificationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/trackname"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:scrollHorizontally="true" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

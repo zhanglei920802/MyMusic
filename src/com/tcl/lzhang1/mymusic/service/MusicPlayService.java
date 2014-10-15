@@ -17,15 +17,14 @@
 package com.tcl.lzhang1.mymusic.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,15 +38,18 @@ import android.os.IBinder;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.tcl.lzhang1.mymusic.AppContext;
 import com.tcl.lzhang1.mymusic.Contants;
 import com.tcl.lzhang1.mymusic.MusicUtil;
+import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.model.BaseModel;
 import com.tcl.lzhang1.mymusic.model.SongModel;
 import com.tcl.lzhang1.mymusic.model.SongsWrap;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayAction;
 import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayMode;
+import com.tcl.lzhang1.mymusic.ui.SpalashActivity;
 
 /**
  * play music service <br>
@@ -181,6 +183,7 @@ public class MusicPlayService extends Service {
                             sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
                                     PlayState.PLAY_PAUSED, 0,
                                     null);
+                            createStatusBarNotification(false);
                         }
                         break;
                     case PlayAction.ACTION_NEW:
@@ -192,6 +195,7 @@ public class MusicPlayService extends Service {
                                 timeToPlay = intent.getIntExtra("time", 0);
                                 playMusic(play_index, 0);
                             }
+                            createStatusBarNotification(true);
                         }
                         break;
 
@@ -200,6 +204,7 @@ public class MusicPlayService extends Service {
                             Log.d(LOG_TAG, "recever broad cast to start play");
                             Log.d(LOG_TAG, "pause=start:isplaying:" + mMusicMediaPlayer.isPlaying());
                             mMusicMediaPlayer.start();
+                            createStatusBarNotification(true);
                             sendStateBroadCast(MusicPlayService.this, mSongs.get(play_index),
                                     PlayState.PLAY_RESUMED, 0,
                                     null);
@@ -222,6 +227,8 @@ public class MusicPlayService extends Service {
                             mMusicMediaPlayer.stop();
                             sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_STOPED,
                                     0, "play stoped");
+                            mNotificationManager.cancelAll();
+                            sendAppExitBroadCast();
                         }
                         break;
                     case PlayAction.ACTION_PRE:
@@ -247,7 +254,7 @@ public class MusicPlayService extends Service {
                                 default:
                                     break;
                             }
-
+                            createStatusBarNotification(true);
                             playMusic(play_index < 1 ? 0 : play_index, 0);
                             // }
                         }
@@ -271,7 +278,7 @@ public class MusicPlayService extends Service {
                                 default:
                                     break;
                             }
-
+                            createStatusBarNotification(true);
                             playMusic(getValidPlayIndex(play_index), 0);
                             // }
                         }
@@ -291,6 +298,7 @@ public class MusicPlayService extends Service {
                             setMin(((int) playedTime % 3600) / 60);
                             setSec(((int) playedTime % 3600) % 60);
                             mMusicMediaPlayer.seekTo(seekedValue);
+                            createStatusBarNotification(true);
                         }
                     }
                         break;
@@ -328,6 +336,7 @@ public class MusicPlayService extends Service {
                             // sendBroadCast(mSongs.get(play_index),
                             // PlayState.PLAY_NEW, 0, null);
                             // }
+                            createStatusBarNotification(true);
                         }
                         break;
                     case PlayAction.ACTION_NEXT:
@@ -355,6 +364,7 @@ public class MusicPlayService extends Service {
                             // sendBroadCast(mSongs.get(play_index),
                             // PlayState.PLAY_NEW, 0, null);
                             // }
+                            createStatusBarNotification(true);
                         }
                         if (null != mMusicMediaPlayer) {
                             int seekedValue = intent.getIntExtra("seekvalue", 0);
@@ -366,6 +376,7 @@ public class MusicPlayService extends Service {
                             setMin(((int) playedTime % 3600) / 60);
                             setSec(((int) playedTime % 3600) % 60);
                             mMusicMediaPlayer.seekTo(seekedValue);
+                            createStatusBarNotification(true);
                         }
 
                         break;
@@ -381,6 +392,7 @@ public class MusicPlayService extends Service {
                                         PlayState.PLAY_PAUSED,
                                         0,
                                         null);
+                                createStatusBarNotification(false);
                             } else {
 
                                 Log.d(LOG_TAG, "recever app widget's broad cast to start play");
@@ -389,6 +401,8 @@ public class MusicPlayService extends Service {
                                         PlayState.PLAY_RESUMED,
                                         0,
                                         null);
+                                Log.d(LOG_TAG, "views:" + views);
+                                createStatusBarNotification(true);
 
                             }
                             if (null != mMusicMediaPlayer) {
@@ -401,8 +415,18 @@ public class MusicPlayService extends Service {
                                 setMin(((int) playedTime % 3600) / 60);
                                 setSec(((int) playedTime % 3600) % 60);
                                 mMusicMediaPlayer.seekTo(seekedValue);
+                                createStatusBarNotification(true);
                             }
 
+                        }
+                        break;
+                    case PlayAction.ACTION_STOP:
+                        if (null != mMusicMediaPlayer) {
+                            mMusicMediaPlayer.stop();
+                            sendStateBroadCast(MusicPlayService.this, null, PlayState.PLAY_STOPED,
+                                    0, "play stoped");
+                            mNotificationManager.cancelAll();
+                            sendAppExitBroadCast();
                         }
                         break;
                     default:
@@ -657,6 +681,7 @@ public class MusicPlayService extends Service {
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
+        Log.d(LOG_TAG, "service create");
         LOG_TAG = getPackageName() + "/" + MusicPlayService.class.getSimpleName();
         super.onCreate();
         mMusicMediaPlayer = new MediaPlayer();
@@ -719,6 +744,7 @@ public class MusicPlayService extends Service {
             timeToPlay = intent.getIntExtra("time", 0);
         }
         if (null == mSongs || mSongs.isEmpty()) {
+            Log.d(LOG_TAG, "empty play list");
             sendStateBroadCast(MusicPlayService.this, null, PlayState.NO_SONGS, 0, null);
             stopSelf();
             return;
@@ -759,6 +785,7 @@ public class MusicPlayService extends Service {
      */
     public void playMusic(final int position, final int time_position) {
         try {
+            Log.d(LOG_TAG, "play song:" + mSongs.get(position));
             play_index = getValidPlayIndex(position);
 
             mMusicMediaPlayer.setDataSource(mSongs.get(position).getFile());
@@ -783,7 +810,7 @@ public class MusicPlayService extends Service {
                         min = 0;
                         sec = 0;
                     }
-
+                    createStatusBarNotification(true);
                 }
             });
             mMusicMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -844,29 +871,66 @@ public class MusicPlayService extends Service {
         }
     }
 
+    private RemoteViews views = null;
+
     /**
      * create notification
      * 
      * @param notificationContent
      */
-    public void createStatusBarNotification(String notificationContent) {
+    @SuppressWarnings("deprecation")
+    public void createStatusBarNotification(boolean isPlaying) {
         if (null == mNotificationManager) {
             mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         }
+        SongModel model = mSongs.get(play_index);
+        if (null == mNotificationManager) {
+            mNotificationManager.cancelAll();
+            return;
+        }
 
-        Notification notification = new Notification(0, notificationContent,
-                System.currentTimeMillis());
-        notification.defaults = Notification.DEFAULT_LIGHTS;
-        notification.tickerText = notificationContent;
+        Log.d(LOG_TAG, "song :" + model.toString());
+        Notification notification = new Notification(R.drawable.icon_notification,
+                model.getSongName() + "-" + model.getSingerName(), System.currentTimeMillis());
+        views = new RemoteViews(getPackageName(), R.layout.statusbar_new);
+        notification.contentView = views;
+        views.setTextViewText(R.id.trackname, model.getSongName() + "-" + model.getSingerName());
+        views.setTextViewText(R.id.artistalbum, model.getAblumName());
+
+        // launch
+        Intent intent = new Intent(this, SpalashActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.toppart, pendingIntent);
+
+        // play next
+        intent = new Intent();
+        intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
+        intent.putExtra("action", PlayAction.ACTION_NEXT);
+        pendingIntent = PendingIntent.getBroadcast(this, 101, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        if (isPlaying) views.setImageViewResource(R.id.btnPause, R.drawable.notification_pause);
+        else views.setImageViewResource(R.id.btnPause, R.drawable.notification_play);
+        views.setOnClickPendingIntent(R.id.btnNext, pendingIntent);
+        
+        // pause & start
+        intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
+        intent.putExtra("action", PlayAction.ACTION_PAUSE);
+        pendingIntent = PendingIntent.getBroadcast(MusicPlayService.this, 103, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.btnPause, pendingIntent);
+        
+        // exit
+        intent.setAction(Contants.FILTER_WIDGET_PLAY_ACTION);
+        intent.putExtra("action", PlayAction.ACTION_STOP);
+        pendingIntent = PendingIntent.getBroadcast(MusicPlayService.this, 104, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.btnExit, pendingIntent);
+
+        // notify
+        pendingIntent = PendingIntent.getBroadcast(MusicPlayService.this, 102, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.flags = Notification.FLAG_NO_CLEAR;
         mNotificationManager.notify(notification_id, notification);
-        mHandler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                mNotificationManager.cancel(notification_id);
-            }
-        }, 100 * 1000);
     }
 
     /**
@@ -960,5 +1024,14 @@ public class MusicPlayService extends Service {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * send application exit broadcast
+     */
+    public void sendAppExitBroadCast() {
+        Intent intent = new Intent();
+        intent.setAction(Contants.FILTER_ACTION_APP_EXIT);
+        sendBroadcast(intent);
     }
 }

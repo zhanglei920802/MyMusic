@@ -26,5 +26,7 @@
     <dimen name="my_music_view_account_bg_cover_hieght">-80.0dip</dimen>
     <dimen name="my_music_view_username_margin_top">12.0dip</dimen>
     <dimen name="player_album_height">800.0px</dimen>
+    <dimen name="notification_large_icon_width">60.0dip</dimen>
+    <dimen name="notification_large_icon_height">56.0dip</dimen>
 
 </resources>

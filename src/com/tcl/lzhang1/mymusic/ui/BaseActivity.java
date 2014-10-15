@@ -17,8 +17,13 @@
 package com.tcl.lzhang1.mymusic.ui;
 
 import com.tcl.lzhang1.mymusic.AppContext;
+import com.tcl.lzhang1.mymusic.Contants;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 /**
@@ -29,6 +34,8 @@ public abstract class BaseActivity extends Activity implements AcitivityInit {
     protected boolean DEBUG = true;
     protected String TAG = "";
 
+ 
+
     /*
      * template pattern for init views ,and bind initial data
      * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -37,7 +44,9 @@ public abstract class BaseActivity extends Activity implements AcitivityInit {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
+
         AppContext.mAppManger.addActivity(this);
+     
         {
             getPreActivityData(getIntent().getExtras());
             initViewData();
@@ -54,6 +63,7 @@ public abstract class BaseActivity extends Activity implements AcitivityInit {
     public void onDestroy() {
         // TODO Auto-generated method stub
         AppContext.mAppManger.finishActivity(this);
+       
         super.onDestroy();
 
     }

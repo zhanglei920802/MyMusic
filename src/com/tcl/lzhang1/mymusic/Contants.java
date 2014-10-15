@@ -52,4 +52,9 @@ public class Contants {
      * indicates play list changed
      */
     public static final String FILTER_ACTION_PLAY_LIST_CHANGED = "COM.TCL.LZHANG1.MYMUSIC.PLAYLIST.CHANGED";
+
+    /**
+     * 
+     */
+    public static final String FILTER_ACTION_APP_EXIT = "COM.TCL.LZHANG1.MYMUSIC.APP.EXIT";
 }

@@ -471,6 +471,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                     Contants.FILTER_PLAY_STATE_CHANGED));
             registerReceiver(mProgressReceiver, new IntentFilter(
                     Contants.FILTER_ACTION_SEEK_UPDATED));
+            registerReceiver(mAppExitReceiver, new IntentFilter(Contants.FILTER_ACTION_APP_EXIT));
         }
     }
 
@@ -487,6 +488,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             unregisterReceiver(mFavBroadcastReceiver);
             unregisterReceiver(mMusicPlaySateChangedReciver);
             unregisterReceiver(mProgressReceiver);
+            unregisterReceiver(mAppExitReceiver);
             isUnregister = true;
         }
 
@@ -604,6 +606,17 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         }
     }
 
+    private BroadcastReceiver mAppExitReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+            if (intent != null && Contants.FILTER_ACTION_APP_EXIT.equals(intent.getAction())) {
+                AppContext.mAppManger.AppExit(getApplication());
+            }
+        }
+    };
+
     /*
      * (non-Javadoc)
      * @see android.view.View.OnClickListener#onClick(android.view.View)
@@ -718,7 +731,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      * @param index
      */
     private void updateMiniPlayInfo(List<SongModel> models) {
-      
+
         if (models.isEmpty()) {
             currSongName.setText(R.string.no_musics);
             currSongSinger.setVisibility(View.GONE);

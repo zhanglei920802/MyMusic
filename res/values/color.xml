@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="profile_tab_notification_color">#fff77747</color>
     <color name="main_default_color">#ff88c8ee</color>
     <color name="background_tab_pressed">#6633B5E5</color>
     <color name="appwidget_text">#ffcccccc</color>
@@ -11,6 +12,7 @@
     <color name="minibar_selected_color">#ff16bc5c</color>
     <color name="minibar_background_color">#ff232837</color>
     <color name="mini_player_song_name_color">#ffffffff</color>
-	<color name="main_tab_clolor">#17bc5d</color>
-	<color name="listview_selected_color">#10000000</color>
+    <color name="main_tab_clolor">#17bc5d</color>
+    <color name="listview_selected_color">#10000000</color>
+
 </resources>

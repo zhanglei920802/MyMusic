@@ -38,4 +38,8 @@
         <attr name="pstsTextAllCaps" format="boolean" />
     </declare-styleable>
 
+    <style name="NotificationText" parent="@android:style/TextAppearance.StatusBar.EventContent" />
+
+    <style name="NotificationTitle" parent="@android:style/TextAppearance.StatusBar.EventContent.Title" />
+
 </resources>
