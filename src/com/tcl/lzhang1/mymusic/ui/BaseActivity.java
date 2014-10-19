@@ -18,64 +18,104 @@ package com.tcl.lzhang1.mymusic.ui;
 
 import com.tcl.lzhang1.mymusic.AppContext;
 import com.tcl.lzhang1.mymusic.Contants;
+import com.tcl.lzhang1.mymusic.R;
+import com.tcl.lzhang1.mymusic.service.MusicPlayService;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 /**
  * @author leizhang
  */
 public abstract class BaseActivity extends Activity implements AcitivityInit {
 
-    protected boolean DEBUG = true;
-    protected String TAG = "";
+	protected boolean DEBUG = true;
+	protected String TAG = "";
 
- 
+	/*
+	 * template pattern for init views ,and bind initial data
+	 * 
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
 
-    /*
-     * template pattern for init views ,and bind initial data
-     * @see android.app.Activity#onCreate(android.os.Bundle)
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        super.onCreate(savedInstanceState);
+		AppContext.mAppManger.addActivity(this);
 
-        AppContext.mAppManger.addActivity(this);
-     
-        {
-            getPreActivityData(getIntent().getExtras());
-            initViewData();
-            initView();
-        }
+		{
+			getPreActivityData(getIntent().getExtras());
+			initViewData();
+			initView();
+		}
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        // TODO Auto-generated method stub
-        AppContext.mAppManger.finishActivity(this);
-       
-        super.onDestroy();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		AppContext.mAppManger.finishActivity(this);
 
-    }
+		super.onDestroy();
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    protected void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-    }
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		getMenuInflater().inflate(R.menu.app_exit, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case R.id.menu_exit:
+			// cancel all notification
+			NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			manager.cancelAll();
+			manager = null;
+			// exit all activity
+			AppContext.mAppManger.finishAllActivity();
+			// stop play service
+			Intent intent = new Intent(this, MusicPlayService.class);
+			stopService(intent);
+			intent = null;
+
+			// consumed the event ,so return true
+			return true;
+
+		default:
+			return super.onOptionsItemSelected(item);
+
+		}
+
+	}
 
 }

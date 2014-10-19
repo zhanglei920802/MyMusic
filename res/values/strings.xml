@@ -21,6 +21,7 @@
     <string name="refreshing_music">正在刷新</string>
     <string name="widget_initial_text">点击进行播放</string>
     <string name="delete">删除</string>
+    <string name="app_exit">退出</string>
     <string name="detail">详细信息</string>
     <string name="choose_operate">请选择操作</string>
     <string name="delete_file_error">删除文件失败</string>
@@ -66,6 +67,7 @@
     <string name="login_success">登录成功</string>
     <string name="user_exit">该用户已经存在</string>
     <string name="reg_success">注册成功</string>
-	<string name="welcome_user">%s,欢迎你回来.</string>
-	<string name="play_list">播放列表</string>
+    <string name="welcome_user">%s,欢迎你回来.</string>
+    <string name="play_list">播放列表</string>
+
 </resources>

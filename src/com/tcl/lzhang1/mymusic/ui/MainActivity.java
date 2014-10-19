@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -562,7 +563,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                     mHandler.sendEmptyMessage(SCAN_MUSIC_FAILD);
                 } catch (Exception e) {
                     // TODO: handle exception
-                    Log.d(TAG, "scan music error:" + e.getMessage());
+                	e.printStackTrace();
+//                    Log.d(TAG, "scan music error:" + e.getMessage());
                     mHandler.sendEmptyMessage(SCAN_MUSIC_FAILD);
                 }
 
@@ -613,6 +615,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             // TODO Auto-generated method stub
             if (intent != null && Contants.FILTER_ACTION_APP_EXIT.equals(intent.getAction())) {
                 AppContext.mAppManger.AppExit(getApplication());
+            	NotificationManager manager =(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+				manager.cancelAll();
             }
         }
     };
@@ -870,4 +874,6 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             welcome.setVisibility(View.GONE);
         }
     }
+    
+    
 }
