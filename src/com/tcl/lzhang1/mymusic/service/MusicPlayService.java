@@ -82,17 +82,17 @@ public class MusicPlayService extends Service {
 	/**
 	 * current play index
 	 */
-	private static int play_index = 0;// the special index to play
+	private static int mPlay_index = 0;// the special index to play
 
 	/**
 	 * Log.d(LOG_TAG, "min=" + min + " sec=" + sec + ""); the songs to be play
 	 */
-	private List<SongModel> mSongs = null;
+	private  List<SongModel> mSongs = null;
 
 	/**
 	 * the time to play
 	 */
-	private int timeToPlay = 0;// the special time to play
+	private int mTimeToPlay = 0;// the special time to play
 
 	/**
 	 * local binder
@@ -114,7 +114,7 @@ public class MusicPlayService extends Service {
 	/**
 	 * notification id
 	 */
-	private final int notification_id = 19920802;
+	private final int mNotification_id = 19920802;
 
 	/**
 	 * the hander
@@ -145,7 +145,7 @@ public class MusicPlayService extends Service {
 						setSec(0);
 					}
 
-					SongModel curSong = mSongs.get(play_index);
+					SongModel curSong = mSongs.get(getValidPlayIndex(mPlay_index));
 					int playedTime = getMin() * 60 + getSec();
 					float percent = (playedTime)
 							/ ((float) (curSong.getTime() / 1000));
@@ -180,13 +180,13 @@ public class MusicPlayService extends Service {
 				switch (action) {
 				case PlayAction.ACTION_PAUSE:
 					if (null != mMusicMediaPlayer) {
-						timeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
-						Log.d(LOG_TAG, "request pause,cur pos is:" + timeToPlay);
+						mTimeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
+						Log.d(LOG_TAG, "request pause,cur pos is:" + mTimeToPlay);
 						mMusicMediaPlayer.pause();
 						sendStateBroadCast(MusicPlayService.this,
-								mSongs.get(play_index), PlayState.PLAY_PAUSED,
+								mSongs.get(mPlay_index), PlayState.PLAY_PAUSED,
 								0, null);
-						createStatusBarNotification(false);
+						createStatusBarNotification(false,mPlay_index);
 					}
 					break;
 				case PlayAction.ACTION_NEW:
@@ -194,11 +194,11 @@ public class MusicPlayService extends Service {
 						if (mMusicMediaPlayer.isPlaying()) {
 							mMusicMediaPlayer.stop();
 							mMusicMediaPlayer.reset();
-							play_index = intent.getIntExtra("index", 0);
-							timeToPlay = intent.getIntExtra("time", 0);
-							playMusic(play_index, 0);
+							mPlay_index = intent.getIntExtra("index", 0);
+							mTimeToPlay = intent.getIntExtra("time", 0);
+							playMusic(mPlay_index, 0);
 						}
-						createStatusBarNotification(true);
+						createStatusBarNotification(true,mPlay_index);
 					}
 					break;
 
@@ -208,9 +208,9 @@ public class MusicPlayService extends Service {
 						Log.d(LOG_TAG, "pause=start:isplaying:"
 								+ mMusicMediaPlayer.isPlaying());
 						mMusicMediaPlayer.start();
-						createStatusBarNotification(true);
+						createStatusBarNotification(true,mPlay_index);
 						sendStateBroadCast(MusicPlayService.this,
-								mSongs.get(play_index), PlayState.PLAY_RESUMED,
+								mSongs.get(mPlay_index), PlayState.PLAY_RESUMED,
 								0, null);
 						// if (mMusicMediaPlayer.isPlaying())
 						// {
@@ -243,7 +243,7 @@ public class MusicPlayService extends Service {
 						mMusicMediaPlayer.reset();
 						switch (mPlayMode) {
 						case PlayMode.MODE_REPEAT_ALL:
-							play_index--;
+							mPlay_index--;
 							break;
 						case PlayMode.MODE_REPEAT_RANDOM:// random
 															// play
@@ -253,37 +253,40 @@ public class MusicPlayService extends Service {
 						case PlayMode.MODE_REPEAT_SINGLE:// random
 															// play
 															// music
-							play_index = MusicUtil.getRandomInt(mSongs.size());
+							mPlay_index = MusicUtil.getRandomInt(mSongs.size());
 							break;
 						default:
 							break;
 						}
-						createStatusBarNotification(true);
-						playMusic(play_index < 1 ? 0 : play_index, 0);
+						createStatusBarNotification(true,mPlay_index);
+						playMusic(mPlay_index < 1 ? 0 : mPlay_index, 0);
 						// }
 					}
 					break;
 				case PlayAction.ACTION_NEXT:
 					if (null != mMusicMediaPlayer) {
+					 
 						// no condition to play next
 						// if (mMusicMediaPlayer.isPlaying()) {
 						mMusicMediaPlayer.stop();
 						mMusicMediaPlayer.reset();
 						switch (mPlayMode) {
 						case PlayMode.MODE_REPEAT_ALL:
-							play_index++;
+							mPlay_index++;
 							break;
 						case PlayMode.MODE_REPEAT_RANDOM:
 
 							// break;
 						case PlayMode.MODE_REPEAT_SINGLE:
-							play_index = MusicUtil.getRandomInt(mSongs.size());
+							mPlay_index = MusicUtil.getRandomInt(mSongs.size());
 							break;
 						default:
 							break;
 						}
-						createStatusBarNotification(true);
-						playMusic(getValidPlayIndex(play_index), 0);
+					
+						createStatusBarNotification(true,mPlay_index);
+						playMusic(mPlay_index=getValidPlayIndex(mPlay_index), 0);
+						  Log.d(LOG_TAG, "play next music,index is["+mPlay_index+"]");;
 						// }
 					}
 					break;
@@ -302,7 +305,7 @@ public class MusicPlayService extends Service {
 						setMin(((int) playedTime % 3600) / 60);
 						setSec(((int) playedTime % 3600) % 60);
 						mMusicMediaPlayer.seekTo(seekedValue);
-						createStatusBarNotification(true);
+						createStatusBarNotification(true,mPlay_index);
 					}
 				}
 					break;
@@ -326,10 +329,10 @@ public class MusicPlayService extends Service {
 						mMusicMediaPlayer.reset();
 						switch (mPlayMode) {
 						case PlayMode.MODE_REPEAT_ALL:
-							play_index--;
+							mPlay_index--;
 							break;
 						case PlayMode.MODE_REPEAT_RANDOM:
-							play_index = MusicUtil.getRandomInt(mSongs.size());
+							mPlay_index = MusicUtil.getRandomInt(mSongs.size());
 							break;
 						case PlayMode.MODE_REPEAT_SINGLE:
 
@@ -338,11 +341,11 @@ public class MusicPlayService extends Service {
 							break;
 						}
 
-						playMusic(play_index < 1 ? 0 : play_index, 0);
+						playMusic(mPlay_index < 1 ? 0 : mPlay_index, 0);
 						// sendBroadCast(mSongs.get(play_index),
 						// PlayState.PLAY_NEW, 0, null);
 						// }
-						createStatusBarNotification(true);
+						createStatusBarNotification(true,mPlay_index);
 					}
 					break;
 				case PlayAction.ACTION_NEXT:
@@ -355,10 +358,10 @@ public class MusicPlayService extends Service {
 						mMusicMediaPlayer.reset();
 						switch (mPlayMode) {
 						case PlayMode.MODE_REPEAT_ALL:
-							play_index++;
+							mPlay_index++;
 							break;
 						case PlayMode.MODE_REPEAT_RANDOM:
-							play_index = MusicUtil.getRandomInt(mSongs.size());
+							mPlay_index = MusicUtil.getRandomInt(mSongs.size());
 							break;
 						case PlayMode.MODE_REPEAT_SINGLE:
 
@@ -367,11 +370,11 @@ public class MusicPlayService extends Service {
 							break;
 						}
 
-						playMusic(play_index, 0);
+						playMusic(mPlay_index, 0);
 						// sendBroadCast(mSongs.get(play_index),
 						// PlayState.PLAY_NEW, 0, null);
 						// }
-						createStatusBarNotification(true);
+						createStatusBarNotification(true,mPlay_index);
 					}
 					if (null != mMusicMediaPlayer) {
 						int seekedValue = intent.getIntExtra("seekvalue", 0);
@@ -383,7 +386,7 @@ public class MusicPlayService extends Service {
 						setMin(((int) playedTime % 3600) / 60);
 						setSec(((int) playedTime % 3600) % 60);
 						mMusicMediaPlayer.seekTo(seekedValue);
-						createStatusBarNotification(true);
+						createStatusBarNotification(true,mPlay_index);
 					}
 
 					break;
@@ -393,24 +396,24 @@ public class MusicPlayService extends Service {
 						if (mMusicMediaPlayer.isPlaying()) {
 							Log.d(LOG_TAG,
 									"recever app widget's broad cast to start stop");
-							timeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
+							mTimeToPlay = mMusicMediaPlayer.getCurrentPosition();// save
 							Log.d(LOG_TAG, "request pause,cur pos is:"
-									+ timeToPlay);
+									+ mTimeToPlay);
 							mMusicMediaPlayer.pause();
 							sendStateBroadCast(MusicPlayService.this,
-									mSongs.get(play_index),
+									mSongs.get(mPlay_index),
 									PlayState.PLAY_PAUSED, 0, null);
-							createStatusBarNotification(false);
+							createStatusBarNotification(false,mPlay_index);
 						} else {
 
 							Log.d(LOG_TAG,
 									"recever app widget's broad cast to start play");
 							mMusicMediaPlayer.start();
 							sendStateBroadCast(MusicPlayService.this,
-									mSongs.get(play_index),
+									mSongs.get(mPlay_index),
 									PlayState.PLAY_RESUMED, 0, null);
 							Log.d(LOG_TAG, "views:" + views);
-							createStatusBarNotification(true);
+							createStatusBarNotification(true,mPlay_index);
 
 						}
 						if (null != mMusicMediaPlayer) {
@@ -426,7 +429,7 @@ public class MusicPlayService extends Service {
 							setMin(((int) playedTime % 3600) / 60);
 							setSec(((int) playedTime % 3600) % 60);
 							mMusicMediaPlayer.seekTo(seekedValue);
-							createStatusBarNotification(true);
+							createStatusBarNotification(true,mPlay_index);
 						}
 
 					}
@@ -489,7 +492,7 @@ public class MusicPlayService extends Service {
 			if (mMusicMediaPlayer.isPlaying()) {
 				mMusicMediaPlayer.stop();
 				mMusicMediaPlayer.reset();
-				play_index = random;
+				mPlay_index = random;
 				playMusic(random, 0);
 			}
 		}
@@ -583,7 +586,7 @@ public class MusicPlayService extends Service {
 					if (mMusicMediaPlayer != null) {
 						mMusicMediaPlayer.start();
 						sendStateBroadCast(MusicPlayService.this,
-								mSongs.get(play_index), PlayState.PLAY_RESUMED,
+								mSongs.get(mPlay_index), PlayState.PLAY_RESUMED,
 								0, null);
 					}
 
@@ -682,13 +685,14 @@ public class MusicPlayService extends Service {
 			if (null != intent
 					&& Contants.FILTER_ACTION_PLAY_LIST_CHANGED.equals(intent
 							.getAction())) {
+			 
 				SongsWrap songsWrap = (SongsWrap) intent
 						.getSerializableExtra("songs");
 				if (null != songsWrap) {
 					mSongs.clear();
 					mSongs.addAll(songsWrap.getModels());
 				}
-
+				   Log.d(LOG_TAG, "song list changed size=["+mSongs.size()+"], data=["+mSongs.toString()+"]");
 				if (mSongs.isEmpty()) {
 					stopSelf();
 				}
@@ -770,8 +774,8 @@ public class MusicPlayService extends Service {
 			mMusicMediaPlayer = null;
 		}
 
-		mAppContext.savePlayIndex(play_index);
-		mAppContext.savePlayTime(timeToPlay);
+		mAppContext.savePlayIndex(mPlay_index);
+		mAppContext.savePlayTime(mTimeToPlay);
 		mAppContext.savePlayMode(mPlayMode);
 
 		super.onDestroy();
@@ -789,8 +793,8 @@ public class MusicPlayService extends Service {
 			mSongs = ((SongsWrap) intent.getSerializableExtra("songs"))
 					.getModels();
 			Log.d(LOG_TAG, "music play service created:");
-			play_index = intent.getIntExtra("index", 0);
-			timeToPlay = intent.getIntExtra("time", 0);
+			mPlay_index = intent.getIntExtra("index", 0);
+			mTimeToPlay = intent.getIntExtra("time", 0);
 		}
 		if (null == mSongs || mSongs.isEmpty()) {
 			Log.d(LOG_TAG, "empty play list");
@@ -804,7 +808,7 @@ public class MusicPlayService extends Service {
 		// play_index = intent.getIntExtra("index", 0);
 		// timeToPlay = intent.getIntExtra("time", 0);
 		// }
-		playMusic(play_index, timeToPlay);
+		playMusic(mPlay_index, mTimeToPlay);
 		super.onStart(intent, startId);
 	}
 
@@ -835,9 +839,9 @@ public class MusicPlayService extends Service {
 	 */
 	public void playMusic(final int position, final int time_position) {
 		try {
-			Log.d(LOG_TAG, "play song:" + mSongs.get(position));
-			play_index = getValidPlayIndex(position);
-
+		
+			mPlay_index = getValidPlayIndex(position);
+		    Log.d(LOG_TAG, "play song,outter playindex is ["+mPlay_index+"]:" + mSongs.get(position));
 			mMusicMediaPlayer.setDataSource(mSongs.get(position).getFile());
 			mMusicMediaPlayer.prepareAsync();
 			mMusicMediaPlayer
@@ -848,8 +852,9 @@ public class MusicPlayService extends Service {
 
 							// TODO Auto-generated method stub
 							mp.start();
+							Log.d(LOG_TAG, "inner playindex is["+mPlay_index+"]");
 							sendStateBroadCast(MusicPlayService.this,
-									mSongs.get(position), PlayState.PLAY_NEW,
+									mSongs.get(mPlay_index), PlayState.PLAY_NEW,
 									0, null);
 							// createStatusBarNotification(mSongs.get(position).getSongName());
 							mp.seekTo(time_position);
@@ -862,7 +867,7 @@ public class MusicPlayService extends Service {
 								min = 0;
 								sec = 0;
 							}
-							createStatusBarNotification(true);
+							createStatusBarNotification(true,mPlay_index);
 						}
 					});
 			mMusicMediaPlayer
@@ -941,11 +946,12 @@ public class MusicPlayService extends Service {
 	 * @param notificationContent
 	 */
 	@SuppressWarnings("deprecation")
-	public void createStatusBarNotification(boolean isPlaying) {
+	public void createStatusBarNotification(boolean isPlaying,int playIndex) {
 		if (null == mNotificationManager) {
 			mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		}
-		SongModel model = mSongs.get(play_index);
+		Log.d(LOG_TAG, "createStatusBarNotification==> playindex is ["+mPlay_index+"]");
+		SongModel model = mSongs.get(getValidPlayIndex(mPlay_index));
 		if (null == mNotificationManager) {
 			mNotificationManager.cancelAll();
 			return;
@@ -999,7 +1005,7 @@ public class MusicPlayService extends Service {
 		pendingIntent = PendingIntent.getBroadcast(MusicPlayService.this, 102,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		notification.flags = Notification.FLAG_NO_CLEAR;
-		mNotificationManager.notify(notification_id, notification);
+		mNotificationManager.notify(mNotification_id, notification);
 	}
 
 	/**
@@ -1023,7 +1029,7 @@ public class MusicPlayService extends Service {
 			intent.putExtras(bundle);
 			bundle = null;
 		}
-		intent.putExtra("index", play_index);
+		intent.putExtra("index", mPlay_index);
 		if (playState == PlayState.PLAY_SEEK) {
 			intent.putExtra("time", time);
 		}
@@ -1098,7 +1104,7 @@ public class MusicPlayService extends Service {
 	 * @return if index is valid return it ,return 0 if not
 	 */
 	public int getValidPlayIndex(int index) {
-		if (index > 0 && index < mSongs.size() - 1) {
+		if (index > 0 && index <= mSongs.size() - 1) {
 			return index;
 		} else {
 			return 0;

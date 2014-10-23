@@ -22,12 +22,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.view.View.OnFocusChangeListener;
 
 // TODO: Auto-generated Javadoc
