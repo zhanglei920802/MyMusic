@@ -27,6 +27,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -52,6 +53,8 @@ import com.tcl.lzhang1.mymusic.patterns.Origin;
 import com.tcl.lzhang1.mymusic.patterns.Storage;
 
 /**
+ * This is login Activity
+ * 
  * @author leizhang
  */
 public class LoginActivity extends BaseActivity implements OnClickListener, OnCliearListener {
@@ -103,11 +106,13 @@ public class LoginActivity extends BaseActivity implements OnClickListener, OnCl
      */
     @Override
     public void initView() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // requestWindowFeature(Window.FEATURE_NO_TITLE);
         // TODO Auto-generated method stub
+        
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_ll_fl);
+        viewGroup.addView(getLayoutInflater().inflate(R.layout.activity_login, null));
         TAG = getPackageName() + "/" + LoginActivity.class.getSimpleName();
 
-        setContentView(R.layout.activity_login);
         {
             mDbOperator = new UserImp(this);
         }

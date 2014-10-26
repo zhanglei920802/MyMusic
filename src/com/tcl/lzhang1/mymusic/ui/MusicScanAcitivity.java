@@ -22,6 +22,7 @@ import java.util.List;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
@@ -70,8 +71,10 @@ public class MusicScanAcitivity extends BaseActivity implements OnClickListener,
     @Override
     public void initView() {
         // TODO Auto-generated method stub'
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_music_scan);
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_ll_fl);
+        viewGroup.addView(getLayoutInflater().inflate(R.layout.activity_music_scan, null));
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);/
+//        setContentView(R.layout.activity_music_scan);
         back = (TextView) findViewById(R.id.back);
         back.setOnClickListener(this);
         nav_title = (TextView) findViewById(R.id.nav_title);

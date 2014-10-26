@@ -34,6 +34,7 @@ import com.tcl.lzhang1.mymusic.ui.apdater.MusicListAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -80,9 +81,11 @@ public class PlayListActivity extends BaseActivity implements OnClickListener, O
     @Override
     public void initView() {
         // TODO Auto-generated method stub
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_ll_fl);
+        viewGroup.addView(getLayoutInflater().inflate(R.layout.activity_play_list, null));
         mAppContext = (AppContext) getApplication();
-        setContentView(R.layout.activity_play_list);
+//        setContentView(R.layout.activity_play_list);
         {
             back = (TextView) findViewById(R.id.back);
             back.setOnClickListener(this);

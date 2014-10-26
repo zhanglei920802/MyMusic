@@ -34,6 +34,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
@@ -94,9 +95,10 @@ public class RegActivity extends BaseActivity implements OnClickListener {
     @Override
     public void initView() {
         // TODO Auto-generated method stub
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_ll_fl);
+        viewGroup.addView(getLayoutInflater().inflate(R.layout.activity_reg, null));
         TAG = getPackageName() + "/" + RegActivity.class.getSimpleName();
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_reg);
+        // setContentView(R.layout.activity_reg);
         mAppContext = (AppContext) getApplication();
 
         {

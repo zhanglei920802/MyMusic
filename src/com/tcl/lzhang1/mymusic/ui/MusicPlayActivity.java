@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
@@ -387,8 +388,12 @@ public class MusicPlayActivity extends BaseActivity implements OnClickListener {
     @Override
     public void initView() {
         // TODO Auto-generated method stub
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.acitivity_music_play);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        setContentView(R.layout.acitivity_music_play);
+        
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_ll_fl);
+        viewGroup.addView(getLayoutInflater().inflate(R.layout.acitivity_music_play, null));
+        
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         mAppContext = (AppContext) getApplication();
         {

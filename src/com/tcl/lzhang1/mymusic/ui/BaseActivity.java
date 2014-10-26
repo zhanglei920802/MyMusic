@@ -37,85 +37,82 @@ import android.view.MenuItem;
  */
 public abstract class BaseActivity extends Activity implements AcitivityInit {
 
-	protected boolean DEBUG = true;
-	protected String TAG = "";
+    protected boolean DEBUG = true;
+    protected String TAG = "";
 
-	/*
-	 * template pattern for init views ,and bind initial data
-	 * 
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
+    /*
+     * template pattern for init views ,and bind initial data
+     * @see android.app.Activity#onCreate(android.os.Bundle)
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreate(savedInstanceState);
 
-		AppContext.mAppManger.addActivity(this);
+        AppContext.mAppManger.addActivity(this);
+        setContentView(R.layout.layout_with_mini_player);
+        {
+            getPreActivityData(getIntent().getExtras());
+            initViewData();
+            initView();
+        }
 
-		{
-			getPreActivityData(getIntent().getExtras());
-			initViewData();
-			initView();
-		}
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onDestroy()
+     */
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        AppContext.mAppManger.finishActivity(this);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onDestroy()
-	 */
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		AppContext.mAppManger.finishActivity(this);
+        super.onDestroy();
 
-		super.onDestroy();
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onResume()
+     */
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onResume()
-	 */
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // TODO Auto-generated method stub
+        getMenuInflater().inflate(R.menu.app_exit, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
-		getMenuInflater().inflate(R.menu.app_exit, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        switch (item.getItemId()) {
+            case R.id.menu_exit:
+                // cancel all notification
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancelAll();
+                manager = null;
+                // exit all activity
+                AppContext.mAppManger.finishAllActivity();
+                // stop play service
+                Intent intent = new Intent(this, MusicPlayService.class);
+                stopService(intent);
+                intent = null;
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
-		switch (item.getItemId()) {
-		case R.id.menu_exit:
-			// cancel all notification
-			NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			manager.cancelAll();
-			manager = null;
-			// exit all activity
-			AppContext.mAppManger.finishAllActivity();
-			// stop play service
-			Intent intent = new Intent(this, MusicPlayService.class);
-			stopService(intent);
-			intent = null;
+                // consumed the event ,so return true
+                return true;
 
-			// consumed the event ,so return true
-			return true;
+            default:
+                return super.onOptionsItemSelected(item);
 
-		default:
-			return super.onOptionsItemSelected(item);
+        }
 
-		}
-
-	}
+    }
 
 }

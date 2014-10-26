@@ -34,6 +34,8 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -66,7 +68,8 @@ import com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip;
  * 
  * @author leizhang
  */
-public class MainActivity extends BaseActivity implements OnItemClickListener, OnClickListener {
+public class MainActivity extends MiniPlayerBaseActivity implements OnItemClickListener,
+        OnClickListener {
 
     /**
      * title
@@ -130,11 +133,6 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private MineAdapter mineAdapter = null;
 
     /**
-     * the songs
-     */
-    private List<SongModel> mSongModels;
-
-    /**
      * database access API
      */
     private DBOperator mDbOperator = null;
@@ -160,113 +158,9 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     private int fav_count = 0;
 
     /**
-     * the player ablum
-     */
-    private ImageView mini_player_ablum = null;
-
-    /**
-     * currSongName
-     */
-    private TextView currSongName = null;
-
-    /**
-     * currSongSinger
-     */
-    private TextView currSongSinger = null;
-
-    /**
-     * the previous button
-     */
-    private ImageView mini_player_pre = null;
-
-    /**
-     * the pause or start button
-     */
-    private ImageView mini_player_start = null;
-
-    /**
-     * the next button android:paddingTop="5dip" android:paddingBottom="5dip"
-     */
-    private ImageView mini_player_next = null;
-
-    /**
      * application context
      */
     private AppContext mAppContext = null;
-
-    /**
-     * is playing
-     */
-    private boolean isPlaying;
-    /**
-     * current song
-     */
-    private SongModel curSong;
-
-    private SeekBar playSeekBar = null;
-    // process music play state changed
-    private BroadcastReceiver mMusicPlaySateChangedReciver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // TODO Auto-generated method stub
-            if (null != intent && intent.getAction().equals(Contants.FILTER_PLAY_STATE_CHANGED)) {
-                curSong = (SongModel) intent.getSerializableExtra("model");
-                mAppContext.savePlayIndex(intent.getIntExtra("index", 0));
-                try {
-                    Log.d(TAG, "main activity receive action:" + Contants.FILTER_PLAY_STATE_CHANGED
-                            + "play music[" + curSong != null ? curSong.getSongName() : "" + "]");
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    // e.printStackTrace();
-                }
-
-                int time = intent.getIntExtra("time", 0);
-                String errmsg = intent.getStringExtra("errmsg");
-                switch (intent.getIntExtra("state", 0)) {
-                    case PlayState.PLAY_END:
-                        Log.d(TAG, "PLAY_END");
-                        break;
-                    case PlayState.PLAY_ERROR:
-                        Log.d(TAG, "PLAY_ERROR");
-                        break;
-                    case PlayState.PLAY_NEW:
-                    {
-                        Log.d(TAG, "PLAY_NEW");
-                        updateMiniPlayInfo(curSong);
-                        mini_player_start.setBackground(getResources().getDrawable(
-                                R.drawable.mini_pausebtn_xml));
-                        isPlaying = true;
-                    }
-                        break;
-                    case PlayState.PLAY_PAUSED:
-                        Log.d(TAG, "PLAY_PAUSED");
-                        Log.d(TAG, "main activity received broadcast,music was puased");
-                        mini_player_start.setBackground(getResources().getDrawable(
-                                R.drawable.mini_playbtn_xml));
-                        isPlaying = false;
-                        break;
-                    case PlayState.PLAY_RESUMED:
-                        Log.d(TAG, "PLAY_RESUMED");
-                        mini_player_start.setBackground(getResources().getDrawable(
-                                R.drawable.mini_pausebtn_xml));
-                        isPlaying = true;
-                        break;
-                    case PlayState.PLAY_SEEK:
-                        Log.d(TAG, "PLAY_SEEK");
-                        break;
-                    case PlayState.PLAY_STOPED:
-                        Log.d(TAG, "PLAY_STOPED");
-                        mini_player_start.setBackground(getResources().getDrawable(
-                                R.drawable.mini_playbtn_xml));
-                        isPlaying = false;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    };
 
     // music scan
     private Handler mHandler = new Handler() {
@@ -347,23 +241,6 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         };
     };
 
-    private BroadcastReceiver mProgressReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // TODO Auto-generated method stub
-            if (null != mProgressReceiver
-                    && Contants.FILTER_ACTION_SEEK_UPDATED.equals(intent.getAction())) {
-
-                int progress = (int) (intent.getFloatExtra("percent", 0.0f) * 100);
-                curSong = (SongModel) intent.getSerializableExtra("song");
-                currSongName.setText(curSong.getSongName());
-                currSongSinger.setText(curSong.getSingerName());
-                playSeekBar.setProgress(progress);
-            }
-        }
-    };
-
     private boolean isUnregister = false;
 
     /**
@@ -395,7 +272,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     @Override
     public void getPreActivityData(Bundle bundle) {
         // TODO Auto-generated method stub
-
+        super.getPreActivityData(bundle);
     }
 
     /*
@@ -404,27 +281,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      */
     @Override
     public void initView() {
-        // TODO Auto-generated method stub * @see
-        // com.tcl.lzhang1.mymusic.ui.AcitivityInit#initView()
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.initView();
 
-        setContentView(R.layout.main);
+        mViewGroup.addView(getLayoutInflater().inflate(R.layout.main, null));
         mAppContext = (AppContext) getApplication();
         TAG = MainActivity.class.getName();
-        {
-            mini_player_ablum = (ImageView) findViewById(R.id.mini_player_ablum);
-            mini_player_ablum.setOnClickListener(this);
-            mini_player_pre = (ImageView) findViewById(R.id.mini_player_pre);
-            mini_player_pre.setOnClickListener(this);
-            mini_player_next = (ImageView) findViewById(R.id.mini_player_next);
-            mini_player_next.setOnClickListener(this);
-            mini_player_start = (ImageView) findViewById(R.id.mini_player_start);
-            mini_player_start.setOnClickListener(this);
-            currSongName = (TextView) findViewById(R.id.currSongName);
-            currSongSinger = (TextView) findViewById(R.id.currSongSinger);
-            playSeekBar = (SeekBar) findViewById(R.id.playSeekBar);
-
-        }
 
         {
             mViewPager = (ViewPager) findViewById(R.id.menu_page);
@@ -468,10 +329,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         {
             registerReceiver(mFavBroadcastReceiver, new IntentFilter(
                     Contants.FILTER_ACTION_MARK_FAV));
-            registerReceiver(mMusicPlaySateChangedReciver, new IntentFilter(
-                    Contants.FILTER_PLAY_STATE_CHANGED));
-            registerReceiver(mProgressReceiver, new IntentFilter(
-                    Contants.FILTER_ACTION_SEEK_UPDATED));
+
             registerReceiver(mAppExitReceiver, new IntentFilter(Contants.FILTER_ACTION_APP_EXIT));
         }
     }
@@ -487,8 +345,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
         if (!isUnregister) {
             Log.d(TAG, "un register");
             unregisterReceiver(mFavBroadcastReceiver);
-            unregisterReceiver(mMusicPlaySateChangedReciver);
-            unregisterReceiver(mProgressReceiver);
+            // unregisterReceiver(mMusicPlaySateChangedReciver);
+            // unregisterReceiver(mProgressReceiver);
             unregisterReceiver(mAppExitReceiver);
             isUnregister = true;
         }
@@ -503,6 +361,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
     @Override
     public void initViewData() {
         // TODO Auto-generated method stub
+        super.initViewData();
+
         mMenuTitles = getResources().getStringArray(R.array.pageview_menu);
         mList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map = new HashMap<String, String>();
@@ -563,8 +423,8 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
                     mHandler.sendEmptyMessage(SCAN_MUSIC_FAILD);
                 } catch (Exception e) {
                     // TODO: handle exception
-                	e.printStackTrace();
-//                    Log.d(TAG, "scan music error:" + e.getMessage());
+                    e.printStackTrace();
+                    // Log.d(TAG, "scan music error:" + e.getMessage());
                     mHandler.sendEmptyMessage(SCAN_MUSIC_FAILD);
                 }
 
@@ -615,8 +475,9 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             // TODO Auto-generated method stub
             if (intent != null && Contants.FILTER_ACTION_APP_EXIT.equals(intent.getAction())) {
                 AppContext.mAppManger.AppExit(getApplication());
-            	NotificationManager manager =(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-				manager.cancelAll();
+                NotificationManager manager = (NotificationManager) context
+                        .getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancelAll();
             }
         }
     };
@@ -627,204 +488,11 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
      */
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
-        Intent intent = null;
-        switch (v.getId()) {
-            case R.id.login:
-                UIHelper.showLoginActivity(this, null);
-                break;
-            case R.id.mini_player_ablum:
-                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
-                    return;
-                }
-                shouMusicPlay(curSong, isPlaying);
-                break;
-            case R.id.mini_player_pre: {
-                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
-                    return;
-                }
-                if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {// service
-                                                                                               // not
-                                                                                               // running
-                    playMusic(0);
-                } else {
-                    intent = new Intent(Contants.FILTER_PLAY_ACTION);
-                    intent.putExtra("action", PlayAction.ACTION_PRE);
-                    sendBroadcast(intent);
-                }
-
-                mini_player_start.setBackground(getResources().getDrawable(
-                        R.drawable.mini_playbtn_xml));
-                isPlaying = false;
-            }
-                break;
-            case R.id.mini_player_next: {
-                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
-                    return;
-                }
-                if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {// service
-                                                                                               // not
-                                                                                               // running
-                    playMusic(2);
-                } else {// service not running
-                    intent = new Intent(Contants.FILTER_PLAY_ACTION);
-                    intent.putExtra("action", PlayAction.ACTION_NEXT);
-                    sendBroadcast(intent);
-                }
-
-                mini_player_start.setBackground(getResources().getDrawable(
-                        R.drawable.mini_playbtn_xml));
-                isPlaying = false;
-            }
-                break;
-            case R.id.mini_player_start:
-                if (isRefreshing || mSongModels == null || mSongModels.isEmpty()) {
-                    return;
-                }
-                if (!isPlaying) {
-                    if (!MusicUtil.checkServiceIsRunning(this, MusicPlayService.class.getName())) {
-                        curSong = mSongModels.get(mAppContext.getPlayIndex());
-                        playMusic(1);
-                        isPlaying = true;
-                    } else {
-                        Log.i(TAG, "send broadcast to start play music");
-                        intent = new Intent(Contants.FILTER_PLAY_ACTION);
-                        intent.putExtra("action", PlayAction.ACTION_START);
-                        sendBroadcast(intent);
-                        mini_player_start.setBackground(getResources().getDrawable(
-                                R.drawable.mini_pausebtn_xml));
-                        isPlaying = true;
-
-                    }
-
-                } else {
-                    intent = new Intent(Contants.FILTER_PLAY_ACTION);
-                    intent.putExtra("action", PlayAction.ACTION_PAUSE);
-
-                    sendBroadcast(intent);
-                    mini_player_start.setBackground(getResources().getDrawable(
-                            R.drawable.mini_playbtn_xml));
-                    isPlaying = false;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * update mini player informations
-     * 
-     * @param index
-     */
-    private void updateMiniPlayInfo(SongModel model) {
-
-        if (null == model) {
+        if (isRefreshing) {
             return;
         }
-        curSong = model;
+        super.onClick(v);
 
-        currSongName.setText(model.getSongName());
-        currSongSinger.setText(model.getSingerName());
-
-    }
-
-    /**
-     * update mini player informations
-     * 
-     * @param index
-     */
-    private void updateMiniPlayInfo(List<SongModel> models) {
-
-        if (models.isEmpty()) {
-            currSongName.setText(R.string.no_musics);
-            currSongSinger.setVisibility(View.GONE);
-        } else {
-            SongModel model = models.get(mAppContext.getPlayIndex());
-            curSong = model;
-            currSongName.setText(model.getSongName());
-            currSongSinger.setText(model.getSingerName());
-        }
-
-    }
-
-    /**
-     * play music
-     */
-    private void playMusic(int tag) {
-        startSetvice(tag);
-        mini_player_start.setBackground(getResources().getDrawable(R.drawable.mini_pausebtn_xml));
-
-    }
-
-    /**
-     * start play service
-     */
-    private void startSetvice(int tag) {
-        Intent intent = new Intent(this, MusicPlayService.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("songs", new SongsWrap(mSongModels));
-        switch (tag) {
-            case 0:
-                bundle.putInt("index", getValidPlayIndex(mAppContext.getPlayIndex() - 1));
-                break;
-            case 1:
-                bundle.putInt("index", mAppContext.getPlayIndex());
-                break;
-            case 2:
-                bundle.putInt("index", getValidPlayIndex(mAppContext.getPlayIndex() + 1));
-                break;
-            default:
-                break;
-        }
-
-        bundle.putInt("time", mAppContext.getPlayTime());
-        intent.putExtras(bundle);
-        startService(intent);
-    }
-
-    /**
-     * get the valid index
-     * 
-     * @param index
-     * @return
-     */
-    public int getValidPlayIndex(int index) {
-        if (index > 0 && index < mSongModels.size() - 1) {
-            return index;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * show music play song
-     * 
-     * @param currentSong current song
-     * @param isRunning indicates play is running
-     */
-    private void shouMusicPlay(SongModel currentSong, boolean isRunning) {
-        if (null == currentSong) {
-            currentSong = mSongModels.get(getValidPlayIndex(mAppContext.getPlayIndex()));
-
-            if (null == currentSong) {
-                currSongName.setText("N/A");
-                currSongSinger.setText("N/A");
-                return;
-            }
-        }
-
-        Log.d(TAG, "shouMusicPlay.current play song :" + currentSong.getSongName());
-
-        Bundle bundle = new Bundle();
-
-        bundle.putSerializable("song", currentSong);
-        bundle.putInt("index", MusicUtil.getIndexOfList(mSongModels, curSong.getFile()));
-        bundle.putSerializable("songs", new SongsWrap(mSongModels));
-        bundle.putBoolean("isrunning", isRunning);
-        bundle.putInt("from", MusicPlayActivity.START_MODE_FROM_MINIPLAYER);
-        UIHelper.showMusicPlayActivity(this, bundle);
-        bundle = null;
     }
 
     /*
@@ -840,7 +508,7 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             UIHelper.toast(this, R.string.exit_when_click_again);
         } else {
 
-            Log.d(TAG, "isPlaying:" + isPlaying);
+            // Log.d(TAG, "isPlaying:" + isPlaying);
             // if is paused , stop service
             if (!isPlaying) {
                 Intent intent = new Intent(this, MusicPlayService.class);
@@ -874,6 +542,5 @@ public class MainActivity extends BaseActivity implements OnItemClickListener, O
             welcome.setVisibility(View.GONE);
         }
     }
-    
-    
+
 }

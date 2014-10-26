@@ -16,24 +16,34 @@
 
 package com.tcl.lzhang1.mymusic.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewStub;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.tcl.lzhang1.mymusic.Contants;
+import com.tcl.lzhang1.mymusic.MusicUtil;
 import com.tcl.lzhang1.mymusic.R;
 import com.tcl.lzhang1.mymusic.UIHelper;
+import com.tcl.lzhang1.mymusic.service.MusicPlayService;
+import com.tcl.lzhang1.mymusic.ui.MusicPlayActivity.PlayAction;
 
 /**
  * This is Spalash Activity
  * 
  * @author leizhang
  */
-public class SpalashActivity extends BaseActivity {
+public class SpalashActivity extends BaseActivity implements View.OnClickListener {
 
     private Animation mAnimation = null;
-    private RelativeLayout mLinearLayout = null;
+    private LinearLayout mLinearLayout = null;
 
     /*
      * (non-Javadoc)
@@ -53,11 +63,11 @@ public class SpalashActivity extends BaseActivity {
      */
     @Override
     public void initView() {
-        // TODO Auto-generated method stub
-        requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.spalash);
+        ViewGroup viewGroup = (ViewGroup) findViewById(R.id.content_ll_fl);
+        viewGroup.addView(getLayoutInflater().inflate(R.layout.spalash, null));
+
         TAG = SpalashActivity.class.getName();
-        mLinearLayout = (RelativeLayout) findViewById(R.id.background);
+        mLinearLayout = (LinearLayout) findViewById(R.id.background);
         mAnimation = new AlphaAnimation(0.7f, 1.0f);
         mAnimation.setDuration(2000);
         mLinearLayout.startAnimation(mAnimation);
@@ -104,4 +114,9 @@ public class SpalashActivity extends BaseActivity {
         mAnimation = null;
 
     }
+
+    @Override
+    public void onClick(View v) {}
+
+   
 }

@@ -44,7 +44,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -77,7 +76,7 @@ import com.tcl.lzhang1.mymusic.ui.widget.PagerSlidingTabStrip;
 /**
  * @author leizhang
  */
-public class MusicListAcitivity extends BaseActivity implements OnClickListener,
+public class MusicListAcitivity extends MiniPlayerBaseActivity implements OnClickListener,
         OnItemClickListener, OnItemLongClickListener, IXListViewListener {
 
     /**
@@ -621,8 +620,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
     @Override
     public void initView() {
         // TODO Auto-generated method stub
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.initView();
         if (curStartMode == START_MODE_LOCAL) {/*
                                                 * <<<<<<< HEAD
                                                 * mMusicList.setPullLoadEnable
@@ -642,7 +641,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                                                 * (false); } ======= >>>>>>>
                                                 * c37d08196b48ed4b02dc814a229c1fde8d09d22b
                                                 */
-            setContentView(R.layout.activity_music_list);
+            mViewGroup.addView(getLayoutInflater().inflate(R.layout.activity_music_list, null));
+            //setContentView(R.layout.activity_music_list);
             // wrap
             {
 
@@ -758,7 +758,8 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
                 // loadSingerAndAlbum();
             }
         } else {
-            setContentView(R.layout.activity_music_list_v1);
+            mViewGroup.addView(getLayoutInflater().inflate(R.layout.activity_music_list_v1, null));
+         //   setContentView(R.layout.activity_music_list_v1);
 
             {
                 mMusicListv1 = (ListView) findViewById(R.id.music_list);
@@ -857,6 +858,7 @@ public class MusicListAcitivity extends BaseActivity implements OnClickListener,
 
                 break;
             default:
+                super.onClick(v);
                 break;
         }
     }
